@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Cardano Escrow DApp</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <h1>🔐 Cardano Escrow DApp</h1>
+      <nav>
+        <a href="#app">App</a>
+        <a href="#about">About</a>
+        <a href="#redeem">Redeem</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero-content">
+      <h2>Secure, Trustless Escrow on Cardano</h2>
+      <p>Lock your ADA into a Plutus smart contract. Release or refund when conditions are met.</p>
+      <button id="connect-btn" class="btn primary">🔗 Connect Wallet</button>
+    </div>
+  </section>
+
+  <!-- Main App Section -->
+  <main id="app" class="container">
+    <h3>🧱 Escrow Interaction</h3>
+
+    <!-- Card: Lock funds -->
+    <div class="card">
+      <!-- keep escrow-address in DOM but hidden so app.js can still read it if needed -->
+      <p id="escrow-address" class="address hidden">HIDDEN_SCRIPT_ADDRESS</p>
+
+      <div class="form-row">
+        <label for="lock-amount" class="label-inline">Amount (ADA)</label>
+        <input id="lock-amount" type="number" min="0.1" step="0.1" placeholder="5.0" class="form-control amount-input" />
+      </div>
+
+      <div class="row">
+        <button id="lock-btn" class="btn secondary" disabled>Lock to Escrow</button>
+      </div>
+    </div>
+
+    <!-- Card: Redeem / Refund -->
+    <div class="card">
+      <h4>Redeem / Refund</h4>
+      <input type="file" id="datum-file" accept=".json" class="form-control" />
+      <input type="file" id="redeemer-file" accept=".json" class="form-control" />
+      <div class="row">
+        <button id="redeem-btn" class="btn primary" disabled>Spend from Script</button>
+      </div>
+    </div>
+
+    <div id="status" class="status">Status: idle</div>
+  </main>
+
+  <!-- About / Info -->
+  <section id="about" class="info">
+    <div class="container">
+      <h3>About This DApp</h3>
+      <p>
+        This decentralized application demonstrates an escrow contract built on Cardano using Plutus.
+        The UI allows a buyer to lock ADA into the contract and the parties to redeem or refund with datum/redeemer files.
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-content">
+      <p>© 2025 Cardano Escrow DApp — Built with ❤️ on Cardano</p>
+    </div>
+  </footer>
+
+  <!-- Inline small adapter script:
+       - Dispatches `lockRequested` event with { amount }
+       - Calls window.lockEscrow(amount) if that function exists (backwards-compatible)
+       - Leaves existing IDs intact so your app.js continues to work -->
+  <script>
+    (function () {
+      const lockBtn = document.getElementById('lock-btn');
+      const connectBtn = document.getElementById('connect-btn');
+      const amountInput = document.getElementById('lock-amount');
+      const status = document.getElementById('status');
+
+      // Utility: show simple status text (non-invasive)
+      function setStatus(s) {
+        if (status) status.textContent = 'Status: ' + s;
+      }
+
+      // Enable/disable lock button based on amount validity
+      function validateAmount() {
+        const v = parseFloat(amountInput.value);
+        if (!isNaN(v) && v > 0) {
+          lockBtn.disabled = false;
+        } else {
+          lockBtn.disabled = true;
+        }
+      }
+
+      // wire amount input
+      amountInput.addEventListener('input', validateAmount);
+
+      // If your app.js handles wallet connect and will enable lock-btn, fine.
+      // This makes the lock action emit the amount so either app.js can listen for event:
+      //   window.addEventListener('lockRequested', (e) => { ... })
+      // or expose a function named lockEscrow(amount) and it will be called.
+      lockBtn.addEventListener('click', function () {
+        const amount = parseFloat(amountInput.value);
+        if (isNaN(amount) || amount <= 0) {
+          setStatus('Enter a valid amount above 0.');
+          return;
+        }
+        setStatus('Lock requested: ' + amount + ' ADA');
+
+        // call existing global function if available (backwards compatible)
+        if (typeof window.lockEscrow === 'function') {
+          try {
+            window.lockEscrow(amount);
+          } catch (err) {
+            console.error('lockEscrow threw:', err);
+          }
+        }
+
+        // dispatch event for any listener in app.js
+        const ev = new CustomEvent('lockRequested', { detail: { amount } });
+        window.dispatchEvent(ev);
+      });
+
+      // small convenience: enable lock button if wallet is connected by app.js
+      // app.js can set window.walletConnected = true and call window.dispatchEvent(new Event('walletConnected'));
+      window.addEventListener('walletConnected', () => {
+        // only enable if amount valid
+        validateAmount();
+        setStatus('Wallet connected');
+      });
+
+      // allow clicking Connect to dispatch an event that app.js can respond to
+      connectBtn.addEventListener('click', () => {
+        setStatus('Connect wallet requested');
+        window.dispatchEvent(new Event('connectRequested'));
+      });
+
+      // initial validation
+      validateAmount();
+    })();
+  </script>
+
+  <!-- your main app code (keeps using the same ids) -->
+  <script src="app.js"></script>
+</body>
+</html>
