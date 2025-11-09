@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardanoSecureEscrow - Trusted ADA Transactions</title>
+    <style>
+        :root {
+            --primary: #0033ad;
+            --primary-dark: #00267c;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --cardano: #0033ad;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--cardano);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: var(--cardano);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--cardano);
+        }
+        
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--cardano);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--cardano);
+            color: var(--cardano);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--cardano);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #0da271;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #d97706;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 4rem 0;
+            text-align: center;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 4rem 0;
+            background-color: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.25rem;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title p {
+            color: var(--secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background-color: var(--light);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background-color: var(--cardano);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card p {
+            color: var(--secondary);
+        }
+        
+        /* Dashboard Section */
+        .dashboard {
+            padding: 4rem 0;
+            background-color: #f8fafc;
+        }
+        
+        .dashboard-container {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        .dashboard-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .wallet-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background-color: #f0f9ff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid #bae6fd;
+        }
+        
+        .wallet-address {
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+        
+        .wallet-balance {
+            font-weight: 600;
+            color: var(--cardano);
+        }
+        
+        .dashboard-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 2px solid var(--cardano);
+            color: var(--cardano);
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            padding: 2rem;
+        }
+        
+        .tab-pane {
+            display: none;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+        
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+        }
+        
+        .transaction-info h4 {
+            margin-bottom: 0.25rem;
+        }
+        
+        .transaction-info p {
+            color: var(--secondary);
+            font-size: 0.875rem;
+        }
+        
+        .transaction-amount {
+            font-weight: 600;
+            font-size: 1.125rem;
+            color: var(--cardano);
+        }
+        
+        .transaction-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+        
+        .status-active {
+            background-color: #dbeafe;
+            color: var(--cardano);
+        }
+        
+        .status-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-disputed {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+        
+        .transaction-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .action-btn {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border: none;
+        }
+        
+        /* Create Escrow Form */
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--cardano);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .form-help {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            margin-top: 0.25rem;
+        }
+        
+        .file-input-group {
+            border: 1px dashed var(--border);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            text-align: center;
+        }
+        
+        .file-input-group label {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: var(--light);
+            border-radius: 0.25rem;
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+        }
+        
+        .file-input-group input[type="file"] {
+            display: none;
+        }
+        
+        .file-name {
+            font-size: 0.875rem;
+            color: var(--secondary);
+        }
+        
+        /* Status Display */
+        .status-display {
+            background-color: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        /* Contract Actions */
+        .contract-actions {
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .contract-actions h3 {
+            margin-bottom: 1rem;
+            color: var(--cardano);
+        }
+        
+        .amount-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: flex-end;
+        }
+        
+        .amount-input {
+            flex: 1;
+        }
+        
+        .lovelace-conversion {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            margin-top: 0.25rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 3rem 0 2rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-column h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.125rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+        
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification-success {
+            background-color: var(--success);
+        }
+        
+        .notification-error {
+            background-color: var(--danger);
+        }
+        
+        .notification-warning {
+            background-color: var(--warning);
+        }
+        
+        .notification-info {
+            background-color: var(--cardano);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .transaction-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .transaction-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .amount-input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <div class="logo-icon">C</div>
+                    <span>CardanoSecureEscrow</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#features">How It Works</a>
+                    <a href="#dashboard">Dashboard</a>
+                    <a href="#create">Create Escrow</a>
+                </div>
+                <div>
+                    <button class="btn btn-outline" id="connectWallet">Connect Wallet</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Secure ADA Escrow Service</h1>
+            <p>Protect your Cardano transactions with our blockchain-based escrow service. Funds are held securely until all conditions are met.</p>
+            <button class="btn btn-primary" onclick="app.showCreateEscrow()">Create Escrow</button>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>How CardanoSecureEscrow Works</h2>
+                <p>Our simple three-step process ensures your ADA transactions are secure and transparent</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">1</div>
+                    <h3>Create Escrow</h3>
+                    <p>Set up an escrow agreement with the buyer, seller, and arbitrator details along with the ADA amount.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">2</div>
+                    <h3>Fund Escrow</h3>
+                    <p>The buyer deposits ADA into the secure escrow smart contract. Funds are locked until conditions are met.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">3</div>
+                    <h3>Release or Dispute</h3>
+                    <p>Once terms are fulfilled, funds are released to the seller. In case of disputes, an arbitrator resolves the issue.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section class="dashboard" id="dashboard">
+        <div class="container">
+            <div class="section-title">
+                <h2>Your Escrow Dashboard</h2>
+                <p>Manage all your ADA escrow transactions in one place</p>
+            </div>
+            
+            <!-- Contract Actions -->
+            <div class="contract-actions">
+                <h3>Escrow Contract Actions</h3>
+                <div class="amount-input-group">
+                    <div class="amount-input">
+                        <label for="lock-amount">Amount to Lock (ADA)</label>
+                        <input type="number" id="lock-amount" class="form-control" step="0.1" min="1" value="5" placeholder="Enter ADA amount">
+                        <div class="lovelace-conversion" id="lovelace-conversion">0 lovelace</div>
+                    </div>
+                    <button class="btn btn-primary" id="lock-btn" disabled>Lock ADA</button>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-success" id="redeem-btn" disabled>Redeem Funds</button>
+                    <button class="btn btn-outline btn-sm" id="show-contract-btn">Show Contract Address</button>
+                </div>
+                
+                <!-- Contract Address (Hidden by default) -->
+                <div id="contract-address-section" style="display: none; margin-top: 1rem;">
+                    <label style="font-weight: 500; margin-bottom: 0.5rem; display: block;">Escrow Contract Address</label>
+                    <div style="background-color: white; padding: 0.75rem; border-radius: 0.25rem; border: 1px solid var(--border); font-family: monospace; word-break: break-all; font-size: 0.875rem;" id="escrow-address"></div>
+                    <p class="form-help">This is the address where escrow funds are securely held</p>
+                </div>
+                
+                <!-- File Uploads for Redeem -->
+                <div id="redeem-files" style="margin-top: 1.5rem; display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="file-input-group">
+                                <label for="datum-file">Upload Datum JSON</label>
+                                <input type="file" id="datum-file" accept=".json">
+                                <div class="file-name" id="datum-file-name">No file selected</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="file-input-group">
+                                <label for="redeemer-file">Upload Redeemer JSON</label>
+                                <input type="file" id="redeemer-file" accept=".json">
+                                <div class="file-name" id="redeemer-file-name">No file selected</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-container">
+                <div class="dashboard-header">
+                    <h3>My Transactions</h3>
+                    <div class="wallet-info" id="walletInfo" style="display: none;">
+                        <div class="wallet-address">Address: <span id="walletAddress"></span></div>
+                        <div class="wallet-balance">Balance: <span id="walletBalance"></span> ADA</div>
+                    </div>
+                    <button class="btn btn-primary" onclick="app.showCreateEscrow()">New Escrow</button>
+                </div>
+                
+                <!-- Status Display -->
+                <div class="status-display" id="status">
+                    Connect your wallet to get started
+                </div>
+                
+                <div class="dashboard-tabs">
+                    <div class="tab active" data-tab="all">All Transactions</div>
+                    <div class="tab" data-tab="active">Active</div>
+                    <div class="tab" data-tab="pending">Pending</div>
+                    <div class="tab" data-tab="completed">Completed</div>
+                    <div class="tab" data-tab="disputed">Disputed</div>
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="all-tab">
+                        <div class="transaction-list">
+                            <!-- Transaction items will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="active-tab">
+                        <div class="transaction-list">
+                            <!-- Active transactions will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="pending-tab">
+                        <div class="transaction-list">
+                            <!-- Pending transactions will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="completed-tab">
+                        <div class="transaction-list">
+                            <!-- Completed transactions will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="disputed-tab">
+                        <div class="transaction-list">
+                            <!-- Disputed transactions will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Create Escrow Section -->
+    <section class="dashboard" id="create" style="display: none;">
+        <div class="container">
+            <div class="section-title">
+                <h2>Create New ADA Escrow</h2>
+                <p>Set up a secure escrow agreement for your Cardano transaction</p>
+            </div>
+            <div class="dashboard-container">
+                <div class="form-container">
+                    <form id="escrowForm">
+                        <div class="form-group">
+                            <label for="escrowTitle">Escrow Title</label>
+                            <input type="text" id="escrowTitle" class="form-control" placeholder="e.g., Website Development Payment" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="buyerAddress">Buyer Address</label>
+                                <input type="text" id="buyerAddress" class="form-control" placeholder="addr_test..." required>
+                                <div class="form-help">The address of the person paying for the goods/services</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="sellerAddress">Seller Address</label>
+                                <input type="text" id="sellerAddress" class="form-control" placeholder="addr_test..." required>
+                                <div class="form-help">The address of the person providing the goods/services</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="arbitratorAddress">Arbitrator Address</label>
+                            <input type="text" id="arbitratorAddress" class="form-control" placeholder="addr_test..." required>
+                            <div class="form-help">The address of the trusted third party to resolve disputes</div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="amount">Amount (ADA)</label>
+                                <input type="number" id="amount" class="form-control" step="0.1" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="fee">Escrow Fee (%)</label>
+                                <input type="number" id="fee" class="form-control" value="1" step="0.1" min="0" max="10" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Transaction Description</label>
+                            <textarea id="description" class="form-control" rows="4" placeholder="Describe the goods or services being exchanged..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="terms">Terms & Conditions</label>
+                            <textarea id="terms" class="form-control" rows="4" placeholder="Specify the conditions for releasing funds..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">Create Escrow</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>CardanoSecureEscrow</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">How It Works</a></li>
+                        <li><a href="#">Security</a></li>
+                        <li><a href="#">Pricing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">Dispute Resolution</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">support@cardanoescrow.com</a></li>
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">LinkedIn</a></li>
+                        <li><a href="#">GitHub</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 CardanoSecureEscrow. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <script>
+        // Cardano Escrow Contract Integration
+        const SCRIPT_ADDRESS = "addr_test1wrlvp5amfskax5wurj59gqhuajudk940976uckxpxd5zrvqpdl3zp";
+
+        class CardanoEscrowFrontend {
+            constructor() {
+                this.wallet = null;
+                this.walletApi = null;
+                this.account = null;
+                this.balance = 0;
+                this.escrowContractAddress = SCRIPT_ADDRESS;
+                this.transactions = [];
+                this.api = null;
+                
+                this.initialize();
+            }
+            
+            async initialize() {
+                // Set contract address (hidden by default)
+                document.getElementById("escrow-address").textContent = this.escrowContractAddress;
+                
+                // Check if a wallet is already connected
+                this.checkWalletConnection();
+                
+                // Initialize event listeners
+                this.setupEventListeners();
+                
+                // Load transaction data
+                this.loadTransactions();
+                
+                // Initialize amount conversion
+                this.updateLovelaceConversion();
+            }
+            
+            setupEventListeners() {
+                // Wallet connection
+                document.getElementById('connectWallet').addEventListener('click', () => {
+                    this.connectWallet();
+                });
+                
+                // Form submission
+                document.getElementById('escrowForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.createEscrow();
+                });
+                
+                // Tab navigation
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const tabId = tab.getAttribute('data-tab');
+                        this.switchTab(tabId);
+                    });
+                });
+                
+                // Navigation
+                document.querySelectorAll('.nav-links a').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const target = link.getAttribute('href').substring(1);
+                        this.handleNavigation(target);
+                    });
+                });
+                
+                // Contract action buttons
+                document.getElementById("lock-btn").addEventListener("click", () => {
+                    this.lockAda();
+                });
+                
+                document.getElementById("redeem-btn").addEventListener("click", () => {
+                    this.redeemFunds();
+                });
+                
+                // Show contract address button
+                document.getElementById("show-contract-btn").addEventListener("click", () => {
+                    this.toggleContractAddress();
+                });
+                
+                // File input handlers
+                document.getElementById("datum-file").addEventListener("change", (e) => {
+                    document.getElementById("datum-file-name").textContent = e.target.files[0]?.name || "No file selected";
+                });
+                
+                document.getElementById("redeemer-file").addEventListener("change", (e) => {
+                    document.getElementById("redeemer-file-name").textContent = e.target.files[0]?.name || "No file selected";
+                });
+                
+                // Amount input handler
+                document.getElementById("lock-amount").addEventListener("input", () => {
+                    this.updateLovelaceConversion();
+                });
+            }
+            
+            updateLovelaceConversion() {
+                const adaAmount = document.getElementById("lock-amount").value;
+                const lovelaceAmount = adaAmount ? (parseFloat(adaAmount) * 1000000).toLocaleString() : "0";
+                document.getElementById("lovelace-conversion").textContent = `${lovelaceAmount} lovelace`;
+            }
+            
+            toggleContractAddress() {
+                const addressSection = document.getElementById("contract-address-section");
+                const showButton = document.getElementById("show-contract-btn");
+                
+                if (addressSection.style.display === "none") {
+                    addressSection.style.display = "block";
+                    showButton.textContent = "Hide Contract Address";
+                } else {
+                    addressSection.style.display = "none";
+                    showButton.textContent = "Show Contract Address";
+                }
+            }
+            
+            async checkWalletConnection() {
+                // Check if a Cardano wallet extension is available
+                if (window.cardano) {
+                    // Check if any wallet is already connected
+                    const enabledWallet = await this.getEnabledWallet();
+                    if (enabledWallet) {
+                        this.wallet = enabledWallet;
+                        await this.loadWalletInfo();
+                        this.showNotification('Wallet connected successfully!', 'success');
+                    }
+                }
+            }
+            
+            async getEnabledWallet() {
+                // Check for various Cardano wallets
+                const wallets = ['lace', 'nami', 'eternl', 'flint', 'yoroi', 'gerowallet'];
+                
+                for (const wallet of wallets) {
+                    if (window.cardano && window.cardano[wallet]) {
+                        try {
+                            const enabled = await window.cardano[wallet].isEnabled();
+                            if (enabled) {
+                                return window.cardano[wallet];
+                            }
+                        } catch (error) {
+                            console.log(`${wallet} wallet not enabled`);
+                        }
+                    }
+                }
+                
+                return null;
+            }
+            
+            async connectWallet() {
+                try {
+                    if (!window.cardano) {
+                        this.showNotification('No Cardano wallet extension found. Please install Lace or Nami wallet.', 'error');
+                        return;
+                    }
+                    
+                    // Try to connect to Lace first, then Nami
+                    if (window.cardano.lace) {
+                        this.wallet = window.cardano.lace;
+                    } else if (window.cardano.nami) {
+                        this.wallet = window.cardano.nami;
+                    } else if (window.cardano.eternl) {
+                        this.wallet = window.cardano.eternl;
+                    } else if (window.cardano.flint) {
+                        this.wallet = window.cardano.flint;
+                    } else {
+                        this.showNotification('No supported Cardano wallet found. Please install Lace or Nami wallet.', 'error');
+                        return;
+                    }
+                    
+                    // Enable the wallet
+                    this.api = await this.wallet.enable();
+                    
+                    // Get network ID
+                    const netId = await this.api.getNetworkId();
+                    const statusElement = document.getElementById("status");
+                    
+                    if (netId !== 0 && netId !== 1) {
+                        statusElement.innerHTML = "✅ Wallet connected (network " + netId + ")";
+                        document.getElementById("lock-btn").disabled = false;
+                        document.getElementById("redeem-btn").disabled = false;
+                        document.getElementById("redeem-files").style.display = "block";
+                    } else {
+                        statusElement.innerHTML = "⚠️ Please switch wallet to Testnet.";
+                        return;
+                    }
+                    
+                    // Get account info
+                    const accounts = await this.api.getAccounts();
+                    this.account = accounts[0];
+                    
+                    // Get balance
+                    await this.loadWalletInfo();
+                    
+                    this.showNotification('Wallet connected successfully!', 'success');
+                    
+                } catch (e) {
+                    console.error('Wallet connection error:', e);
+                    document.getElementById("status").innerHTML = "❌ " + e;
+                    this.showNotification('Failed to connect wallet. Please try again.', 'error');
+                }
+            }
+            
+            async loadWalletInfo() {
+                if (!this.api || !this.account) return;
+                
+                try {
+                    // Get UTXOs to calculate balance (simplified)
+                    const utxos = await this.api.getUtxos();
+                    // Mock balance calculation - in production you would sum UTXO values
+                    this.balance = utxos.length > 0 ? 125.75 : 0;
+                    
+                    // Update UI
+                    document.getElementById('walletAddress').textContent = 
+                        `${this.account.substring(0, 10)}...${this.account.substring(this.account.length - 10)}`;
+                    document.getElementById('walletBalance').textContent = this.balance;
+                    document.getElementById('walletInfo').style.display = 'flex';
+                    
+                    // Update connect button
+                    const connectBtn = document.getElementById('connectWallet');
+                    connectBtn.textContent = 'Connected';
+                    connectBtn.classList.remove('btn-outline');
+                    connectBtn.classList.add('btn-primary');
+                    connectBtn.disabled = true;
+                    
+                } catch (error) {
+                    console.error('Error loading wallet info:', error);
+                }
+            }
+            
+            async lockAda() {
+                if (!this.api) {
+                    this.showNotification('Please connect your wallet first.', 'error');
+                    return;
+                }
+                
+                try {
+                    const amountInput = document.getElementById("lock-amount");
+                    const adaAmount = parseFloat(amountInput.value);
+                    
+                    if (!adaAmount || adaAmount <= 0) {
+                        this.showNotification("Please enter a valid ADA amount.", "error");
+                        return;
+                    }
+                    
+                    // Convert ADA to lovelace
+                    const lovelaceAmount = Math.floor(adaAmount * 1000000).toString();
+                    
+                    document.getElementById("status").innerHTML = `⏳ Building transaction to lock ${adaAmount} ADA...`;
+                    
+                    const utxos = await this.api.getUtxos();
+                    if (!utxos.length) {
+                        throw "No UTxOs in wallet.";
+                    }
+
+                    // Use wallet's experimental tx builder if available
+                    const txBuilder = window.cardano.experimental?.transactionBuilder;
+                    if (!txBuilder) {
+                        this.showNotification("Wallet lacks transaction builder support.", "error");
+                        return;
+                    }
+
+                    const tx = await txBuilder()
+                        .addInput(utxos[0])
+                        .addOutput(this.escrowContractAddress, lovelaceAmount)
+                        .build();
+
+                    document.getElementById("status").innerHTML = "🖊 Signing transaction...";
+                    const signed = await this.api.signTx(tx, true);
+                    
+                    document.getElementById("status").innerHTML = "📡 Submitting transaction...";
+                    const hash = await this.api.submitTx(signed);
+                    
+                    document.getElementById("status").innerHTML = `✅ ${adaAmount} ADA locked successfully! TxHash: ${hash}`;
+                    this.showNotification(`${adaAmount} ADA successfully locked in escrow!`, 'success');
+                    
+                    // Add to transaction history
+                    this.addLockTransaction(adaAmount, hash);
+                    
+                } catch (e) {
+                    console.error(e);
+                    document.getElementById("status").innerHTML = "❌ " + e;
+                    this.showNotification('Failed to lock ADA. Please try again.', 'error');
+                }
+            }
+            
+            addLockTransaction(amount, txHash) {
+                const newTransaction = {
+                    id: Date.now(),
+                    title: `Lock ${amount} ADA`,
+                    buyer: this.account,
+                    seller: "Escrow Contract",
+                    arbitrator: "N/A",
+                    amount: `${amount} ADA`,
+                    status: "active",
+                    date: new Date().toISOString().split('T')[0],
+                    description: `Funds locked in escrow contract`,
+                    terms: "Funds will be released according to escrow terms",
+                    txHash: txHash
+                };
+                
+                this.transactions.unshift(newTransaction);
+                this.loadTransactions();
+            }
+            
+            async redeemFunds() {
+                if (!this.api) {
+                    this.showNotification('Please connect your wallet first.', 'error');
+                    return;
+                }
+                
+                try {
+                    const datumFile = document.getElementById("datum-file").files[0];
+                    const redeemerFile = document.getElementById("redeemer-file").files[0];
+                    
+                    if (!datumFile || !redeemerFile) {
+                        this.showNotification("Upload both datum.json and redeemer.json.", "error");
+                        return;
+                    }
+
+                    const datum = JSON.parse(await datumFile.text());
+                    const redeemer = JSON.parse(await redeemerFile.text());
+
+                    document.getElementById("status").innerHTML = "🔍 Fetching script UTxOs...";
+
+                    // Get UTxOs at script address
+                    const resp = await fetch(
+                        `https://api.koios.rest/api/v1/address_utxos?address=${this.escrowContractAddress}`
+                    );
+                    const utxos = await resp.json();
+                    
+                    if (!utxos.length) {
+                        throw "No UTxOs found at script address.";
+                    }
+
+                    const scriptUtxo = utxos[0];
+
+                    document.getElementById("status").innerHTML = "🧱 Building spend transaction...";
+
+                    // Use wallet's tx builder (if supported)
+                    const txBuilder = window.cardano.experimental?.transactionBuilder;
+                    if (!txBuilder) {
+                        this.showNotification("Wallet lacks transaction builder support.", "error");
+                        return;
+                    }
+
+                    const tx = await txBuilder()
+                        .spendScriptUtxo(scriptUtxo.tx_hash + "#" + scriptUtxo.tx_index, datum, redeemer)
+                        .addChange()
+                        .build();
+
+                    document.getElementById("status").innerHTML = "🖊 Signing...";
+                    const signed = await this.api.signTx(tx, true);
+                    const hash = await this.api.submitTx(signed);
+
+                    document.getElementById("status").innerHTML = "✅ Redeemed! TxHash: " + hash;
+                    this.showNotification('Funds successfully redeemed!', 'success');
+                    
+                } catch (e) {
+                    console.error(e);
+                    document.getElementById("status").innerHTML = "❌ " + e;
+                    this.showNotification('Failed to redeem funds. Please try again.', 'error');
+                }
+            }
+            
+            async createEscrow() {
+                if (!this.api) {
+                    this.showNotification('Please connect your wallet first.', 'error');
+                    return;
+                }
+                
+                try {
+                    // Get form values
+                    const title = document.getElementById('escrowTitle').value;
+                    const buyer = document.getElementById('buyerAddress').value;
+                    const seller = document.getElementById('sellerAddress').value;
+                    const arbitrator = document.getElementById('arbitratorAddress').value;
+                    const amount = document.getElementById('amount').value;
+                    const fee = document.getElementById('fee').value;
+                    const description = document.getElementById('description').value;
+                    const terms = document.getElementById('terms').value;
+                    
+                    // Validate addresses (basic validation)
+                    if (!buyer.startsWith('addr_test') || !seller.startsWith('addr_test') || !arbitrator.startsWith('addr_test')) {
+                        this.showNotification('Please use valid Cardano testnet addresses (starting with addr_test)', 'error');
+                        return;
+                    }
+                    
+                    // In a real implementation, this would build the escrow creation transaction
+                    document.getElementById("status").innerHTML = "⏳ Creating escrow contract...";
+                    
+                    // Simulate transaction delay
+                    setTimeout(() => {
+                        // Add the new escrow to transactions
+                        const newEscrow = {
+                            id: Date.now(),
+                            title: title,
+                            buyer: buyer,
+                            seller: seller,
+                            arbitrator: arbitrator,
+                            amount: `${amount} ADA`,
+                            status: 'active',
+                            date: new Date().toISOString().split('T')[0],
+                            description: description,
+                            terms: terms
+                        };
+                        
+                        this.transactions.push(newEscrow);
+                        this.loadTransactions();
+                        
+                        document.getElementById("status").innerHTML = "✅ Escrow created successfully!";
+                        this.showNotification('Escrow created successfully!', 'success');
+                        
+                        // Reset form and show dashboard
+                        document.getElementById('escrowForm').reset();
+                        this.showDashboard();
+                    }, 2000);
+                    
+                } catch (error) {
+                    console.error('Error creating escrow:', error);
+                    this.showNotification('Failed to create escrow. Please try again.', 'error');
+                }
+            }
+            
+            loadTransactions() {
+                // Sample transaction data
+                if (this.transactions.length === 0) {
+                    this.transactions = [
+                        {
+                            id: 1,
+                            title: "Website Development",
+                            buyer: "addr_test1qzx...9k4j",
+                            seller: "addr_test1qrs...7mhn",
+                            arbitrator: "addr_test1qap...3dfg",
+                            amount: "150 ADA",
+                            status: "active",
+                            date: "2023-10-15",
+                            description: "Full website development with 5 pages",
+                            terms: "Funds released after final approval of design and functionality"
+                        },
+                        {
+                            id: 2,
+                            title: "NFT Purchase",
+                            buyer: "addr_test1qzx...9k4j",
+                            seller: "addr_test1qwe...2fgh",
+                            arbitrator: "addr_test1qap...3dfg",
+                            amount: "75 ADA",
+                            status: "completed",
+                            date: "2023-10-10",
+                            description: "Purchase of SpaceBudz NFT #1234",
+                            terms: "Funds released after NFT transfer confirmation"
+                        }
+                    ];
+                }
+                
+                // Populate all transactions
+                const allTab = document.querySelector('#all-tab .transaction-list');
+                allTab.innerHTML = this.generateTransactionHTML(this.transactions);
+                
+                // Populate active transactions
+                const activeTab = document.querySelector('#active-tab .transaction-list');
+                const activeTransactions = this.transactions.filter(t => t.status === 'active');
+                activeTab.innerHTML = this.generateTransactionHTML(activeTransactions);
+                
+                // Populate pending transactions
+                const pendingTab = document.querySelector('#pending-tab .transaction-list');
+                const pendingTransactions = this.transactions.filter(t => t.status === 'pending');
+                pendingTab.innerHTML = this.generateTransactionHTML(pendingTransactions);
+                
+                // Populate completed transactions
+                const completedTab = document.querySelector('#completed-tab .transaction-list');
+                const completedTransactions = this.transactions.filter(t => t.status === 'completed');
+                completedTab.innerHTML = this.generateTransactionHTML(completedTransactions);
+                
+                // Populate disputed transactions
+                const disputedTab = document.querySelector('#disputed-tab .transaction-list');
+                const disputedTransactions = this.transactions.filter(t => t.status === 'disputed');
+                disputedTab.innerHTML = this.generateTransactionHTML(disputedTransactions);
+            }
+            
+            generateTransactionHTML(transactions) {
+                if (transactions.length === 0) {
+                    return '<p class="no-transactions">No transactions found</p>';
+                }
+                
+                return transactions.map(transaction => `
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <h4>${transaction.title}</h4>
+                            <p>With: ${transaction.buyer === this.account ? transaction.seller : transaction.buyer}</p>
+                            <p>Created: ${transaction.date}</p>
+                            ${transaction.txHash ? `<p style="font-size: 0.75rem; color: var(--secondary);">Tx: ${transaction.txHash.substring(0, 20)}...</p>` : ''}
+                            <div class="transaction-actions">
+                                ${transaction.status === 'active' && !transaction.txHash ? `
+                                    <button class="action-btn btn-success" onclick="app.releaseFunds(${transaction.id})">Release</button>
+                                    <button class="action-btn btn-warning" onclick="app.disputeEscrow(${transaction.id})">Dispute</button>
+                                ` : ''}
+                                ${transaction.status === 'disputed' ? `
+                                    <button class="action-btn btn-primary" onclick="app.resolveDispute(${transaction.id})">Resolve</button>
+                                ` : ''}
+                                <button class="action-btn btn-outline" onclick="app.viewDetails(${transaction.id})">Details</button>
+                            </div>
+                        </div>
+                        <div class="transaction-details">
+                            <div class="transaction-amount">${transaction.amount}</div>
+                            <div class="transaction-status status-${transaction.status}">${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            switchTab(tabId) {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                // Add active class to clicked tab
+                document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+                
+                // Hide all tab panes
+                document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+                // Show the corresponding tab pane
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            }
+            
+            handleNavigation(target) {
+                if (target === 'create') {
+                    this.showCreateEscrow();
+                } else if (target === 'dashboard') {
+                    this.showDashboard();
+                } else {
+                    // Scroll to section
+                    document.getElementById(target).scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+            
+            showCreateEscrow() {
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('create').style.display = 'block';
+                window.scrollTo(0, 0);
+            }
+            
+            showDashboard() {
+                document.getElementById('create').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                window.scrollTo(0, 0);
+            }
+            
+            // Escrow actions (to be implemented with your smart contract)
+            async releaseFunds(escrowId) {
+                this.showNotification('Releasing funds...', 'info');
+                // Implementation would interact with your escrow contract
+            }
+            
+            async disputeEscrow(escrowId) {
+                this.showNotification('Opening dispute...', 'info');
+                // Implementation would interact with your escrow contract
+            }
+            
+            async resolveDispute(escrowId) {
+                this.showNotification('Resolving dispute...', 'info');
+                // Implementation would interact with your escrow contract
+            }
+            
+            viewDetails(escrowId) {
+                const transaction = this.transactions.find(t => t.id === escrowId);
+                if (transaction) {
+                    alert(`Details for: ${transaction.title}\n\nDescription: ${transaction.description}\n\nTerms: ${transaction.terms}${transaction.txHash ? `\n\nTransaction Hash: ${transaction.txHash}` : ''}`);
+                }
+            }
+            
+            showNotification(message, type) {
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type}`;
+                notification.innerHTML = `
+                    <span>${message}</span>
+                `;
+                
+                document.getElementById('notificationContainer').appendChild(notification);
+                
+                // Show notification
+                setTimeout(() => {
+                    notification.classList.add('show');
+                }, 100);
+                
+                // Hide after 5 seconds
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 5000);
+            }
+        }
+
+        // Initialize the application
+        const app = new CardanoEscrowFrontend();
+    </script>
+</body>
+</html>
