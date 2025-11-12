@@ -536,3 +536,125 @@
             </div>
         </div>
     </section>
+    
+    <!-- Owner Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Meet Our Founder</h2>
+                <p>The passionate mind behind our delicious creations</p>
+            </div>
+            <div class="owner-section">
+                <div class="owner-image">
+                    <!-- Replace with owner's photo -->
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Jane Smith - Founder">
+                </div>
+                <div class="owner-info">
+                    <h3>Jane Smith</h3>
+                    <p>With over 15 years of experience in the culinary industry, Jane founded FreshBites with a simple mission: to share her passion for exceptional food with her community.</p>
+                    <p>Her journey began in her grandmother's kitchen, where she learned traditional cooking methods and developed an appreciation for quality ingredients. After graduating from culinary school and working in several prestigious restaurants, Jane decided to channel her expertise into creating products that bring restaurant-quality flavors to home kitchens.</p>
+                    <p>"Food is more than just sustenance - it's an experience, a memory, a way to connect with others. At FreshBites, we're committed to creating products that elevate everyday meals into special moments."</p>
+                    <!-- Replace with actual WhatsApp number -->
+                    <a href="https://wa.me/1234567890?text=Hi%20Jane%2C%20I%20would%20like%20to%20get%20in%20touch%20about%20FreshBites" class="btn btn-whatsapp" target="_blank">
+                        <i class="fab fa-whatsapp"></i> Contact Jane on WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section contact" id="contact">
+        <div class="container">
+            <div class="section-title">
+                <h2>Contact Us</h2>
+                <p>Get in touch with us for feedback, inquiries, or collaborations</p>
+            </div>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h3>Get In Touch</h3>
+                    <div class="contact-details">
+                        <p><i class="fas fa-map-marker-alt"></i> 123 Food Street, Culinary District, City 10001</p>
+                        <p><i class="fas fa-phone"></i> (555) 123-4567</p>
+                        <p><i class="fas fa-envelope"></i> info@freshbites.com</p>
+                        <p><i class="fas fa-clock"></i> Mon-Fri: 9am-6pm, Sat: 10am-4pm</p>
+                    </div>
+                    <div class="social-links">
+                        <!-- Replace with your actual social media links -->
+                        <a href="https://facebook.com/yourbusiness" aria-label="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://instagram.com/yourbusiness" aria-label="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="https://twitter.com/yourbusiness" aria-label="Twitter" target="_blank"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Your Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Your Message</label>
+                            <textarea id="message" name="message" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">Send Message</button>
+                    </form>
+                    <div id="successMessage" class="success-message">
+                        Thank you for your message! We'll get back to you soon.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <p>&copy; 2023 FreshBites. All rights reserved.</p>
+            <div class="social-links">
+                <!-- Replace with your actual social media links -->
+                <a href="https://facebook.com/yourbusiness" aria-label="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://instagram.com/yourbusiness" aria-label="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://twitter.com/yourbusiness" aria-label="Twitter" target="_blank"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Form submission handling
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            
+            // Replace with your actual email address
+            const companyEmail = 'info@freshbites.com';
+            
+            // Create mailto link
+            const subject = `New Message from ${name}`;
+            const body = `Name: ${name}%0D%0AEmail: ${email}%0D%0AMessage: ${message}`;
+            const mailtoLink = `mailto:${companyEmail}?subject=${encodeURIComponent(subject)}&body=${body}`;
+            
+            // Open email client
+            window.location.href = mailtoLink;
+            
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // Reset form
+            document.getElementById('contactForm').reset();
+            
+            // Hide success message after 5 seconds
+            setTimeout(function() {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
