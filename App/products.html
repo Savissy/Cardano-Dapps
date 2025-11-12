@@ -985,3 +985,60 @@
             const customerName = document.getElementById('customerName').value;
             const customerEmail = document.getElementById('customerEmail').value;
             const customerPhone = document.getElementById('customerPhone').value
+            const customerAddress = document.getElementById('customerAddress').value;
+            const orderNotes = document.getElementById('orderNotes').value;
+            
+            // Calculate total
+            let totalAmount = 0;
+            let orderDetails = '';
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                totalAmount += itemTotal;
+                orderDetails += `${item.name} - Quantity: ${item.quantity} - ₦${itemTotal.toLocaleString()}\n`;
+            });
+            
+            // Replace with your actual company email
+            const companyEmail = 'orders@freshbites.com';
+            
+            // Create email content
+            const subject = `New Order from ${customerName}`;
+            const body = `
+Customer Details:
+Name: ${customerName}
+Email: ${customerEmail}
+Phone: ${customerPhone}
+Address: ${customerAddress}
+Special Instructions: ${orderNotes}
+
+Order Details:
+${orderDetails}
+
+Total Amount: ₦${totalAmount.toLocaleString()}
+            `;
+            
+            // Create mailto link
+            const mailtoLink = `mailto:${companyEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            
+            // Open email client
+            window.location.href = mailtoLink;
+            
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // Reset form and cart
+            document.getElementById('orderForm').reset();
+            cart = [];
+            updateCartDisplay();
+            
+            // Close modal after 5 seconds
+            setTimeout(function() {
+                closeOrderModal();
+            }, 5000);
+        });
+
+        // Initialize cart display
+        updateCartDisplay();
+    </script>
+</body>
+</html>
