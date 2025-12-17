@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Yield Sharing Lending dApp</title>
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="style.css" />
+
+</head>
+<body>
+
+  <div class="container">
+    <h1>Yield Sharing Lending</h1>
+
+    <!-- Wallet Connect -->
+    <button id="connectWallet" class="primary">
+      Connect Wallet
+    </button>
+
+    <!-- Main App -->
+    <div id="app" class="hidden">
+
+      <!-- Deposit -->
+      <div class="section">
+        <h3>Deposit (Lender)</h3>
+        <p style="font-size: 0.85rem; margin-bottom: 8px; color: #94a3b8;">
+          Lock funds into the contract as principal.
+        </p>
+        <button id="depositBtn" class="primary">
+          Deposit Funds
+        </button>
+      </div>
+
+      <!-- Borrow -->
+      <div class="section">
+        <h3>Borrow</h3>
+        <input
+          id="borrowAmt"
+          type="number"
+          placeholder="Borrow amount (lovelace)"
+        />
+        <button id="borrowBtn" class="secondary">
+          Borrow
+        </button>
+      </div>
+
+      <!-- Repay -->
+      <div class="section">
+        <h3>Repay</h3>
+        <input
+          id="repayAmt"
+          type="number"
+          placeholder="Repay amount (lovelace)"
+        />
+        <button id="repayBtn" class="secondary">
+          Repay
+        </button>
+      </div>
+
+      <!-- Yield Distribution -->
+      <div class="section">
+        <h3>Distribute Yield</h3>
+        <input
+          id="yieldAmt"
+          type="number"
+          placeholder="Yield amount (lovelace)"
+        />
+        <button id="yieldBtn" class="warning">
+          Distribute Yield
+        </button>
+      </div>
+
+      <!-- Logs -->
+      <pre id="log"></pre>
+
+    </div>
+  </div>
+
+  <!-- Lucid App Logic -->
+  <script type="module" src="yield.js"></script>
+
+</body>
+</html>
