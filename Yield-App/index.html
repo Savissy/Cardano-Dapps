@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,6 +11,7 @@
   <link rel="stylesheet" href="style.css" />
 
 </head>
+
 <body>
 
   <div class="container">
@@ -29,6 +31,7 @@
         <p style="font-size: 0.85rem; margin-bottom: 8px; color: #94a3b8;">
           Lock funds into the contract as principal.
         </p>
+        <input id="depositAmt" type="number" placeholder="Deposit amount (lovelace)" />
         <button id="depositBtn" class="primary">
           Deposit Funds
         </button>
@@ -37,11 +40,7 @@
       <!-- Borrow -->
       <div class="section">
         <h3>Borrow</h3>
-        <input
-          id="borrowAmt"
-          type="number"
-          placeholder="Borrow amount (lovelace)"
-        />
+        <input id="borrowAmt" type="number" placeholder="Borrow amount (lovelace)" />
         <button id="borrowBtn" class="secondary">
           Borrow
         </button>
@@ -50,11 +49,7 @@
       <!-- Repay -->
       <div class="section">
         <h3>Repay</h3>
-        <input
-          id="repayAmt"
-          type="number"
-          placeholder="Repay amount (lovelace)"
-        />
+        <!-- <input id="repayAmt" type="number" placeholder="Repay amount (lovelace)" /> -->
         <button id="repayBtn" class="secondary">
           Repay
         </button>
@@ -63,11 +58,7 @@
       <!-- Yield Distribution -->
       <div class="section">
         <h3>Distribute Yield</h3>
-        <input
-          id="yieldAmt"
-          type="number"
-          placeholder="Yield amount (lovelace)"
-        />
+        <!-- <input id="yieldAmt" type="number" placeholder="Yield amount (lovelace)" /> -->
         <button id="yieldBtn" class="warning">
           Distribute Yield
         </button>
@@ -83,4 +74,5 @@
   <script type="module" src="yield.js"></script>
 
 </body>
+
 </html>
