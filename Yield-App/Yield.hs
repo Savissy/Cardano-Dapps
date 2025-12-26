@@ -101,18 +101,18 @@ mkYieldValidator dat action ctx =
     case action of
 
         Deposit ->
-            traceIfFalse "lender must sign"
+            traceIfFalse "lender must sign!"
               (signedBy (ydLender dat) ctx)
 
         Borrow _ ->
             case ydBorrower dat of
                 Nothing ->
                     -- ✅ First borrower: ANY signer allowed
-                    traceIfFalse "borrower must sign"
+                    traceIfFalse "borrower must sign!"
                       (anySigner ctx)
 
                 Just borrower ->
-                    traceIfFalse "borrower must sign"
+                    traceIfFalse "borrower must sign!"
                       (signedBy borrower ctx)
 
         Repay _ ->
