@@ -316,73 +316,73 @@ async function repay() {
    DISTRIBUTE YIELD (LENDER)
    =============================== */
 
-async function distributeYield() {
-  // let yieldAmt = BigInt(document.getElementById("yieldAmt").value);
-  // yieldAmt = yieldAmt * 1_000_000n
-  const lenderAddr = await lucid.wallet.address();
-  const lenderPkh =
-    lucid.utils.getAddressDetails(lenderAddr).paymentCredential.hash;
-  console.log({ lenderPkh });
-  const utxos = await lucid.utxosAt(scriptAddress);
-  if (utxos.length === 0) return log("No loans found");
+// async function distributeYield() {
+//   // let yieldAmt = BigInt(document.getElementById("yieldAmt").value);
+//   // yieldAmt = yieldAmt * 1_000_000n
+//   const lenderAddr = await lucid.wallet.address();
+//   const lenderPkh =
+//     lucid.utils.getAddressDetails(lenderAddr).paymentCredential.hash;
+//   console.log({ lenderPkh });
+//   const utxos = await lucid.utxosAt(scriptAddress);
+//   if (utxos.length === 0) return log("No loans found");
 
-  const loanUtxo = utxos.find((u) => {
-    if (!u.datum) return false;
-    const d = Data.from(u.datum);
-    const lenderDPkh = d.fields[0]
-    const borrower = d.fields[1];
-    const principal = d.fields[2];
-    const interest = d.fields[3];
-    if (lenderDPkh === lenderPkh) {
-      console.log(d.fields);
+//   const loanUtxo = utxos.find((u) => {
+//     if (!u.datum) return false;
+//     const d = Data.from(u.datum);
+//     const lenderDPkh = d.fields[0]
+//     const borrower = d.fields[1];
+//     const principal = d.fields[2];
+//     const interest = d.fields[3];
+//     if (lenderDPkh === lenderPkh) {
+//       console.log(d.fields);
 
-      console.log("lovelace amount ", u.assets.lovelace);
-      console.log("amount to distribute ", BigInt(principal) + BigInt(interest));
-      console.log("yield share ", d.fields[4]);
+//       console.log("lovelace amount ", u.assets.lovelace);
+//       console.log("amount to distribute ", BigInt(principal) + BigInt(interest));
+//       console.log("yield share ", d.fields[4]);
 
-    }
-
-
-    return (
-      borrower && borrower.fields !== undefined && borrower.fields.length > 0
-      && lenderPkh === lenderDPkh
-      && u.assets.lovelace >= BigInt(principal) + BigInt(interest)
-    );
-  });
-  console.log("loanUtxo", loanUtxo);
-  if (!loanUtxo) return log("No fully repaid loan to distribute yield and lender wallet not connected");
-
-  const datum = Data.from(loanUtxo.datum);
-  const [lender, borrowerMaybe, principal, interest, yieldShare] = datum.fields;
-  const borrowerPkh = borrowerMaybe.fields[0];
-  console.log({ lender });
-  console.log({ lenderPkh });
-  console.log({ borrowerPkh })
-  console.log({ borrowerMaybe })
+//     }
 
 
-  const lenderShare = (loanUtxo.assets.lovelace * BigInt(yieldShare)) / 100n;
-  const borrowerShare = loanUtxo.assets.lovelace - lenderShare;
-  const userUtxos = await lucid.wallet.getUtxos()
-  const borrowerAddr = lucid.utils.credentialToAddress({
-    type: "Key",
-    hash: borrowerPkh,
-  });
+//     return (
+//       borrower && borrower.fields !== undefined && borrower.fields.length > 0
+//       && lenderPkh === lenderDPkh
+//       && u.assets.lovelace >= BigInt(principal) + BigInt(interest)
+//     );
+//   });
+//   console.log("loanUtxo", loanUtxo);
+//   if (!loanUtxo) return log("No fully repaid loan to distribute yield and lender wallet not connected");
 
-  const tx = await lucid
-    .newTx()
-    .collectFrom([loanUtxo], redeemerYield(loanUtxo.assets.lovelace))
-    .collectFrom(userUtxos)
-    .attachSpendingValidator(script)
-    .payToAddress(lenderAddr, { lovelace: lenderShare })
-    .payToAddress(borrowerAddr, { lovelace: borrowerShare })
-    .addSigner(lenderAddr)
-    .complete();
+//   const datum = Data.from(loanUtxo.datum);
+//   const [lender, borrowerMaybe, principal, interest, yieldShare] = datum.fields;
+//   const borrowerPkh = borrowerMaybe.fields[0];
+//   console.log({ lender });
+//   console.log({ lenderPkh });
+//   console.log({ borrowerPkh })
+//   console.log({ borrowerMaybe })
 
-  const signed = await tx.sign().complete();
-  const txHash = await signed.submit();
-  log("Yield distributed: " + txHash);
-}
+
+//   const lenderShare = (loanUtxo.assets.lovelace * BigInt(yieldShare)) / 100n;
+//   const borrowerShare = loanUtxo.assets.lovelace - lenderShare;
+//   const userUtxos = await lucid.wallet.getUtxos()
+//   const borrowerAddr = lucid.utils.credentialToAddress({
+//     type: "Key",
+//     hash: borrowerPkh,
+//   });
+
+//   const tx = await lucid
+//     .newTx()
+//     .collectFrom([loanUtxo], redeemerYield(loanUtxo.assets.lovelace))
+//     .collectFrom(userUtxos)
+//     .attachSpendingValidator(script)
+//     .payToAddress(lenderAddr, { lovelace: lenderShare })
+//     .payToAddress(borrowerAddr, { lovelace: borrowerShare })
+//     .addSigner(lenderAddr)
+//     .complete();
+
+//   const signed = await tx.sign().complete();
+//   const txHash = await signed.submit();
+//   log("Yield distributed: " + txHash);
+// }
 
 /* ===============================
    UI
@@ -396,4 +396,4 @@ document.getElementById("connectWallet").onclick = initLucid;
 document.getElementById("depositBtn").onclick = deposit;
 document.getElementById("borrowBtn").onclick = borrow;
 document.getElementById("repayBtn").onclick = repay;
-document.getElementById("yieldBtn").onclick = distributeYield;
+//document.getElementById("yieldBtn").onclick = distributeYield;
