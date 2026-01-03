@@ -15,7 +15,7 @@ const NETWORK = "Preprod";
 
 /* HARD-CODED PROTOCOL PARAMS */
 const LTV = 60;                 // 60%
-const INTEREST = 1_000_000n;    // 1 ADA
+const INTEREST = BigInt(document.getElementById("interest").value) * 1_000_000n;    
 const COLLATERAL_MULTIPLIER = 100n;
 
 /* LENDER PUBKEY HASH (FIXED) */
