@@ -15,7 +15,14 @@
     <input id="collateral" placeholder="Collateral (ADA)" />
     <input id="principal" placeholder="Borrow Amount (ADA)" />
     <input id="interest" placeholder="Interest (ADA)" />
-    <input id="ltv" placeholder="LTV %" />
+    <div class="field">
+  <label>Loan-to-Value (LTV)</label>
+  <div class="readonly">
+    <span>60%</span>
+    <small>Fixed by protocol</small>
+  </div>
+</div>
+
     <button onclick="openLoan()">Open Loan</button>
 
     <h2>Repay</h2>
