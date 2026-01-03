@@ -14,14 +14,10 @@ const BLOCKFROST_KEY = "preprodYjRkHfcazNkL0xxG9C2RdUbUoTrG7wip";
 const NETWORK = "Preprod";
 
 /* HARD-CODED PROTOCOL PARAMS */
-const LTV = 60;                 // 60%
-const INTEREST = BigInt(document.getElementById("interest").value) * 1_000_000n;    
+const LTV = 60;                 // 60%    
 const COLLATERAL_MULTIPLIER = 100n;
 
 /* LENDER PUBKEY HASH (FIXED) */
-const lenderAddr = document.getElementById("lender").value;
-const LENDER_PKH =
-    lucid.utils.getAddressDetails(lenderAddr).paymentCredential.hash;
 
 /* =====================================================
    PLUTUS SCRIPT (CBOR HEX)
@@ -58,6 +54,8 @@ async function init() {
 
   walletAddress = await lucid.wallet.address();
   scriptAddress = lucid.utils.validatorToAddress(script);
+  console.log("scriptAddress", scriptAddress);
+  console.log("walletAddress", walletAddress);
 
   log("Wallet connected");
   log("Script: " + scriptAddress);
@@ -69,16 +67,18 @@ async function init() {
 
 function mkLoanDatum(
   borrower,
+  lender,
   collateral,
-  principal
+  principal,
+  interest
 ) {
   return Data.to(
     new Constr(0, [
       borrower,
-      LENDER_PKH,
+      lender,
       BigInt(collateral),
       BigInt(principal),
-      INTEREST,
+      BigInt(interest),
       BigInt(LTV),
     ])
   );
@@ -98,6 +98,17 @@ async function openLoan() {
   const principalAda =
     BigInt(document.getElementById("principal").value) * 1_000_000n;
 
+  const lenderAddr = document.getElementById("lender").value;
+  const LenderPkh =
+    lucid.utils.getAddressDetails(lenderAddr).paymentCredential.hash;
+  const interest = BigInt(document.getElementById("interest").value) * 1_000_000n;
+
+  console.log("collateralAda", collateralAda);
+  console.log("principalAda", principalAda);
+  console.log("lenderAddr", lenderAddr);
+  console.log("LenderPkh", LenderPkh);
+  console.log("interest", interest);
+
   /* LTV CHECK (OFF-CHAIN MIRROR) */
   if (principalAda * 100n > collateralAda * BigInt(LTV)) {
     return log("LTV exceeded");
@@ -106,13 +117,16 @@ async function openLoan() {
   const borrowerPkh =
     lucid.utils.getAddressDetails(walletAddress)
       .paymentCredential.hash;
+  console.log("borrowerPkh", borrowerPkh);
 
   const datum = mkLoanDatum(
     borrowerPkh,
+    LenderPkh,
     collateralAda,
-    principalAda
+    principalAda,
+    interest
   );
-
+  console.log ("datum", datum)
   const tx = await lucid
     .newTx()
     .payToContract(
@@ -137,15 +151,15 @@ async function repayLoan() {
   const borrowerPkh =
     lucid.utils.getAddressDetails(walletAddress)
       .paymentCredential.hash;
-
+  
   const utxos = await lucid.utxosAt(scriptAddress);
-
+  console.log("utxos", utxos);
   const loanUtxo = utxos.find((u) => {
     if (!u.datum) return false;
     const d = Data.from(u.datum);
     return d.fields[0] === borrowerPkh;
   });
-
+  console.log("loanUtxo", loanUtxo);
   if (!loanUtxo) {
     return log("No active loan found");
   }
@@ -153,8 +167,14 @@ async function repayLoan() {
   const datum = Data.from(loanUtxo.datum);
   const principal = BigInt(datum.fields[3]);
   const interest = BigInt(datum.fields[4]);
+  const LENDER_PKH = datum.fields[1];
+  console.log("datum", datum);
+  console.log("principal", principal);
+  console.log("interest", interest);
+  console.log("lenderPkh", LENDER_PKH);
 
   const totalRepay = principal + interest;
+  console.log("totalRepay", totalRepay);
 
   const tx = await lucid
     .newTx()
