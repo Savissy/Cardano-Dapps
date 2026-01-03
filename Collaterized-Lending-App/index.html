@@ -8,7 +8,7 @@
   <div class="card">
     <h1>💰 P2P Lending Protocol</h1>
 
-    <button onclick="initLucid()">🔌 Connect Wallet</button>
+    <button id="connect">🔌 Connect Wallet</button>
 
     <h2>Open Loan</h2>
     <input id="lender" placeholder="Lender Address" />
@@ -16,17 +16,17 @@
     <input id="principal" placeholder="Borrow Amount (ADA)" />
     <input id="interest" placeholder="Interest (ADA)" />
     <div class="field">
-  <label>Loan-to-Value (LTV)</label>
+  <!--<label>Loan-to-Value (LTV)</label> -->
   <div class="readonly">
-    <span>60%</span>
+    <span>Ltv 60%</span>
     <small>Fixed by protocol</small>
   </div>
 </div>
 
-    <button onclick="openLoan()">Open Loan</button>
+    <button id="openLoan">Open Loan</button>
 
     <h2>Repay</h2>
-    <button onclick="repayLoan()">Repay Loan</button>
+    <button id="repayLoan">Repay Loan</button>
 
     <p id="log"></p>
   </div>
