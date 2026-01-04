@@ -6,6 +6,20 @@ import {
 } from "https://unpkg.com/lucid-cardano@0.10.11/web/mod.js";
 
 /* =====================================================
+   DATUM SCHEMA (CRITICAL)
+===================================================== */
+
+const LoanDatum = Data.Object({
+  borrower: Data.Bytes(),
+  lender: Data.Bytes(),
+  collateral: Data.Integer(),
+  principal: Data.Integer(),
+  interest: Data.Integer(),
+  ltv: Data.Integer(),
+});
+
+
+/* =====================================================
    CONFIG
 ===================================================== */
 
@@ -73,16 +87,18 @@ function mkLoanDatum(
   interest
 ) {
   return Data.to(
-    new Constr(0, [
+    {
       borrower,
       lender,
-      BigInt(collateral),
-      BigInt(principal),
-      BigInt(interest),
-      BigInt(LTV),
-    ])
+      collateral: BigInt(collateral),
+      principal: BigInt(principal),
+      interest: BigInt(interest),
+      ltv: BigInt(LTV),
+    },
+    LoanDatum
   );
 }
+
 
 const openLoanRedeemer = Data.to(new Constr(0, []));
 const repayLoanRedeemer = Data.to(new Constr(1, []));
@@ -151,27 +167,34 @@ async function repayLoan() {
   const borrowerPkh =
     lucid.utils.getAddressDetails(walletAddress)
       .paymentCredential.hash;
-  
+
   const utxos = await lucid.utxosAt(scriptAddress);
   console.log("utxos", utxos);
   const loanUtxo = utxos.find((u) => {
     if (!u.datum) return false;
-    const d = Data.from(u.datum);
-    return d.fields[0] === borrowerPkh;
+    const d = Data.from(u.datum, LoanDatum);
+    return d.borrower === borrowerPkh;
   });
   console.log("loanUtxo", loanUtxo);
   if (!loanUtxo) {
     return log("No active loan found");
   }
 
-  const datum = Data.from(loanUtxo.datum);
-  const principal = BigInt(datum.fields[3]);
-  const interest = BigInt(datum.fields[4]);
-  const LENDER_PKH = datum.fields[1];
-  console.log("datum", datum);
+  const d = Data.from(loanUtxo.datum, LoanDatum);
+  console.log("datum", d);
+
+  const principal = d.principal;
+  const interest  = d.interest;
+  const lenderPkh = d.lender;
   console.log("principal", principal);
   console.log("interest", interest);
-  console.log("lenderPkh", LENDER_PKH);
+  console.log("lenderPkh", lenderPkh);
+
+  const lenderAddress = lucid.utils.credentialToAddress({
+    type: "Key",
+    hash: lenderPkh,
+  });
+  console.log("lenderAddress", lenderAddress);
 
   const totalRepay = principal + interest;
   console.log("totalRepay", totalRepay);
@@ -180,13 +203,7 @@ async function repayLoan() {
     .newTx()
     .collectFrom([loanUtxo], repayLoanRedeemer)
     .attachSpendingValidator(script)
-    .payToAddress(
-      lucid.utils.credentialToAddress({
-        type: "Key",
-        hash: LENDER_PKH,
-      }),
-      { lovelace: totalRepay }
-    )
+    .payToAddress(lenderAddress, { lovelace: totalRepay })
     .addSignerKey(borrowerPkh)
     .complete();
 
@@ -195,6 +212,55 @@ async function repayLoan() {
 
   log("Loan repaid: " + txHash);
 }
+
+
+// async function repayLoan() {
+//   const borrowerPkh =
+//     lucid.utils.getAddressDetails(walletAddress)
+//       .paymentCredential.hash;
+  
+//   const utxos = await lucid.utxosAt(scriptAddress);
+  
+//   const loanUtxo = utxos.find((u) => {
+//     if (!u.datum) return false;
+//     const d = Data.from(u.datum);
+//     return d.fields[0] === borrowerPkh;
+//   });
+  
+//   if (!loanUtxo) {
+//     return log("No active loan found");
+//   }
+
+//   const datum = Data.from(loanUtxo.datum);
+//   const principal = BigInt(datum.fields[3]);
+//   const interest = BigInt(datum.fields[4]);
+//   const LENDER_PKH = datum.fields[1];
+  
+
+//   const lenderAddress = lucid.utils.credentialToAddress(
+//   { type: "Key", hash: LENDER_PKH }
+// );
+  
+
+//   const totalRepay = principal + interest;
+  
+
+//   const tx = await lucid
+//     .newTx()
+//     .collectFrom([loanUtxo], repayLoanRedeemer)
+//     .attachSpendingValidator(script)
+//     .payToAddress(
+//       lenderAddress,
+//       { lovelace: totalRepay }
+//     )
+//     .addSignerKey(borrowerPkh)
+//     .complete();
+
+//   const signed = await tx.sign().complete();
+//   const txHash = await signed.submit();
+
+//   log("Loan repaid: " + txHash);
+// }
 
 /* =====================================================
    UI
