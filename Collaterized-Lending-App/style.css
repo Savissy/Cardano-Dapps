@@ -66,4 +66,17 @@ button:hover {
   color: #94a3b8;
   font-weight: 400;
 }
+.log-box {
+  margin-top: 12px;
+  padding: 10px;
+  height: 60px;          /* fixed height */
+  max-height: 120px;
+  overflow-y: auto;       /* scroll instead of overflow */
+  overflow-x: hidden;
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+  font-size: 14px;
+  white-space: pre-wrap;  /* wrap long text */
+  word-break: break-word;
+}
 
