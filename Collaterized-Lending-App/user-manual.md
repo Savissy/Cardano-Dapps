@@ -1,296 +1,280 @@
 # 📘 P2P Lending dApp
 
-## User Guide & Architectural Documentation
+## User Guide & System Overview
 
 ---
 
-## 1. Introduction
+## 1. What Is This App?
 
-The **P2P Lending dApp** is a decentralized finance (DeFi) application built on the **Cardano blockchain** using **Plutus V2 smart contracts** and a **Lucid-based JavaScript frontend**.
+The **P2P Lending dApp** allows users to take loans using **ADA as collateral**, without banks, tokens, or intermediaries.
 
-The application enables borrowers to obtain loans by **locking ADA as collateral**, with all loan rules enforced on-chain.
-The protocol operates **without minting tokens or NFTs**, relying solely on ADA and Cardano’s **extended UTxO (eUTxO) model**.
+* Borrowers lock ADA as collateral
+* Loans are given based on a **fixed 60% Loan-to-Value (LTV)**
+* Borrowers repay the loan plus interest
+* Once repaid, collateral is released automatically
 
----
-
-## 2. System Architecture Overview
-
-The system follows a **three-layer architecture**: Frontend, Smart Contract, and Blockchain.
-
-```mermaid
-graph TD
-    A[User Wallet<br/>(Lace)] -->|Sign Tx| B[Frontend UI<br/>HTML / JS / Lucid]
-    B -->|Submit Tx| C[Plutus V2 Validator]
-    C -->|Validate & Lock UTxO| D[Cardano Blockchain<br/>(eUTxO Model)]
-```
-
-### Architectural Principles
-
-* Non-custodial design
-* Deterministic execution
-* On-chain enforcement
-* Stateless smart contracts
+Everything is enforced by a **Cardano smart contract**.
 
 ---
 
-## 3. Component Architecture
+## 2. Who Is This App For?
 
-### 3.1 Frontend Layer
+This app supports **two roles**:
+
+| Role         | What they do                              |
+| ------------ | ----------------------------------------- |
+| **Borrower** | Locks collateral and repays the loan      |
+| **Lender**   | Receives repayment (principal + interest) |
+
+> ℹ️ The lender does **not** interact with the app directly.
+> Only the **borrower connects a wallet**.
+
+---
+
+## 3. High-Level How the App Works
 
 ```mermaid
 graph LR
-    UI[HTML/CSS UI] --> Logic[Lucid Off-Chain Logic]
-    Logic --> Wallet[Wallet API]
+    Borrower -->|Uses App| Frontend
+    Frontend -->|Builds Tx| SmartContract
+    SmartContract -->|Locks & Releases ADA| Blockchain
+    Blockchain -->|Pays ADA| Lender
 ```
 
-**Responsibilities**
-
-* Wallet connection
-* User input handling
-* Transaction construction
-* Datum encoding/decoding
-* Logging and UI feedback
-
-**Important Note**
-The frontend is **not trusted**. Any incorrect transaction will fail during on-chain validation.
+* The **frontend** builds transactions
+* The **smart contract** enforces rules
+* The **blockchain** stores funds securely
 
 ---
 
-### 3.2 Off-Chain Transaction Logic (Lucid)
+## 4. What You Need Before Starting
+
+### Requirements
+
+* Lace wallet installed
+* Some ADA for collateral
+* Cardano **Preprod** network selected
+* Lender’s **Bech32 address**
+
+---
+
+## 5. Connecting Your Wallet
+
+### Step 1: Open the App
+
+Open the app in your browser.
+
+### Step 2: Click **Connect Wallet**
+
+* Choose **Lace**
+* Approve the connection
+
+✅ Once connected, your wallet address will be displayed.
+
+---
+
+## 6. Understanding the Loan Parameters
+
+| Parameter          | Description                     |
+| ------------------ | ------------------------------- |
+| **Collateral ADA** | Amount you lock in the contract |
+| **Loan Amount**    | ADA you want to borrow          |
+| **Interest**       | Fixed ADA fee                   |
+| **LTV**            | Fixed at **60%** (not editable) |
+
+```mermaid
+flowchart LR
+    Collateral -->|60%| MaxLoan
+```
+
+> ℹ️ You cannot borrow more than **60%** of your collateral.
+
+---
+
+## 7. Opening a Loan (Borrower)
+
+### Step-by-Step
 
 ```mermaid
 sequenceDiagram
     participant User
-    participant UI
-    participant Wallet
-    participant Blockchain
-
-    User->>UI: Enter loan details
-    UI->>Wallet: Request UTxOs
-    Wallet->>UI: Return UTxOs
-    UI->>Blockchain: Submit signed transaction
-```
-
-**Key Characteristics**
-
-* Builds transactions only
-* Does not enforce rules
-* Fully wallet-approved
-* Stateless and replaceable
-
----
-
-### 3.3 On-Chain Smart Contract (Plutus V2)
-
-```mermaid
-graph TD
-    Tx[Transaction] --> Validator[Loan Validator]
-    Validator -->|Valid| Accept[UTxO Spent / Created]
-    Validator -->|Invalid| Reject[Transaction Fails]
-```
-
-**Responsibilities**
-
-* Enforce loan constraints
-* Validate repayment conditions
-* Protect collateral
-* Ensure correct payouts
-
----
-
-## 4. Data Architecture (Loan Datum)
-
-Each loan exists as **a single UTxO** at the script address, carrying an **inline datum**.
-
-```mermaid
-classDiagram
-    class LoanDatum {
-        PubKeyHash borrower
-        PubKeyHash lender
-        Integer principal
-        Integer interest
-        Integer collateral
-    }
-```
-
-### Key Properties
-
-* Immutable
-* Fully self-describing
-* Deterministic state
-* No hidden variables
-
----
-
-## 5. Loan Lifecycle Architecture
-
-### 5.1 Loan Creation Flow
-
-```mermaid
-sequenceDiagram
-    participant Borrower
-    participant Frontend
+    participant App
     participant Contract
     participant Chain
 
-    Borrower->>Frontend: Open Loan
-    Frontend->>Contract: Build Tx + Datum
-    Contract->>Chain: Validate LTV & Signer
-    Chain-->>Borrower: Loan UTxO Created
+    User->>App: Enter loan details
+    App->>Contract: Create transaction
+    Contract->>Chain: Lock collateral
+    Chain-->>User: Loan created
 ```
 
-**On-Chain Guarantees**
+### Steps in the App
 
-* Borrower signature required
-* Collateral correctly locked
-* LTV constraint enforced
+1. Enter **Collateral ADA**
+2. Enter **Loan Amount**
+3. Enter **Interest**
+4. Paste **Lender Bech32 Address**
+5. Click **Open Loan**
+6. Approve the transaction in your wallet
+
+✅ Your collateral is now locked in the smart contract.
 
 ---
 
-### 5.2 Loan Repayment Flow
+## 8. Where Is the Lender in All This?
+
+* The **lender’s address is provided by the borrower**
+* It is stored inside the **loan datum**
+* On repayment, the contract **automatically pays the lender**
+
+```mermaid
+graph LR
+    Borrower -->|Repays| Contract
+    Contract -->|Pays ADA| Lender
+```
+
+> ⚠️ The lender address cannot be changed after the loan is opened.
+
+---
+
+## 9. Repaying a Loan
+
+### Step-by-Step
 
 ```mermaid
 sequenceDiagram
     participant Borrower
-    participant Frontend
+    participant App
     participant Contract
     participant Lender
 
-    Borrower->>Frontend: Repay Loan
-    Frontend->>Contract: Consume Loan UTxO
-    Contract->>Lender: Pay Principal + Interest
-    Contract->>Borrower: Release Collateral
+    Borrower->>App: Click Repay
+    App->>Contract: Spend loan UTxO
+    Contract->>Lender: Send repayment
+    Contract->>Borrower: Unlock collateral
 ```
 
-**On-Chain Guarantees**
+### Steps in the App
 
-* Full repayment required
-* Correct lender paid
-* Collateral released atomically
+1. Click **Repay Loan**
+2. Confirm repayment amount
+3. Approve transaction in wallet
+
+✅ The lender is paid
+✅ Your collateral is released
+✅ The loan is closed
 
 ---
 
-## 6. Loan-to-Value (LTV) Design
+## 10. Important Rules (Enforced On-Chain)
 
-```mermaid
-flowchart LR
-    Collateral -->|60% LTV| BorrowLimit
-```
+The smart contract guarantees:
 
-### Fixed Protocol Parameter
-
-* **LTV is hard-coded at 60%**
-* Displayed in frontend
-* Not user-editable
-* Enforced in validator
-
-**Why Fixed LTV?**
-
-* Prevents manipulation
-* Simplifies auditability
-* Guarantees protocol consistency
-
----
-
-## 7. Security Architecture
+* ❌ You **cannot** unlock collateral without full repayment
+* ❌ You **cannot** under-collateralize a loan
+* ❌ You **cannot** change the lender address
+* ❌ Partial repayment is not allowed
 
 ```mermaid
 graph TD
-    Attacker -->|Invalid Tx| Validator
-    Validator -->|Reject| Failure
-    Validator -->|Accept Only If Valid| Success
+    InvalidTx --> Validator --> Rejected
+    ValidTx --> Validator --> Accepted
 ```
-
-### Security Guarantees
-
-| Threat                | Mitigation            |
-| --------------------- | --------------------- |
-| Fake lender address   | Datum verification    |
-| Partial repayment     | Exact value checks    |
-| Frontend manipulation | On-chain validation   |
-| Unauthorized spending | Signature enforcement |
 
 ---
 
-## 8. User Role Architecture
+## 11. What the App Does NOT Do
 
-```mermaid
-graph LR
-    Borrower -->|Open / Repay| Contract
-    Contract -->|Pay| Lender
-```
+* ❌ No liquidation logic
+* ❌ No price oracles
+* ❌ No token minting
+* ❌ No automatic lender funding
 
-| Role     | Permissions          |
-| -------- | -------------------- |
-| Borrower | Open and repay loans |
-| Lender   | Receive repayment    |
-| Frontend | Build transactions   |
-| Contract | Enforce all rules    |
+This keeps the protocol:
+
+* Simple
+* Transparent
+* Easy to audit
+* Easy to understand
 
 ---
 
-## 9. Network & Deployment Architecture
+## 12. Architecture (Simple Explanation)
+
+### Components
 
 ```mermaid
 graph TD
-    Dev[Developer] --> Preprod[Preprod Testnet]
-    Preprod --> Wallet[Lace Wallet]
+    UI[Frontend UI] --> Logic[Lucid Logic]
+    Logic --> Wallet[Wallet]
+    Logic --> Contract[Smart Contract]
+    Contract --> Chain[Blockchain]
 ```
 
-* Network: Cardano Preprod
-* Era: Babbage
-* Script Version: Plutus V2
+| Component  | Purpose              |
+| ---------- | -------------------- |
+| Frontend   | User interaction     |
+| Lucid      | Transaction building |
+| Wallet     | Signing              |
+| Contract   | Rule enforcement     |
+| Blockchain | Secure storage       |
 
 ---
 
-## 10. Design Constraints & Tradeoffs
+## 13. Logs & Transaction Feedback
 
-* No liquidation logic
-* Manual lender funding
-* One loan per UTxO
-* Educational & prototype focus
+* Logs appear at the bottom of the app
+* Scrollable container
+* Shows transaction hashes and errors
 
-These decisions prioritize:
-
-* Transparency
-* Determinism
-* Ease of reasoning
-* Protocol correctness
+> ℹ️ Errors usually mean **on-chain validation failed**
 
 ---
 
-## 11. Markdown & PDF Compatibility
+## 14. Network Information
 
-### GitHub
+* Network: **Cardano Preprod**
+* Script Type: **Plutus V2**
+* Address Type: **Shelley (Bech32)**
 
-* Mermaid supported natively
-* Fully rendered diagrams
+---
 
-### PDF Export
+## 15. Frequently Asked Questions
 
-Compatible with:
+### ❓ Why is LTV fixed?
+
+To prevent manipulation and simplify security.
+
+### ❓ Why does the lender not connect?
+
+The lender only receives ADA — no interaction required.
+
+### ❓ Is my collateral safe?
+
+Yes. Only **your signature + full repayment** can unlock it.
+
+---
+
+## 16. Conclusion
+
+This app provides a **simple, secure, and transparent lending experience** using only ADA and Cardano smart contracts.
+
+It demonstrates:
+
+* Non-custodial design
+* Strong on-chain guarantees
+* Clear financial logic
+* User-controlled funds
+
+---
+
+## 📄 PDF Export
+
+This document can be converted to PDF:
 
 ```bash
-pandoc user-guide.md -o user-guide.pdf
+pandoc USER_GUIDE.md -o USER_GUIDE.pdf
 ```
 
 ---
-
-## 12. Conclusion
-
-This project demonstrates a **clean, minimal, and secure lending protocol** built on Cardano using:
-
-* ADA-only design
-* Plutus V2 validation
-* eUTxO-based state
-* Deterministic financial logic
-
-It provides a strong foundation for:
-
-* Advanced DeFi systems
-* Academic research
-* Production-grade lending protocols
-
----
-
 
