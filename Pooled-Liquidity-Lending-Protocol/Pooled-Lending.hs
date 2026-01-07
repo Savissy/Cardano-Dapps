@@ -75,9 +75,9 @@ getContinuingOutput ctx =
     [o] -> o
     _   -> traceError "expected exactly one continuing output"
 
-{-# INLINABLE getDatum #-}
-getDatum :: TxOut -> PoolDatum
-getDatum o = case txOutDatum o of
+{-# INLINABLE getpDatum #-}
+getpDatum :: TxOut -> PoolDatum
+getpDatum o = case txOutDatum o of
   OutputDatum (Datum d) -> unsafeFromBuiltinData d
   _ -> traceError "datum missing"
 
@@ -145,7 +145,7 @@ mkPoolValidator dat action ctx =
     newValue = valueOf (txOutValue ownOutput) adaSymbol adaToken
 
     newDatum :: PoolDatum
-    newDatum = getDatum ownOutput
+    newDatum = getpDatum ownOutput
 
     deposited :: Integer
     deposited = newValue - oldValue
