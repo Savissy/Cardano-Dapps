@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ADA Lending Protocol</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="app">
+    <h1>ADA Lending Protocol</h1>
+    <p class="subtitle">Fixed-Rate • Pooled Liquidity • Cardano</p>
+
+    <button id="connect">Connect Wallet</button>
+
+    <div class="card">
+      <h2>Lend ADA</h2>
+      <input id="depositAmt" placeholder="ADA amount" />
+      <button id="deposit">Deposit</button>
+    </div>
+
+    <div class="card">
+      <h2>Withdraw ADA</h2>
+      <input id="withdrawAmt" placeholder="ADA amount" />
+      <button id="withdraw">Withdraw</button>
+    </div>
+
+    <div class="card">
+      <h2>Borrow ADA</h2>
+      <input id="borrowAmt" placeholder="ADA amount" />
+      <button id="borrow">Borrow</button>
+    </div>
+
+    <div class="card">
+      <h2>Repay Loan</h2>
+      <!--<input id="repayAmt" placeholder="ADA amount" />-->
+      <button id="repay">Repay</button>
+    </div>
+
+    <pre id="log"></pre>
+    <!--<div id="log" class="log-box"></div>-->
+  </div>
+
+  <script type="module" src="lend-market.js"></script>
+</body>
+</html>
