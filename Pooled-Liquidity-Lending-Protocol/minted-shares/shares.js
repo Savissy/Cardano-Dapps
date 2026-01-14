@@ -1,4 +1,4 @@
-import {
+import { 
   Lucid,
   Blockfrost,
   Data,
@@ -8,32 +8,22 @@ import {
 /* =====================================================
    CONFIG
 ===================================================== */
-
 const BLOCKFROST_URL = "https://cardano-preprod.blockfrost.io/api/v0";
-const BLOCKFROST_KEY = "YOUR_BLOCKFROST_KEY";
+const BLOCKFROST_KEY = "preprodYjRkHfcazNkL0xxG9C2RdUbUoTrG7wip";
 const NETWORK = "Preprod";
 
 /* =====================================================
    PLUTUS SCRIPTS (CBOR HEX)
 ===================================================== */
+const POOL_VALIDATOR_CBOR = "590cc301000032323322332232323233223232323232323232323232323232323232323232323232223232232325335323232323232323232533335008215335333573466e20d402888880100040a40a84ccd5cd19b873550022222002337006a014444400400205405220522a66aa66a666ae68cdc39aa800911100219b8035009222200450030290281333573466e1cd54004888800ccdc01a8049111001a80101481408140999ab9a3370e6660226a6a00e44004444444444444010602600e024a004052050205042a66a666ae68cdc4280299b8033700a00e00266e0ccdc10009a8051111000a4190020520542666ae68cdc39aa801111100119b813500a222200200102a0291029215335333573466e24005200002902a153355335333573466e1ccdc0a803a80299b8333704002a00e6a01444440060540522666ae68cdc39aa801111100199b813500a222200300102a02910291333573466e1cccc048d4d402088008888888888888020c05002004ccdc0a400000205405220522052264a666a6a0024444004264c6405a66ae712410d646174756d206d697373696e6700031213015001213263202e33573892010d646174756d206d697373696e6700032500415335333573466e1cd401c888800d20000270261500113370666e094004d401c888800d40104cdc0a800a80189998069aa800911100180a80a8a99aa99a9808801109a800911a80091111a804911a801111111111111199aa981289000911a8011111299a9a80c111a803111919a802919a8021299a999ab9a3371e00400208c08a2a006208a408a466a008408a4a66a666ae68cdc78010008230228a80188228a99a80190a99a8011099a801119a801119a801119a80111981c0010009024119a801102411981c00100091102411119a8021024111299a999ab9a3370e00c0060960942a66a666ae68cdc38028010258250999ab9a3370e0080020960942094209420862a66a002420862086266a08600c00a200aa07c014264c6405066ae71241024c660002c130264988854cd40044008884c0a926133300b35533530100012135001220011326320273357389210d696e707574206d697373696e670002b22220030130133333573466e1cd55cea80224000466442466002006004646464646464646464646464646666ae68cdc39aab9d500c480008cccccccccccc88888888888848cccccccccccc00403403002c02802402001c01801401000c008cd408808cd5d0a80619a8110119aba1500b33502202435742a014666aa04ceb94094d5d0a804999aa8133ae502535742a01066a0440566ae85401cccd540980b1d69aba150063232323333573466e1cd55cea801240004664424660020060046464646666ae68cdc39aab9d5002480008cc8848cc00400c008cd40d9d69aba150023037357426ae8940088c98c80f4cd5ce01d02081d89aab9e5001137540026ae854008c8c8c8cccd5cd19b8735573aa004900011991091980080180119a81b3ad35742a004606e6ae84d5d1280111931901e99ab9c03a04103b135573ca00226ea8004d5d09aba2500223263203933573806c07a06e26aae7940044dd50009aba1500533502275c6ae854010ccd540980a08004d5d0a801999aa8133ae200135742a00460546ae84d5d1280111931901a99ab9c032039033135744a00226ae8940044d5d1280089aba25001135744a00226ae8940044d5d1280089aba25001135744a00226ae8940044d55cf280089baa00135742a00860346ae84d5d1280211931901399ab9c02402b0253333573466e1d40152006232122223002005375a6ae84d55cf280391999ab9a3370ea00c90021190911118020029bad357426aae7940208cccd5cd19b875007480088c848888c004014dd69aba135573ca01246666ae68cdc3a80424000424444006464c6405266ae700980b409c098094090c02c01c40a0584d55cf280089baa001135573aa00226ea8004888c8c8c004014c8004d5409488cd400520002235002225335333573466e3c0080240880844c01c0044c01800cc8004d5409088cd400520002235002225335333573466e3c00801c08408040044c01800d22109504f4f4c534841524500235001223333500123263201e335738921024c6800022200123263201e3357389201024c680002223263201e3357389201024c68000222323232323333573466e1cd55cea8022400046666444424666600200a0080060046eb4d5d0a8021bad35742a0066eb4d5d0a8011bad357426ae8940088c98c807ccd5ce00e01180e89aba25001135744a00226aae7940044dd5000990009aa80e9108911299a800880111099802801199aa98038900080280200091a800911a8011111111111111999a8069281492814928149199aa98088900099091980091299a801108018800801281491a80091299aa99a999ab9a3371e6a004440046a0084400404c04a2666ae68cdc39a801110009a80211000813012881289a8168018a816006990009aa80d9108911299a80089a80191000910999a802910011802001199aa98038900080280200091199ab9a3371e004002026024911001232230023758002640026aa032446666aae7c004940608cd405cc010d5d080118019aba200201a232323333573466e1cd55cea8012400046644246600200600460146ae854008c014d5d09aba2500223263201633573802603402826aae7940044dd50009191919191999ab9a3370e6aae75401120002333322221233330010050040030023232323333573466e1cd55cea8012400046644246600200600460266ae854008cd4034048d5d09aba2500223263201b33573803003e03226aae7940044dd50009aba150043335500875ca00e6ae85400cc8c8c8cccd5cd19b875001480108c84888c008010d5d09aab9e500323333573466e1d4009200223212223001004375c6ae84d55cf280211999ab9a3370ea00690001091100191931900e99ab9c01a02101b01a019135573aa00226ea8004d5d0a80119a804bae357426ae8940088c98c805ccd5ce00a00d80a89aba25001135744a00226aae7940044dd5000899aa800bae75a224464460046eac004c8004d5405888c8cccd55cf8011280b119a80a9991091980080180118031aab9d5002300535573ca00460086ae8800c0604d5d080089119191999ab9a3370ea002900011a80b18029aba135573ca00646666ae68cdc3a801240044a02c464c6402866ae700440600480444d55cea80089baa001232323333573466e1d400520062321222230040053007357426aae79400c8cccd5cd19b875002480108c848888c008014c024d5d09aab9e500423333573466e1d400d20022321222230010053007357426aae7940148cccd5cd19b875004480008c848888c00c014dd71aba135573ca00c464c6402866ae7004406004804404003c4d55cea80089baa001232323333573466e1cd55cea80124000466442466002006004600a6ae854008dd69aba135744a004464c6402066ae700340500384d55cf280089baa0012323333573466e1cd55cea800a400046eb8d5d09aab9e500223263200e33573801602401826ea80048c8c8c8c8c8cccd5cd19b8750014803084888888800c8cccd5cd19b875002480288488888880108cccd5cd19b875003480208cc8848888888cc004024020dd71aba15005375a6ae84d5d1280291999ab9a3370ea00890031199109111111198010048041bae35742a00e6eb8d5d09aba2500723333573466e1d40152004233221222222233006009008300c35742a0126eb8d5d09aba2500923333573466e1d40192002232122222223007008300d357426aae79402c8cccd5cd19b875007480008c848888888c014020c038d5d09aab9e500c23263201733573802803602a02802602402202001e26aae7540104d55cf280189aab9e5002135573ca00226ea80048c8c8c8c8cccd5cd19b875001480088ccc888488ccc00401401000cdd69aba15004375a6ae85400cdd69aba135744a00646666ae68cdc3a80124000464244600400660106ae84d55cf280311931900819ab9c00d01400e00d135573aa00626ae8940044d55cf280089baa001232323333573466e1d400520022321223001003375c6ae84d55cf280191999ab9a3370ea004900011909118010019bae357426aae7940108c98c8034cd5ce00500880580509aab9d50011375400224464646666ae68cdc3a800a40084244400246666ae68cdc3a8012400446424446006008600c6ae84d55cf280211999ab9a3370ea00690001091100111931900719ab9c00b01200c00b00a135573aa00226ea80048c8cccd5cd19b8750014800880148cccd5cd19b8750024800080148c98c8028cd5ce00380700400389aab9d375400224400424400292103505431002326320033357389212665787065637465642065786163746c79206f6e6520636f6e74696e75696e67206f7574707574000074984488008488488cc00401000c48488c00800c448800448004448c8c00400488cc00cc0080080041"; // insert your compiled pool validator CBOR
+const SHARE_POLICY_CBOR   = "5908e901000033233223322323232323232323232323232323232323232322223232533532323253355335333553009120013232123300122333500522002002001002350012200112330012253350021020100101d23535350012200122220042233500220202333573466e3c004030084080d5400488888888888803040744cd5ce24913706f6f6c207574786f206e6f74207370656e740001c15335333573466e1cc8c8c8c00400cc8004d5408888cd400520002235002225335333573466e3c00801c0940904c08c0044c01800cd400c88cccd40048c98c8074cd5ce2481024c680001e200123263201d3357389201024c680001e23263201d3357389201024c680001e35500122222222222200800301d01c101d133573892011177726f6e67206d696e7420616d6f756e740001c101c135001220023333573466e1cd55cea801a4000466442466002006004646464646464646464646464646666ae68cdc39aab9d500c480008cccccccccccc88888888888848cccccccccccc00403403002c02802402001c01801401000c008cd405c060d5d0a80619a80b80c1aba1500b33501701935742a014666aa036eb94068d5d0a804999aa80dbae501a35742a01066a02e0406ae85401cccd5406c085d69aba150063232323333573466e1cd55cea801240004664424660020060046464646666ae68cdc39aab9d5002480008cc8848cc00400c008cd40add69aba15002302c357426ae8940088c98c80b8cd5ce01701781609aab9e5001137540026ae854008c8c8c8cccd5cd19b8735573aa004900011991091980080180119a815bad35742a00460586ae84d5d1280111931901719ab9c02e02f02c135573ca00226ea8004d5d09aba2500223263202a33573805405605026aae7940044dd50009aba1500533501775c6ae854010ccd5406c0748004d5d0a801999aa80dbae200135742a004603e6ae84d5d1280111931901319ab9c026027024135744a00226ae8940044d5d1280089aba25001135744a00226ae8940044d5d1280089aba25001135744a00226ae8940044d55cf280089baa00135742a006601e6ae84d5d1280191931900c19ab9c018019016375a008202e2c26aae7940044dd5000990009aa80b9108911299a80089a80191000910999a802910011802001199aa9803890008028020008919118011bac001320013550172233335573e0024a032466a03060086ae84008c00cd5d1001009919191999ab9a3370e6aae7540092000233221233001003002300a35742a004600a6ae84d5d1280111931900919ab9c012013010135573ca00226ea80048c8c8c8c8cccd5cd19b8735573aa00890001199991110919998008028020018011919191999ab9a3370e6aae7540092000233221233001003002301335742a00466a01a0246ae84d5d1280111931900b99ab9c017018015135573ca00226ea8004d5d0a802199aa8043ae500735742a0066464646666ae68cdc3a800a4008464244460040086ae84d55cf280191999ab9a3370ea0049001119091118008021bae357426aae7940108cccd5cd19b875003480008488800c8c98c8064cd5ce00c80d00b80b00a89aab9d5001137540026ae854008cd4025d71aba135744a004464c6402666ae7004c0500444d5d1280089aba25001135573ca00226ea80044cd54005d73ad112232230023756002640026aa02844646666aae7c0089405c8cd4058cc8848cc00400c008c018d55cea80118029aab9e500230043574400602226ae84004488c8c8cccd5cd19b875001480008c8488c00800cc014d5d09aab9e500323333573466e1d40092002212200123263201033573802002201c01a26aae7540044dd5000919191999ab9a3370ea002900311909111180200298039aba135573ca00646666ae68cdc3a8012400846424444600400a60126ae84d55cf280211999ab9a3370ea006900111909111180080298039aba135573ca00a46666ae68cdc3a8022400046424444600600a6eb8d5d09aab9e500623263201033573802002201c01a01801626aae7540044dd5000919191999ab9a3370e6aae7540092000233221233001003002300535742a0046eb4d5d09aba2500223263200c33573801801a01426aae7940044dd50009191999ab9a3370e6aae75400520002375c6ae84d55cf280111931900519ab9c00a00b00813754002464646464646666ae68cdc3a800a401842444444400646666ae68cdc3a8012401442444444400846666ae68cdc3a801a40104664424444444660020120106eb8d5d0a8029bad357426ae8940148cccd5cd19b875004480188cc8848888888cc008024020dd71aba15007375c6ae84d5d1280391999ab9a3370ea00a900211991091111111980300480418061aba15009375c6ae84d5d1280491999ab9a3370ea00c900111909111111180380418069aba135573ca01646666ae68cdc3a803a400046424444444600a010601c6ae84d55cf280611931900999ab9c01301401101000f00e00d00c00b135573aa00826aae79400c4d55cf280109aab9e5001137540024646464646666ae68cdc3a800a4004466644424466600200a0080066eb4d5d0a8021bad35742a0066eb4d5d09aba2500323333573466e1d4009200023212230020033008357426aae7940188c98c8030cd5ce00600680500489aab9d5003135744a00226aae7940044dd5000919191999ab9a3370ea002900111909118008019bae357426aae79400c8cccd5cd19b875002480008c8488c00800cdd71aba135573ca008464c6401266ae7002402801c0184d55cea80089baa00112232323333573466e1d400520042122200123333573466e1d40092002232122230030043006357426aae7940108cccd5cd19b87500348000848880088c98c8028cd5ce00500580400380309aab9d5001137540024646666ae68cdc3a800a4004401246666ae68cdc3a801240004012464c6400c66ae7001801c01000c4d55ce9baa00149924103505431001200132001355005223350014800088d4008894cd4ccd5cd19b8f002488109504f4f4c5348415245000080071001130060031220021220011122002122122330010040031123230010012233003300200200148920b05cce42d6e6e9015958e9fcf450383d15be2bc13b1697a776b017cd140818050001"; // insert your compiled share policy CBOR
 
-const POOL_VALIDATOR_CBOR = "PASTE_lending_pool.plutus_HEX_HERE";
-const SHARE_POLICY_CBOR   = "PASTE_share_policy.plutus_HEX_HERE";
-
-const poolValidator = {
-  type: "PlutusV2",
-  script: POOL_VALIDATOR_CBOR,
-};
-
-const sharePolicy = {
-  type: "PlutusV2",
-  script: SHARE_POLICY_CBOR,
-};
+const poolValidator = { type: "PlutusV2", script: POOL_VALIDATOR_CBOR };
+const sharePolicy    = { type: "PlutusV2", script: SHARE_POLICY_CBOR };
 
 /* =====================================================
-   DATUM / REDEEMER SCHEMAS (CRITICAL)
+   DATUM / REDEEMER SCHEMAS
 ===================================================== */
-
 const PoolDatum = Data.Object({
   pdTotalLiquidity: Data.Integer(),
   pdTotalShares: Data.Integer(),
@@ -41,17 +31,17 @@ const PoolDatum = Data.Object({
   pdInterestRate: Data.Integer(),
 });
 
-const PoolAction = Data.Enum([
-  Data.Literal("Deposit"),
-  Data.Object({ Withdraw: Data.Integer() }),
-  Data.Object({ Borrow: Data.Integer() }),
-  Data.Object({ Repay: Data.Integer() }),
-]);
+// Using Constr pattern instead of Enum
+const PoolAction = {
+  Deposit: new Constr(0, []),
+  Withdraw: (amt) => new Constr(1, [amt]),
+  Borrow: (amt) => new Constr(2, [amt]),
+  Repay: (amt) => new Constr(3, [amt]),
+};
 
 /* =====================================================
    GLOBAL STATE
 ===================================================== */
-
 let lucid;
 let walletAddress;
 let poolAddress;
@@ -60,20 +50,15 @@ let shareCurrencySymbol;
 /* =====================================================
    INIT
 ===================================================== */
-
 async function init() {
-  lucid = await Lucid.new(
-    new Blockfrost(BLOCKFROST_URL, BLOCKFROST_KEY),
-    NETWORK
-  );
+  lucid = await Lucid.new(new Blockfrost(BLOCKFROST_URL, BLOCKFROST_KEY), NETWORK);
 
   const api = await window.cardano.lace.enable();
   lucid.selectWallet(api);
 
   walletAddress = await lucid.wallet.address();
   poolAddress = lucid.utils.validatorToAddress(poolValidator);
-  shareCurrencySymbol =
-    lucid.utils.mintingPolicyToId(sharePolicy);
+  shareCurrencySymbol = lucid.utils.mintingPolicyToId(sharePolicy);
 
   log("Wallet: " + walletAddress);
   log("Pool: " + poolAddress);
@@ -83,7 +68,6 @@ async function init() {
 /* =====================================================
    HELPERS
 ===================================================== */
-
 async function getPoolUtxo() {
   const utxos = await lucid.utxosAt(poolAddress);
   if (utxos.length !== 1) throw "Expected exactly 1 pool UTxO";
@@ -91,57 +75,43 @@ async function getPoolUtxo() {
 }
 
 function mkPoolDatum(liq, shares, borrowed, rate) {
-  return Data.to(
-    {
-      pdTotalLiquidity: BigInt(liq),
-      pdTotalShares: BigInt(shares),
-      pdTotalBorrowed: BigInt(borrowed),
-      pdInterestRate: BigInt(rate),
-    },
-    PoolDatum
-  );
+  return Data.to({
+    pdTotalLiquidity: BigInt(liq),
+    pdTotalShares: BigInt(shares),
+    pdTotalBorrowed: BigInt(borrowed),
+    pdInterestRate: BigInt(rate),
+  }, PoolDatum);
 }
 
 /* =====================================================
    INIT POOL (ONE-TIME)
 ===================================================== */
-
 async function initPool() {
   const interestRate = 5n;
-
   const datum = mkPoolDatum(0n, 0n, 0n, interestRate);
 
   const tx = await lucid
     .newTx()
-    .payToContract(
-      poolAddress,
-      { inline: datum },
-      { lovelace: 2_000_000n }
-    )
+    .payToContract(poolAddress, { inline: datum }, { lovelace: 2_000_000n })
     .complete();
 
   const signed = await tx.sign().complete();
   const txHash = await signed.submit();
-
   log("Pool initialized: " + txHash);
 }
 
 /* =====================================================
    DEPOSIT (MINT SHARES)
 ===================================================== */
-
 async function deposit() {
-  const ada =
-    BigInt(document.getElementById("deposit").value) * 1_000_000n;
-
+  const ada = BigInt(document.getElementById("deposit").value) * 1_000_000n;
   const poolUtxo = await getPoolUtxo();
   const oldDatum = Data.from(poolUtxo.datum, PoolDatum);
 
   const mintedShares =
     oldDatum.pdTotalShares === 0n
       ? ada
-      : (ada * oldDatum.pdTotalShares) /
-        oldDatum.pdTotalLiquidity;
+      : (ada * oldDatum.pdTotalShares) / oldDatum.pdTotalLiquidity;
 
   const newDatum = mkPoolDatum(
     oldDatum.pdTotalLiquidity + ada,
@@ -152,41 +122,27 @@ async function deposit() {
 
   const tx = await lucid
     .newTx()
-    .collectFrom([poolUtxo], Data.to("Deposit", PoolAction))
-    .payToContract(
-      poolAddress,
-      { inline: newDatum },
-      { lovelace: ada }
-    )
-    .mintAssets(
-      {
-        [`${shareCurrencySymbol}.POOLSHARE`]: mintedShares,
-      }
-    )
+    .collectFrom([poolUtxo], PoolAction.Deposit)
+    .payToContract(poolAddress, { inline: newDatum }, { lovelace: ada })
+    .mintAssets({ [`${shareCurrencySymbol}.POOLSHARE`]: mintedShares })
     .attachSpendingValidator(poolValidator)
     .attachMintingPolicy(sharePolicy)
     .complete();
 
   const signed = await tx.sign().complete();
   const txHash = await signed.submit();
-
   log("Deposited: " + txHash);
 }
 
 /* =====================================================
    WITHDRAW (BURN SHARES)
 ===================================================== */
-
 async function withdraw() {
-  const burned =
-    BigInt(document.getElementById("burn").value);
-
+  const burned = BigInt(document.getElementById("burn").value);
   const poolUtxo = await getPoolUtxo();
   const oldDatum = Data.from(poolUtxo.datum, PoolDatum);
 
-  const withdrawn =
-    (burned * oldDatum.pdTotalLiquidity) /
-    oldDatum.pdTotalShares;
+  const withdrawn = (burned * oldDatum.pdTotalLiquidity) / oldDatum.pdTotalShares;
 
   const newDatum = mkPoolDatum(
     oldDatum.pdTotalLiquidity - withdrawn,
@@ -197,38 +153,23 @@ async function withdraw() {
 
   const tx = await lucid
     .newTx()
-    .collectFrom(
-      [poolUtxo],
-      Data.to({ Withdraw: burned }, PoolAction)
-    )
-    .payToContract(
-      poolAddress,
-      { inline: newDatum },
-      { lovelace: withdrawn }
-    )
-    .mintAssets(
-      {
-        [`${shareCurrencySymbol}.POOLSHARE`]: -burned,
-      }
-    )
+    .collectFrom([poolUtxo], PoolAction.Withdraw(burned))
+    .payToContract(poolAddress, { inline: newDatum }, { lovelace: withdrawn })
+    .mintAssets({ [`${shareCurrencySymbol}.POOLSHARE`]: -burned })
     .attachSpendingValidator(poolValidator)
     .attachMintingPolicy(sharePolicy)
     .complete();
 
   const signed = await tx.sign().complete();
   const txHash = await signed.submit();
-
   log("Withdrawn: " + txHash);
 }
 
 /* =====================================================
    BORROW
 ===================================================== */
-
 async function borrow() {
-  const amt =
-    BigInt(document.getElementById("borrow").value) * 1_000_000n;
-
+  const amt = BigInt(document.getElementById("borrow").value) * 1_000_000n;
   const poolUtxo = await getPoolUtxo();
   const oldDatum = Data.from(poolUtxo.datum, PoolDatum);
 
@@ -241,39 +182,26 @@ async function borrow() {
 
   const tx = await lucid
     .newTx()
-    .collectFrom(
-      [poolUtxo],
-      Data.to({ Borrow: amt }, PoolAction)
-    )
+    .collectFrom([poolUtxo], PoolAction.Borrow(amt))
     .payToAddress(walletAddress, { lovelace: amt })
-    .payToContract(
-      poolAddress,
-      { inline: newDatum },
-      { lovelace: 0n }
-    )
+    .payToContract(poolAddress, { inline: newDatum }, { lovelace: 0n })
     .attachSpendingValidator(poolValidator)
     .complete();
 
   const signed = await tx.sign().complete();
   const txHash = await signed.submit();
-
   log("Borrowed: " + txHash);
 }
 
 /* =====================================================
    REPAY
 ===================================================== */
-
 async function repay() {
-  const principal =
-    BigInt(document.getElementById("repay").value) * 1_000_000n;
-
+  const principal = BigInt(document.getElementById("repay").value) * 1_000_000n;
   const poolUtxo = await getPoolUtxo();
   const d = Data.from(poolUtxo.datum, PoolDatum);
 
-  const interest =
-    (principal * d.pdInterestRate) / 100n;
-
+  const interest = (principal * d.pdInterestRate) / 100n;
   const total = principal + interest;
 
   const newDatum = mkPoolDatum(
@@ -285,28 +213,19 @@ async function repay() {
 
   const tx = await lucid
     .newTx()
-    .collectFrom(
-      [poolUtxo],
-      Data.to({ Repay: principal }, PoolAction)
-    )
-    .payToContract(
-      poolAddress,
-      { inline: newDatum },
-      { lovelace: total }
-    )
+    .collectFrom([poolUtxo], PoolAction.Repay(principal))
+    .payToContract(poolAddress, { inline: newDatum }, { lovelace: total })
     .attachSpendingValidator(poolValidator)
     .complete();
 
   const signed = await tx.sign().complete();
   const txHash = await signed.submit();
-
   log("Repaid: " + txHash);
 }
 
 /* =====================================================
    UI
 ===================================================== */
-
 function log(msg) {
   document.getElementById("log").innerText = msg;
 }
