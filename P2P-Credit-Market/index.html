@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>P2P Credit Market</title>
+
+  <style>
+    body {
+      background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
+      font-family: "Segoe UI", sans-serif;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+      color: #00ffd5;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: #1e2a38;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 20px rgba(0,255,213,0.15);
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+    }
+
+    input {
+      background: #2b3c4f;
+      color: white;
+    }
+
+    button {
+      background: #00ffd5;
+      color: #000;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #00c9aa;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .log {
+      background: #000;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-family: monospace;
+      color: #00ffd5;
+    }
+
+    .offer {
+      background: #243447;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Defi Marketplace</h1>
+
+  <div class="container">
+
+    <div class="card">
+      <button id="connect">Connect Lace Wallet</button>
+      <div class="log" id="log">Not connected</div>
+    </div>
+
+    <div class="card">
+      <h2>Borrower: Post Loan Offer</h2>
+      <div class="row">
+        <input id="collateral" placeholder="Collateral ADA" />
+        <input id="principal" placeholder="Principal ADA" />
+      </div>
+      <input id="interest" placeholder="Interest ADA" />
+      <button id="postOffer">Post Offer</button>
+    </div>
+
+    <div class="card">
+      <h2>Lender: Available Offers</h2>
+      <button id="refresh">Refresh Offers</button>
+      <div id="offers"></div>
+    </div>
+
+    <div class="card">
+      <h2>Borrower: Repay Loan</h2>
+      <button id="repay">Repay Loan</button>
+    </div>
+
+  </div>
+
+<script type="module" src="credit.js"></script>
+
+</body>
+</html>
