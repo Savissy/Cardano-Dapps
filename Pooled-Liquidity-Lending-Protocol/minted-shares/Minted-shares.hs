@@ -7,7 +7,7 @@
 
 module Main where
 
-import Prelude (IO, FilePath, putStrLn, String)
+import Prelude (IO, FilePath, putStrLn)
 import qualified Prelude as P
 
 import Plutus.V2.Ledger.Api
@@ -17,8 +17,6 @@ import PlutusTx
 import PlutusTx.Prelude hiding (Semigroup(..), unless)
 
 import qualified PlutusTx.Builtins as Builtins
-import qualified Plutus.V2.Ledger.Api as PlutusV2
-
 import qualified Codec.Serialise as Serialise
 import qualified Data.ByteString.Lazy as LBS
 import qualified Data.ByteString as BS
@@ -33,7 +31,7 @@ shareTokenName :: TokenName
 shareTokenName = TokenName "POOLSHARE"
 
 -------------------------------------------------
--- POOL DATUM (GLOBAL STATE)
+-- POOL DATUM (SINGLE GLOBAL STATE)
 -------------------------------------------------
 
 data PoolDatum = PoolDatum
@@ -59,12 +57,17 @@ PlutusTx.unstableMakeIsData ''PoolAction
 -- HELPERS
 -------------------------------------------------
 
-{-# INLINABLE getContinuingOutput #-}
-getContinuingOutput :: ScriptContext -> TxOut
-getContinuingOutput ctx =
-  case getContinuingOutputs ctx of
+{-# INLINABLE findPoolOutput #-}
+findPoolOutput :: ScriptContext -> TxOut
+findPoolOutput ctx =
+  case filter hasDatum (getContinuingOutputs ctx) of
     [o] -> o
-    _   -> traceError "expected exactly one continuing output"
+    _   -> traceError "expected exactly one pool output"
+  where
+    hasDatum o =
+      case txOutDatum o of
+        OutputDatum (Datum _) -> True
+        _                     -> False
 
 {-# INLINABLE getPoolDatum #-}
 getPoolDatum :: TxOut -> PoolDatum
@@ -74,49 +77,7 @@ getPoolDatum o =
     _ -> traceError "datum missing"
 
 -------------------------------------------------
--- SHARE TOKEN MINTING POLICY
--------------------------------------------------
-
-{-# INLINABLE mkSharePolicy #-}
-mkSharePolicy :: ValidatorHash -> Integer -> ScriptContext -> Bool
-mkSharePolicy poolVH shares ctx =
-  traceIfFalse "pool utxo not spent" poolSpent &&
-  traceIfFalse "wrong mint amount" mintCorrect
-  where
-    info :: TxInfo
-    info = scriptContextTxInfo ctx
-
-    poolSpent :: Bool
-    poolSpent =
-      any (\i -> case txOutAddress (txInInfoResolved i) of
-                   Address (ScriptCredential vh) _ -> vh == poolVH
-                   _                               -> False
-          ) (txInfoInputs info)
-
-    mintCorrect :: Bool
-    mintCorrect =
-      assetClassValueOf (txInfoMint info)
-        (AssetClass (ownCurrencySymbol ctx, shareTokenName))
-        == shares
-
-{-# INLINABLE mkSharePolicyUntyped #-}
-mkSharePolicyUntyped :: ValidatorHash -> BuiltinData -> BuiltinData -> ()
-mkSharePolicyUntyped vh r c =
-  if mkSharePolicy vh
-       (unsafeFromBuiltinData r)
-       (unsafeFromBuiltinData c)
-  then ()
-  else error ()
-
-sharePolicy :: ValidatorHash -> MintingPolicy
-sharePolicy vh =
-  mkMintingPolicyScript $
-    $$(PlutusTx.compile [|| \h -> mkSharePolicyUntyped h ||])
-      `PlutusTx.applyCode`
-        PlutusTx.liftCode vh
-
--------------------------------------------------
--- POOL VALIDATOR
+-- POOL VALIDATOR (NO MINT CHECKS)
 -------------------------------------------------
 
 {-# INLINABLE mkPoolValidator #-}
@@ -125,13 +86,11 @@ mkPoolValidator dat action ctx =
   case action of
 
     Deposit ->
-      depositCorrect &&
-      sharesMintedCorrect
+      depositCorrect
 
     Withdraw burned ->
       burned > 0 &&
-      withdrawCorrect burned &&
-      sharesBurnedCorrect burned
+      withdrawCorrect burned
 
     Borrow amt ->
       pdTotalLiquidity dat >= amt &&
@@ -148,10 +107,10 @@ mkPoolValidator dat action ctx =
     ownInput =
       case findOwnInput ctx of
         Just i  -> txInInfoResolved i
-        Nothing -> traceError "input missing"
+        Nothing -> traceError "pool input missing"
 
     ownOutput :: TxOut
-    ownOutput = getContinuingOutput ctx
+    ownOutput = findPoolOutput ctx
 
     oldAda :: Integer
     oldAda = valueOf (txOutValue ownInput) adaSymbol adaToken
@@ -177,14 +136,9 @@ mkPoolValidator dat action ctx =
 
     depositCorrect :: Bool
     depositCorrect =
+      deposited > 0 &&
       pdTotalLiquidity newDatum == pdTotalLiquidity dat + deposited &&
-      pdTotalShares newDatum    == pdTotalShares dat + mintedShares
-
-    sharesMintedCorrect :: Bool
-    sharesMintedCorrect =
-      assetClassValueOf (txInfoMint info)
-        (AssetClass (ownCurrencySymbol ctx, shareTokenName))
-        == mintedShares
+      pdTotalShares    newDatum == pdTotalShares dat + mintedShares
 
     -------------------------------------------------
     -- WITHDRAW
@@ -192,18 +146,12 @@ mkPoolValidator dat action ctx =
 
     withdrawCorrect :: Integer -> Bool
     withdrawCorrect burned =
-      let withdrawn = oldAda - newAda
-          expected  =
+      let expected =
             (burned * oldAda) `divide` pdTotalShares dat
+          withdrawn = oldAda - newAda
        in withdrawn == expected &&
           pdTotalShares newDatum ==
             pdTotalShares dat - burned
-
-    sharesBurnedCorrect :: Integer -> Bool
-    sharesBurnedCorrect burned =
-      assetClassValueOf (txInfoMint info)
-        (AssetClass (ownCurrencySymbol ctx, shareTokenName))
-        == negate burned
 
     -------------------------------------------------
     -- BORROW
@@ -234,9 +182,9 @@ mkPoolValidator dat action ctx =
 mkUntyped :: BuiltinData -> BuiltinData -> BuiltinData -> ()
 mkUntyped d r c =
   if mkPoolValidator
-      (unsafeFromBuiltinData d)
-      (unsafeFromBuiltinData r)
-      (unsafeFromBuiltinData c)
+       (unsafeFromBuiltinData d)
+       (unsafeFromBuiltinData r)
+       (unsafeFromBuiltinData c)
   then ()
   else error ()
 
@@ -244,6 +192,49 @@ validator :: Validator
 validator =
   mkValidatorScript $
     $$(PlutusTx.compile [|| mkUntyped ||])
+
+-------------------------------------------------
+-- SHARE TOKEN MINTING POLICY
+-------------------------------------------------
+
+{-# INLINABLE mkSharePolicy #-}
+mkSharePolicy :: ValidatorHash -> Integer -> ScriptContext -> Bool
+mkSharePolicy poolVH shares ctx =
+  traceIfFalse "pool not spent" poolSpent &&
+  traceIfFalse "wrong share mint" mintCorrect
+  where
+    info :: TxInfo
+    info = scriptContextTxInfo ctx
+
+    poolSpent :: Bool
+    poolSpent =
+      any (\i ->
+        case txOutAddress (txInInfoResolved i) of
+          Address (ScriptCredential vh) _ -> vh == poolVH
+          _ -> False
+      ) (txInfoInputs info)
+
+    mintCorrect :: Bool
+    mintCorrect =
+      assetClassValueOf (txInfoMint info)
+        (AssetClass (ownCurrencySymbol ctx, shareTokenName))
+        == shares
+
+{-# INLINABLE mkShareUntyped #-}
+mkShareUntyped :: ValidatorHash -> BuiltinData -> BuiltinData -> ()
+mkShareUntyped vh r c =
+  if mkSharePolicy vh
+       (unsafeFromBuiltinData r)
+       (unsafeFromBuiltinData c)
+  then ()
+  else error ()
+
+sharePolicy :: ValidatorHash -> MintingPolicy
+sharePolicy vh =
+  mkMintingPolicyScript $
+    $$(PlutusTx.compile [|| \h -> mkShareUntyped h ||])
+      `PlutusTx.applyCode`
+        PlutusTx.liftCode vh
 
 -------------------------------------------------
 -- SERIALIZATION
@@ -263,15 +254,19 @@ poolValidatorHash =
     hash = sha2_256 builtin
   in ValidatorHash hash
 
-
 sharePolicyScript :: MintingPolicy
-sharePolicyScript = sharePolicy poolValidatorHash
+sharePolicyScript =
+  sharePolicy poolValidatorHash
+
+-------------------------------------------------
+-- WRITE SCRIPTS
+-------------------------------------------------
 
 main :: IO ()
 main = do
   writeCBOR "lending_pool.plutus" validator
   writeCBOR "share_policy.plutus" sharePolicyScript
-  putStrLn "Lending Pool + Share Minting Policy compiled"
+  putStrLn "✅ Lending pool + share policy compiled"
 
 writeCBOR :: Serialise.Serialise a => FilePath -> a -> IO ()
 writeCBOR path script =
@@ -279,4 +274,3 @@ writeCBOR path script =
     B16.encode $
       LBS.toStrict $
         Serialise.serialise script
-
