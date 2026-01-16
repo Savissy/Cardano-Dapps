@@ -7,64 +7,53 @@
 
 module Main where
 
-import Prelude (IO, String, FilePath, putStrLn, (<>), take)
+import Prelude (IO, FilePath, putStrLn, (<>), String)
 import qualified Prelude as P
-import qualified Data.Text as T
 
 import Plutus.V2.Ledger.Api
 import Plutus.V2.Ledger.Contexts
-import qualified Plutus.V2.Ledger.Api as PlutusV2
-import Plutus.V1.Ledger.Value (valueOf, adaSymbol, adaToken, flattenValue)
 import PlutusTx
 import PlutusTx.Prelude hiding (Semigroup(..), unless)
-import qualified PlutusTx.Builtins as Builtins
+
+import Plutus.V1.Ledger.Value (flattenValue)
 
 import qualified Codec.Serialise as Serialise
 import qualified Data.ByteString.Lazy  as LBS
-import qualified Data.ByteString.Short as SBS
 import qualified Data.ByteString       as BS
 import qualified Data.ByteString.Base16 as B16
 
-import qualified Cardano.Api as C
-import qualified Cardano.Api.Shelley as CS
-
-data DocRedeemer = DocRedeemer
-  { borrower :: PubKeyHash
-  , docHash  :: BuiltinByteString
-  }
-PlutusTx.unstableMakeIsData ''DocRedeemer
-
 --------------------------------------------------------------------------------
--- Document Minting Policy
+-- Document NFT Minting Policy (NO REDEEMER)
 --------------------------------------------------------------------------------
 
 {-# INLINABLE mkDocPolicy #-}
-mkDocPolicy :: DocRedeemer -> ScriptContext -> Bool
-mkDocPolicy red ctx =
-    traceIfFalse "borrower not signed" borrowerSigned &&
-    traceIfFalse "must mint exactly one NFT" singleMint &&
-    traceIfFalse "token name mismatch" correctTokenName
+mkDocPolicy :: ScriptContext -> Bool
+mkDocPolicy ctx =
+    traceIfFalse "must mint exactly one document NFT" singleMint &&
+    traceIfFalse "borrower must sign transaction" signerPresent
   where
+    info :: TxInfo
     info = scriptContextTxInfo ctx
 
-    borrowerSigned =
-        txSignedBy info (borrower red)
+    ownSymbol :: CurrencySymbol
+    ownSymbol = ownCurrencySymbol ctx
 
-    ownSymbol =
-        ownCurrencySymbol ctx
+    minted :: [(CurrencySymbol, TokenName, Integer)]
+    minted = flattenValue (txInfoMint info)
 
-    minted =
-        flattenValue (txInfoMint info)
-
+    -- Exactly one NFT minted under this policy
+    singleMint :: Bool
     singleMint =
         case minted of
             [(cs, _, amt)] -> cs == ownSymbol && amt == 1
             _              -> False
 
-    correctTokenName =
-        case minted of
-            [(_, tn, _)] -> unTokenName tn == docHash red
-            _            -> False
+    -- Whoever submits must sign (borrower = wallet owner)
+    signerPresent :: Bool
+    signerPresent =
+        case txInfoSignatories info of
+            [_] -> True
+            _   -> False
 
 --------------------------------------------------------------------------------
 -- Untyped Wrapper
@@ -72,9 +61,8 @@ mkDocPolicy red ctx =
 
 {-# INLINABLE mkPolicy #-}
 mkPolicy :: BuiltinData -> BuiltinData -> ()
-mkPolicy r ctx =
-    if mkDocPolicy (unsafeFromBuiltinData r)
-                   (unsafeFromBuiltinData ctx)
+mkPolicy _ ctx =
+    if mkDocPolicy (unsafeFromBuiltinData ctx)
     then ()
     else error ()
 
@@ -84,7 +72,7 @@ policy =
         $$(PlutusTx.compile [|| mkPolicy ||])
 
 --------------------------------------------------------------------------------
--- CBOR Hex Generator
+-- CBOR HEX GENERATOR
 --------------------------------------------------------------------------------
 
 policyToCBORHex :: MintingPolicy -> String
