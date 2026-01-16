@@ -28,57 +28,60 @@ import qualified Data.ByteString.Base16 as B16
 import qualified Cardano.Api as C
 import qualified Cardano.Api.Shelley as CS
 
+data DocRedeemer = DocRedeemer
+  { borrower :: PubKeyHash
+  , docHash  :: BuiltinByteString
+  }
+PlutusTx.unstableMakeIsData ''DocRedeemer
+
 --------------------------------------------------------------------------------
 -- Document Minting Policy
 --------------------------------------------------------------------------------
 
 {-# INLINABLE mkDocPolicy #-}
-mkDocPolicy :: PubKeyHash -> BuiltinByteString -> ScriptContext -> Bool
-mkDocPolicy borrower docHash ctx =
+mkDocPolicy :: DocRedeemer -> ScriptContext -> Bool
+mkDocPolicy red ctx =
     traceIfFalse "borrower not signed" borrowerSigned &&
     traceIfFalse "must mint exactly one NFT" singleMint &&
     traceIfFalse "token name mismatch" correctTokenName
   where
-    info :: TxInfo
     info = scriptContextTxInfo ctx
 
-    borrowerSigned :: Bool
-    borrowerSigned = txSignedBy info borrower
+    borrowerSigned =
+        txSignedBy info (borrower red)
 
-    ownSymbol :: CurrencySymbol
-    ownSymbol = ownCurrencySymbol ctx
+    ownSymbol =
+        ownCurrencySymbol ctx
 
-    minted :: [(CurrencySymbol, TokenName, Integer)]
-    minted = flattenValue (txInfoMint info)
+    minted =
+        flattenValue (txInfoMint info)
 
-    singleMint :: Bool
     singleMint =
         case minted of
             [(cs, _, amt)] -> cs == ownSymbol && amt == 1
             _              -> False
 
-    correctTokenName :: Bool
     correctTokenName =
         case minted of
-            [(_, tn, _)] -> unTokenName tn == docHash
+            [(_, tn, _)] -> unTokenName tn == docHash red
             _            -> False
 
 --------------------------------------------------------------------------------
 -- Untyped Wrapper
 --------------------------------------------------------------------------------
 
-{-# INLINABLE mkPolicyUntyped #-}
-mkPolicyUntyped :: BuiltinData -> BuiltinData -> ()
-mkPolicyUntyped r c =
-    let (borrower, docHash) = unsafeFromBuiltinData r
-    in if mkDocPolicy borrower docHash (unsafeFromBuiltinData c)
-       then ()
-       else error ()
+{-# INLINABLE mkPolicy #-}
+mkPolicy :: BuiltinData -> BuiltinData -> ()
+mkPolicy r ctx =
+    if mkDocPolicy (unsafeFromBuiltinData r)
+                   (unsafeFromBuiltinData ctx)
+    then ()
+    else error ()
 
 policy :: MintingPolicy
 policy =
     mkMintingPolicyScript
-        $$(PlutusTx.compile [|| mkPolicyUntyped ||])
+        $$(PlutusTx.compile [|| mkPolicy ||])
 
 --------------------------------------------------------------------------------
 -- CBOR Hex Generator
