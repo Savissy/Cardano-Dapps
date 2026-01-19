@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADA Lending + Document NFTs</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 40px 20px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    pointer-events: none;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  h1 { 
+    color: #ffffff;
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 40px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    animation: fadeInDown 0.6s ease;
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  section { 
+    margin-bottom: 25px;
+    padding: 30px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease;
+    animation-fill-mode: both;
+  }
+
+  section:nth-child(2) { animation-delay: 0.1s; }
+  section:nth-child(3) { animation-delay: 0.2s; }
+  section:nth-child(4) { animation-delay: 0.3s; }
+  section:nth-child(5) { animation-delay: 0.4s; }
+
+  section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  }
+
+  h2 {
+    color: #5b21b6;
+    font-size: 1.4em;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 3px solid #a78bfa;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  h2::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+  }
+
+  label { 
+    font-weight: 600;
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    color: #4b5563;
+    font-size: 0.95em;
+  }
+
+  input[type="text"],
+  input[type="number"] { 
+    padding: 14px 18px;
+    margin: 8px 0;
+    width: 100%;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    background: #f9fafb;
+    color: #1f2937;
+  }
+
+  input[type="text"]:focus,
+  input[type="number"]:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+    transform: translateY(-2px);
+  }
+
+  input[type="file"] {
+    padding: 14px;
+    margin: 8px 0;
+    width: 100%;
+    border: 2px dashed #8b5cf6;
+    border-radius: 10px;
+    background: #f5f3ff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #5b21b6;
+  }
+
+  input[type="file"]::file-selector-button {
+    padding: 8px 16px;
+    border: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-right: 12px;
+    transition: all 0.3s ease;
+  }
+
+  input[type="file"]::file-selector-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  input[type="file"]:hover {
+    border-color: #7c3aed;
+    background: #ede9fe;
+  }
+
+  button { 
+    padding: 14px 28px;
+    margin: 15px 0 5px 0;
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    font-size: 1.05em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  button:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  button:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+
+  #log { 
+    margin-top: 30px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 12px;
+    min-height: 60px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border-left: 4px solid #10b981;
+    color: #1f2937;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95em;
+    line-height: 1.6;
+    animation: fadeInUp 0.6s ease 0.5s both;
+  }
+
+  #log:empty::before {
+    content: 'System logs will appear here...';
+    color: #9ca3af;
+    font-style: italic;
+  }
+
+  .input-group {
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2em;
+    }
+    
+    section {
+      padding: 20px;
+    }
+    
+    h2 {
+      font-size: 1.2em;
+    }
+  }
+
+  /* Shimmer effect for primary button */
+  @keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+  }
+
+  #connect {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+    background-size: 200% 100%;
+    animation: shimmer 3s infinite;
+  }
+
+  /* Success state for buttons */
+  button.success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🔐 ADA Lending + Document NFTs</h1>
+
+  <section>
+    <h2>Connect Wallet</h2>
+    <button id="connect">Connect Wallet</button>
+  </section>
+
+  <section>
+    <h2>Mint & Transfer Document</h2>
+    <div class="input-group">
+      <label for="docUpload">📄 Upload Document</label>
+      <input type="file" id="docUpload" />
+    </div>
+    <div class="input-group">
+      <label for="collateral">🏦 Lender Address</label>
+      <input type="text" id="collateral" placeholder="Enter lender address" />
+    </div>
+    <button id="mintNFT">Mint NFT & Transfer</button>
+  </section>
+
+  <section>
+    <h2>Open Loan</h2>
+    <div class="input-group">
+      <label for="lender">👤 Lender Address</label>
+      <input type="text" id="lender" placeholder="Enter lender address" />
+    </div>
+    <div class="input-group">
+      <label for="collateral">💰 Collateral Amount (ADA)</label>
+      <input type="number" id="collateral" placeholder="Enter collateral in ADA" />
+    </div>
+    <div class="input-group">
+      <label for="principal">💵 Principal Amount (ADA)</label>
+      <input type="number" id="principal" placeholder="Enter principal in ADA" />
+    </div>
+    <div class="input-group">
+      <label for="interest">📈 Interest Amount (ADA)</label>
+      <input type="number" id="interest" placeholder="Enter interest in ADA" />
+    </div>
+    <button id="openLoan">Open Loan</button>
+  </section>
+
+  <section>
+    <h2>Repay Loan</h2>
+    <button id="repayLoan">Repay Loan</button>
+  </section>
+
+  <div id="log"></div>
+</div>
+</body>
+</html>
