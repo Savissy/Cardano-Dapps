@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROSCA Circle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --bg-primary: #0a0e27;
+  --bg-secondary: #151932;
+  --card-bg: rgba(30, 35, 62, 0.6);
+  --primary: #00d4aa;
+  --primary-dark: #00b894;
+  --accent: #e84393;
+  --accent-light: #fd79a8;
+  --secondary: #6c5ce7;
+  --text: #e8eaed;
+  --text-muted: #a0a4b8;
+  --border: rgba(255, 255, 255, 0.08);
+}
+
+/* =============================
+   GLOBAL STYLES
+============================= */
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: linear-gradient(135deg, #0a0e27 0%, #151932 50%, #1a1f3a 100%);
+  color: var(--text);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Animated background pattern */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(0, 212, 170, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(232, 67, 147, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(108, 92, 231, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+  animation: backgroundFloat 25s ease-in-out infinite;
+}
+
+@keyframes backgroundFloat {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dots" width="60" height="60" patternUnits="userSpaceOnUse"><circle cx="30" cy="30" r="1.5" fill="rgba(0,212,170,0.08)"/></pattern></defs><rect width="60" height="60" fill="url(%23dots)"/></svg>');
+  pointer-events: none;
+}
+
+.container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 40px 32px;
+  animation: fadeIn 0.8s ease;
+  position: relative;
+  z-index: 1;
+}
+
+/* =============================
+   TOPBAR
+============================= */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+  animation: slideDown 0.6s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.topbar h1 {
+  font-size: 3rem;
+  background: linear-gradient(135deg, #00d4aa 0%, #00b894 50%, #6c5ce7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+  text-shadow: 0 0 40px rgba(0, 212, 170, 0.3);
+}
+
+.topbar p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.topbar button {
+  padding: 16px 32px;
+  font-size: 1.05rem;
+  background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%);
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 700;
+  color: #0a0e27;
+  box-shadow: 0 8px 24px rgba(0, 212, 170, 0.3),
+              0 0 0 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.topbar button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.topbar button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.topbar button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 212, 170, 0.5);
+}
+
+/* =============================
+   CARD STYLES
+============================= */
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 35px;
+  margin-bottom: 30px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 0.6s ease;
+  animation-fill-mode: both;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  transition: left 0.8s;
+}
+
+.card:hover::before {
+  left: 100%;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(0, 212, 170, 0.3);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4),
+              0 0 0 1px rgba(0, 212, 170, 0.2);
+}
+
+.card.large {
+  border: 1px solid rgba(0, 212, 170, 0.15);
+  background: rgba(30, 35, 62, 0.7);
+}
+
+.card.accent {
+  border: 2px solid var(--accent);
+  background: linear-gradient(135deg, rgba(232, 67, 147, 0.1), rgba(253, 121, 168, 0.05));
+}
+
+.card h2 {
+  font-size: 1.75rem;
+  margin-bottom: 8px;
+  color: var(--text);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.card h3 {
+  font-size: 1.4rem;
+  margin-bottom: 16px;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.card button {
+  margin-top: 20px;
+  padding: 16px;
+  width: 100%;
+  font-size: 1.1rem;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%);
+  font-weight: 700;
+  cursor: pointer;
+  color: #0a0e27;
+  box-shadow: 0 6px 20px rgba(0, 212, 170, 0.3);
+  transition: all 0.3s ease;
+}
+
+.card button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0, 212, 170, 0.5);
+}
+
+/* =============================
+   FORMS
+============================= */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 30px;
+}
+
+textarea {
+  grid-column: span 1;
+  min-height: 120px;
+  resize: vertical;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  background: rgba(10, 14, 39, 0.6);
+  color: var(--text);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: rgba(10, 14, 39, 0.8);
+  box-shadow: 0 0 0 4px rgba(0, 212, 170, 0.15),
+              0 4px 16px rgba(0, 212, 170, 0.2);
+  transform: translateY(-2px);
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+  color: var(--text);
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+}
+
+button.primary {
+  margin-top: 28px;
+  padding: 18px;
+  font-size: 1.15rem;
+  width: 100%;
+  background: linear-gradient(135deg, #e84393 0%, #fd79a8 100%);
+  border: none;
+  border-radius: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0 8px 24px rgba(232, 67, 147, 0.4);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+button.primary::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+button.primary:hover::after {
+  width: 400px;
+  height: 400px;
+}
+
+button.primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 36px rgba(232, 67, 147, 0.6);
+}
+
+/* =============================
+   LOG SECTION
+============================= */
+.log {
+  margin-top: 40px;
+}
+
+.log pre {
+  background: rgba(10, 14, 39, 0.8);
+  padding: 20px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid rgba(0, 212, 170, 0.2);
+  color: var(--primary);
+  font-family: 'Courier New', monospace;
+  line-height: 1.6;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.log pre::-webkit-scrollbar {
+  width: 8px;
+}
+
+.log pre::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.log pre::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+/* =============================
+   GRID LAYOUTS
+============================= */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+
+/* =============================
+   ACTIVE ROSCA CARDS
+============================= */
+.circles-section {
+  margin-top: 50px;
+  margin-bottom: 40px;
+}
+
+.circles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 28px;
+  margin-top: 28px;
+}
+
+.circles-grid:empty::before {
+  content: 'No active circles yet. Create one to get started!';
+  display: block;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  font-style: italic;
+  grid-column: 1 / -1;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+}
+
+.circle-card {
+  background: linear-gradient(135deg, rgba(21, 25, 50, 0.9) 0%, rgba(30, 35, 62, 0.8) 100%);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4),
+              0 0 0 1px rgba(0, 212, 170, 0.1);
+  animation: fadeInScale 0.5s ease forwards;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.circle-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--accent), var(--secondary));
+  opacity: 0.6;
+}
+
+.circle-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5),
+              0 0 0 1px rgba(0, 212, 170, 0.3);
+  border-color: rgba(0, 212, 170, 0.3);
+}
+
+@keyframes fadeInScale {
+  from { 
+    opacity: 0; 
+    transform: scale(0.9) translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1) translateY(0); 
+  }
+}
+
+.circle-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 16px;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.circle-meta p {
+  font-size: 0.95rem;
+  margin: 8px 0;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.circle-meta p strong {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.circle-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.circle-actions button {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #0a0e27;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 12px rgba(0, 212, 170, 0.3);
+}
+
+.circle-actions button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 212, 170, 0.5);
+}
+
+button.secondary {
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+button.secondary:hover {
+  background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* =============================
+   ANIMATIONS
+============================= */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to   { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* Stagger animation delays */
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }
+
+/* =============================
+   MOBILE RESPONSIVENESS
+============================= */
+@media (max-width: 768px) {
+  .container {
+    padding: 24px 16px;
+  }
+
+  .topbar h1 {
+    font-size: 2rem;
+  }
+
+  .topbar p {
+    font-size: 1rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .circles-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .circle-actions {
+    flex-direction: column;
+  }
+
+  .card {
+    padding: 24px;
+  }
+
+  .card h2 {
+    font-size: 1.4rem;
+  }
+}
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <header class="topbar">
+      <div>
+        <h1>🌸 ROSCA Circle (Esusu)</h1>
+        <p>Decentralized Rotating Savings on Cardano</p>
+      </div>
+      <button id="connect">Connect Wallet</button>
+    </header>
+
+    <section class="card large">
+      <h2>👥 Create Savings Circle</h2>
+
+      <div class="form-grid" style="margin-top: 40px;">
+        <div>
+          <label>Deposit Amount (ADA)</label>
+          <input id="amount" placeholder="10" />
+        </div>
+
+        <div>
+          <label>Participants (one address per line)</label>
+          <textarea id="participants" placeholder="addr1...&#10;addr2...&#10;addr3..."></textarea>
+        </div>
+
+        <div>
+          <label>Payout Order</label>
+          <textarea id="order" placeholder="0&#10;1&#10;2"></textarea>
+        </div>
+      </div>
+
+      <button class="primary" id="createCircle">Create Circle</button>
+    </section>
+
+    <section class="card large circles-section">
+      <h2>📦 Your Active ROSCA Circle</h2>
+
+      <!-- JS WILL RENDER CARDS HERE -->
+      <div id="circles" class="circles-grid">
+        <!-- circle cards injected here -->
+      </div>
+    </section>
+
+    <section class="card log" style="margin-top: 40px;">
+      <h3>Status</h3>
+      <pre id="log">Waiting...</pre>
+    </section>
+
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
