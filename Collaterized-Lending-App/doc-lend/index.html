@@ -15,7 +15,6 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
-    padding: 40px 20px;
     position: relative;
     overflow-x: hidden;
   }
@@ -32,19 +31,45 @@
   }
 
   .container {
-    max-width: 900px;
+    max-width: 1400px;
     margin: 0 auto;
+    padding: 40px 20px;
     position: relative;
     z-index: 1;
   }
 
-  h1 { 
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 60px;
+  }
+
+  .logo {
+    font-size: 32px;
+    font-weight: 800;
     color: #ffffff;
-    text-align: center;
-    font-size: 2.5em;
-    margin-bottom: 40px;
     text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+
+  .hero {
+    margin-bottom: 60px;
     animation: fadeInDown 0.6s ease;
+  }
+
+  .hero h1 {
+    font-size: 3.5em;
+    line-height: 1.1;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+  }
+
+  .hero p {
+    font-size: 1.2em;
+    opacity: 0.9;
+    color: rgba(255, 255, 255, 0.95);
+    max-width: 700px;
   }
 
   @keyframes fadeInDown {
@@ -69,8 +94,14 @@
     }
   }
 
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+
   section { 
-    margin-bottom: 25px;
     padding: 30px;
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.95);
@@ -81,10 +112,10 @@
     animation-fill-mode: both;
   }
 
-  section:nth-child(2) { animation-delay: 0.1s; }
-  section:nth-child(3) { animation-delay: 0.2s; }
-  section:nth-child(4) { animation-delay: 0.3s; }
-  section:nth-child(5) { animation-delay: 0.4s; }
+  section:nth-child(1) { animation-delay: 0.1s; }
+  section:nth-child(2) { animation-delay: 0.2s; }
+  section:nth-child(3) { animation-delay: 0.3s; }
+  section:nth-child(4) { animation-delay: 0.4s; }
 
   section:hover {
     transform: translateY(-5px);
@@ -252,21 +283,6 @@
     margin-bottom: 12px;
   }
 
-  @media (max-width: 768px) {
-    h1 {
-      font-size: 2em;
-    }
-    
-    section {
-      padding: 20px;
-    }
-    
-    h2 {
-      font-size: 1.2em;
-    }
-  }
-
-  /* Shimmer effect for primary button */
   @keyframes shimmer {
     0% { background-position: -1000px 0; }
     100% { background-position: 1000px 0; }
@@ -276,61 +292,85 @@
     background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #667eea 100%);
     background-size: 200% 100%;
     animation: shimmer 3s infinite;
+    width: auto;
+    padding: 14px 32px;
   }
 
-  /* Success state for buttons */
   button.success {
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  @media (max-width: 1024px) {
+    .cards {
+      grid-template-columns: 1fr;
+    }
+    
+    .hero h1 {
+      font-size: 2.5em;
+    }
+    
+    .hero p {
+      font-size: 1.1em;
+    }
   }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>🔐 P2P Lending Protocol 2.0</h1>
-
-  <section>
-    <h2>Connect Wallet</h2>
+  <header>
+    <div class="logo">🔐 P2P Lending Protocol</div>
     <button id="connect">Connect Wallet</button>
+  </header>
+
+  <section class="hero">
+    <h1>Decentralized<br/>Peer-to-Peer Lending</h1>
+    <p>
+      Secure loans with ADA collateral, mint document NFTs for agreements,
+      and execute trustless transactions on the Cardano blockchain.
+    </p>
   </section>
 
-  <section>
-    <h2>Mint & Transfer Document</h2>
-    <div class="input-group">
-      <label for="docUpload">📄 Upload Document</label>
-      <input type="file" id="docUpload" />
-    </div>
-    <div class="input-group">
-      <label for="collateral">🏦 Lender Address</label>
-      <input type="text" id="reciepient" placeholder="Enter lender address" />
-    </div>
-    <button id="mintNFT">Mint & Transfer NFT</button>
-  </section>
+  <div class="cards">
+    <section>
+      <h2>Mint & Transfer Document</h2>
+      <div class="input-group">
+        <label for="docUpload">📄 Upload Document</label>
+        <input type="file" id="docUpload" />
+      </div>
+      <div class="input-group">
+        <label for="collateral">🏦 Lender Address</label>
+        <input type="text" id="reciepient" placeholder="Enter lender address" />
+      </div>
+      <button id="mintNFT">Mint & Transfer NFT</button>
+    </section>
 
-  <section>
-    <h2>Open Loan</h2>
-    <div class="input-group">
-      <label for="lender">👤 Lender Address</label>
-      <input type="text" id="lender" placeholder="Enter lender address" />
-    </div>
-    <div class="input-group">
-      <label for="collateral">💰 Collateral Amount (ADA)</label>
-      <input type="number" id="collateral" placeholder="Enter collateral in ADA" />
-    </div>
-    <div class="input-group">
-      <label for="principal">💵 Principal Amount (ADA)</label>
-      <input type="number" id="principal" placeholder="Enter principal in ADA" />
-    </div>
-    <div class="input-group">
-      <label for="interest">📈 Interest Amount (ADA)</label>
-      <input type="number" id="interest" placeholder="Enter interest in ADA" />
-    </div>
-    <button id="openLoan">Open Loan</button>
-  </section>
+    <section>
+      <h2>Open Loan</h2>
+      <div class="input-group">
+        <label for="lender">👤 Lender Address</label>
+        <input type="text" id="lender" placeholder="Enter lender address" />
+      </div>
+      <div class="input-group">
+        <label for="collateral">💰 Collateral Amount (ADA)</label>
+        <input type="number" id="collateral" placeholder="Enter collateral in ADA" />
+      </div>
+      <div class="input-group">
+        <label for="principal">💵 Principal Amount (ADA)</label>
+        <input type="number" id="principal" placeholder="Enter principal in ADA" />
+      </div>
+      <div class="input-group">
+        <label for="interest">📈 Interest Amount (ADA)</label>
+        <input type="number" id="interest" placeholder="Enter interest in ADA" />
+      </div>
+      <button id="openLoan">Open Loan</button>
+    </section>
 
-  <section>
-    <h2>Repay Loan</h2>
-    <button id="repayLoan">Repay Loan</button>
-  </section>
+    <section>
+      <h2>Repay Loan</h2>
+      <p style="color: #4b5563; margin-bottom: 15px;">Complete your loan repayment and reclaim your collateral.</p>
+      <button id="repayLoan">Repay Loan</button>
+    </section>
+  </div>
 
   <div id="log"></div>
 </div>
