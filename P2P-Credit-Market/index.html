@@ -1,389 +1,379 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>P2P Credit Market</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADA Lending + Document NFTs</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+  body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    pointer-events: none;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 60px;
+  }
+
+  .logo {
+    font-size: 32px;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+
+  .hero {
+    margin-bottom: 60px;
+    animation: fadeInDown 0.6s ease;
+  }
+
+  .hero h1 {
+    font-size: 3.5em;
+    line-height: 1.1;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+  }
+
+  .hero p {
+    font-size: 1.2em;
+    opacity: 0.9;
+    color: rgba(255, 255, 255, 0.95);
+    max-width: 700px;
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
     }
-
-    body {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      color: #fff;
-      min-height: 100vh;
-      padding: 30px 20px;
-      position: relative;
-      overflow-x: hidden;
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
+  }
 
-    /* Animated background particles */
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image: 
-        radial-gradient(circle at 20% 50%, rgba(255, 107, 107, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(255, 195, 113, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 40% 20%, rgba(72, 219, 251, 0.08) 0%, transparent 50%);
-      pointer-events: none;
-      animation: float 20s ease-in-out infinite;
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
     }
-
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0); }
-      33% { transform: translate(30px, -30px); }
-      66% { transform: translate(-20px, 20px); }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
+  }
 
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+
+  section { 
+    padding: 30px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease;
+    animation-fill-mode: both;
+  }
+
+  section:nth-child(1) { animation-delay: 0.1s; }
+  section:nth-child(2) { animation-delay: 0.2s; }
+  section:nth-child(3) { animation-delay: 0.3s; }
+  section:nth-child(4) { animation-delay: 0.4s; }
+
+  section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  }
+
+  h2 {
+    color: #5b21b6;
+    font-size: 1.4em;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 3px solid #a78bfa;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  h2::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+  }
+
+  label { 
+    font-weight: 600;
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    color: #4b5563;
+    font-size: 0.95em;
+  }
+
+  input[type="text"],
+  input[type="number"] { 
+    padding: 14px 18px;
+    margin: 8px 0;
+    width: 100%;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    background: #f9fafb;
+    color: #1f2937;
+  }
+
+  input[type="text"]:focus,
+  input[type="number"]:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+    transform: translateY(-2px);
+  }
+
+  input[type="file"] {
+    padding: 14px;
+    margin: 8px 0;
+    width: 100%;
+    border: 2px dashed #8b5cf6;
+    border-radius: 10px;
+    background: #f5f3ff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #5b21b6;
+  }
+
+  input[type="file"]::file-selector-button {
+    padding: 8px 16px;
+    border: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-right: 12px;
+    transition: all 0.3s ease;
+  }
+
+  input[type="file"]::file-selector-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  input[type="file"]:hover {
+    border-color: #7c3aed;
+    background: #ede9fe;
+  }
+
+  button { 
+    padding: 14px 28px;
+    margin: 15px 0 5px 0;
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    font-size: 1.05em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  button:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  button:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+
+  #log { 
+    margin-top: 30px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 12px;
+    min-height: 60px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border-left: 4px solid #10b981;
+    color: #1f2937;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95em;
+    line-height: 1.6;
+    animation: fadeInUp 0.6s ease 0.5s both;
+  }
+
+  #log:empty::before {
+    content: 'System logs will appear here...';
+    color: #9ca3af;
+    font-style: italic;
+  }
+
+  .input-group {
+    margin-bottom: 12px;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+  }
+
+  #connect {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+    background-size: 200% 100%;
+    animation: shimmer 3s infinite;
+    width: auto;
+    padding: 14px 32px;
+  }
+
+  button.success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  @media (max-width: 1024px) {
+    .cards {
+      grid-template-columns: 1fr;
     }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateX(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
+    
+    .hero h1 {
+      font-size: 2.5em;
     }
-
-    @keyframes glow {
-      0%, 100% { 
-        box-shadow: 0 0 20px rgba(255, 107, 107, 0.3),
-                    0 0 40px rgba(255, 195, 113, 0.2),
-                    0 8px 32px rgba(0, 0, 0, 0.3);
-      }
-      50% { 
-        box-shadow: 0 0 30px rgba(255, 107, 107, 0.5),
-                    0 0 60px rgba(255, 195, 113, 0.3),
-                    0 12px 40px rgba(0, 0, 0, 0.4);
-      }
+    
+    .hero p {
+      font-size: 1.1em;
     }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 40px;
-      font-size: 3em;
-      background: linear-gradient(135deg, #ff6b6b 0%, #ffc371 50%, #48dbfb 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
-      animation: fadeInUp 0.8s ease;
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-
-    h2 {
-      color: #ffc371;
-      font-size: 1.5em;
-      margin-bottom: 20px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    h2::before {
-      content: '';
-      width: 4px;
-      height: 24px;
-      background: linear-gradient(180deg, #ff6b6b, #ffc371);
-      border-radius: 2px;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scaleY(1); }
-      50% { opacity: 0.6; transform: scaleY(0.8); }
-    }
-
-    .container {
-      max-width: 950px;
-      margin: auto;
-      padding: 0 20px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .card {
-      background: rgba(30, 42, 56, 0.85);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 30px;
-      margin-bottom: 25px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
-                  0 0 0 1px rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      animation: fadeInUp 0.6s ease;
-      animation-fill-mode: both;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 195, 113, 0.1), transparent);
-      transition: left 0.5s;
-    }
-
-    .card:hover::before {
-      left: 100%;
-    }
-
-    .card:nth-child(1) { animation-delay: 0.1s; }
-    .card:nth-child(2) { animation-delay: 0.2s; }
-    .card:nth-child(3) { animation-delay: 0.3s; }
-    .card:nth-child(4) { animation-delay: 0.4s; }
-
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4),
-                  0 0 0 1px rgba(255, 195, 113, 0.2),
-                  0 0 30px rgba(255, 107, 107, 0.15);
-    }
-
-    input, button {
-      width: 100%;
-      padding: 15px 20px;
-      margin-top: 12px;
-      border-radius: 12px;
-      border: none;
-      font-size: 16px;
-      font-family: inherit;
-      transition: all 0.3s ease;
-    }
-
-    input {
-      background: rgba(43, 60, 79, 0.6);
-      color: white;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-    }
-
-    input::placeholder {
-      color: rgba(255, 255, 255, 0.4);
-    }
-
-    input:focus {
-      outline: none;
-      background: rgba(43, 60, 79, 0.8);
-      border-color: #ffc371;
-      box-shadow: 0 0 0 4px rgba(255, 195, 113, 0.15),
-                  0 4px 12px rgba(255, 195, 113, 0.2);
-      transform: translateY(-2px);
-    }
-
-    button {
-      background: linear-gradient(135deg, #ff6b6b 0%, #ffc371 100%);
-      color: #1a1a2e;
-      cursor: pointer;
-      font-weight: 700;
-      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-      position: relative;
-      overflow: hidden;
-      letter-spacing: 0.5px;
-    }
-
-    button::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-      transition: left 0.5s;
-    }
-
-    button:hover::before {
-      left: 100%;
-    }
-
-    button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 25px rgba(255, 107, 107, 0.5);
-    }
-
-    button:active {
-      transform: translateY(-1px);
-    }
-
-    #connect {
-      background: linear-gradient(135deg, #48dbfb 0%, #0abde3 100%);
-      font-size: 18px;
-      padding: 18px;
-      animation: glow 3s ease-in-out infinite;
-    }
-
-    #connect:hover {
-      box-shadow: 0 6px 30px rgba(72, 219, 251, 0.6);
-    }
-
-    #refresh {
-      background: linear-gradient(135deg, #48dbfb 0%, #7e62ff 100%);
-    }
-
-    #refresh:hover {
-      box-shadow: 0 6px 25px rgba(72, 219, 251, 0.5);
-    }
-
-    #repay {
-      background: linear-gradient(135deg, #5f27cd 0%, #341f97 100%);
-      color: #fff;
-    }
-
-    #repay:hover {
-      box-shadow: 0 6px 25px rgba(95, 39, 205, 0.5);
-    }
-
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
-    .log {
-      background: rgba(0, 0, 0, 0.5);
-      padding: 18px;
-      border-radius: 12px;
-      margin-top: 15px;
-      font-family: 'Courier New', monospace;
-      color: #48dbfb;
-      border: 1px solid rgba(72, 219, 251, 0.2);
-      font-size: 15px;
-      line-height: 1.6;
-      min-height: 50px;
-      animation: slideIn 0.5s ease;
-      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
-    }
-
-    .offer {
-      background: linear-gradient(135deg, rgba(36, 52, 71, 0.8) 0%, rgba(30, 42, 56, 0.8) 100%);
-      padding: 20px;
-      border-radius: 14px;
-      margin-top: 15px;
-      border: 1px solid rgba(255, 195, 113, 0.15);
-      transition: all 0.3s ease;
-      animation: slideIn 0.4s ease;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .offer:hover {
-      transform: translateX(5px);
-      border-color: rgba(255, 195, 113, 0.4);
-      box-shadow: 0 6px 20px rgba(255, 195, 113, 0.15);
-    }
-
-    #offers:empty::before {
-      content: 'No offers available. Click "Refresh Offers" to load.';
-      display: block;
-      text-align: center;
-      padding: 30px;
-      color: rgba(255, 255, 255, 0.4);
-      font-style: italic;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 2em;
-      }
-
-      .card {
-        padding: 20px;
-      }
-
-      .row {
-        grid-template-columns: 1fr;
-      }
-
-      h2 {
-        font-size: 1.3em;
-      }
-    }
-
-    /* Loading animation for buttons */
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    button.loading::after {
-      content: '';
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      top: 50%;
-      left: 50%;
-      margin-left: -8px;
-      margin-top: -8px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-  </style>
+  }
+</style>
 </head>
-
 <body>
-  <h1>💎 DeFi Marketplace</h1>
+<div class="container">
+  <header>
+    <div class="logo">🔐 P2P Lending Protocol</div>
+    <button id="connect">Connect Wallet</button>
+  </header>
 
-  <div class="container">
+  <section class="hero">
+    <h1>Decentralized<br/>Peer-to-Peer Lending</h1>
+    <p>
+      Secure loans with ADA collateral, mint document NFTs for agreements,
+      and execute trustless transactions on the Cardano blockchain.
+    </p>
+  </section>
 
-    <div class="card">
-      <button id="connect">🔗 Connect Lace Wallet</button>
-      <div class="log" id="log">Not connected</div>
-    </div>
-
-    <div class="card">
-      <h2>📊 Borrower: Post Loan Offer</h2>
-      <div class="row">
-        <input id="collateral" placeholder="Collateral ADA" />
-        <input id="principal" placeholder="Principal ADA" />
+  <div class="cards">
+    <section>
+      <h2>Mint & Transfer Document</h2>
+      <div class="input-group">
+        <label for="docUpload">📄 Upload Document</label>
+        <input type="file" id="docUpload" />
       </div>
-      <input id="interest" placeholder="Interest ADA" />
-      <button id="postOffer">Post Offer</button>
-    </div>
+      <div class="input-group">
+        <label for="collateral">🏦 Lender Address</label>
+        <input type="text" id="reciepient" placeholder="Enter lender address" />
+      </div>
+      <button id="mintNFT">Mint & Transfer NFT</button>
+    </section>
 
-    <div class="card">
-      <h2>💰 Lender: Available Offers</h2>
-      <button id="refresh">Refresh Offers</button>
-      <div id="offers"></div>
-    </div>
+    <section>
+      <h2>Open Loan</h2>
+      <div class="input-group">
+        <label for="lender">👤 Lender Address</label>
+        <input type="text" id="lender" placeholder="Enter lender address" />
+      </div>
+      <div class="input-group">
+        <label for="collateral">💰 Collateral Amount (ADA)</label>
+        <input type="number" id="collateral" placeholder="Enter collateral in ADA" />
+      </div>
+      <div class="input-group">
+        <label for="principal">💵 Principal Amount (ADA)</label>
+        <input type="number" id="principal" placeholder="Enter principal in ADA" />
+      </div>
+      <div class="input-group">
+        <label for="interest">📈 Interest Amount (ADA)</label>
+        <input type="number" id="interest" placeholder="Enter interest in ADA" />
+      </div>
+      <button id="openLoan">Open Loan</button>
+    </section>
 
-    <div class="card">
-      <h2>💳 Borrower: Repay Loan</h2>
-      <button id="repay">Repay Loan</button>
-    </div>
-
+    <section>
+      <h2>Repay Loan</h2>
+      <p style="color: #4b5563; margin-bottom: 15px;">Complete your loan repayment and reclaim your collateral.</p>
+      <button id="repayLoan">Repay Loan</button>
+    </section>
   </div>
 
-<script type="module" src="credit.js"></script>
-
+  <div id="log"></div>
+</div>
+<script type="module" src="app.js"></script>
 </body>
 </html>
