@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>DAO Treasury</title>
+
+<style>
+/* ======================================================
+   ROOT THEME
+====================================================== */
+:root {
+  --violet: #7c3aed;
+  --purple: #a855f7;
+  --deep: #2e1065;
+  --bg: #0f0720;
+  --card: rgba(255,255,255,0.08);
+  --glass: rgba(255,255,255,0.12);
+}
+
+/* ======================================================
+   GLOBAL RESET
+====================================================== */
+* {
+  box-sizing: border-box;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, #4c1d95, #0f0720 70%);
+  color: white;
+  overflow-x: hidden;
+}
+
+/* ======================================================
+   ANIMATIONS
+====================================================== */
+@keyframes float {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-10px); }
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 20px rgba(168,85,247,0.4); }
+  100% { box-shadow: 0 0 40px rgba(124,58,237,0.7); }
+}
+
+/* ======================================================
+   LAYOUT
+====================================================== */
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 28px;
+  font-weight: 800;
+
+  /* Fallback color */
+  color: #a855f7;
+
+  /* Gradient text */
+  background-image: linear-gradient(90deg, var(--purple), var(--violet));
+  background-clip: text;
+  -webkit-background-clip: text;
+
+  /* Required for WebKit */
+  -webkit-text-fill-color: transparent;
+}
+
+
+button {
+  border: none;
+  border-radius: 14px;
+  padding: 14px 26px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  background: linear-gradient(135deg, var(--purple), var(--violet));
+  transition: transform .2s, box-shadow .2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(124,58,237,0.6);
+}
+
+/* ======================================================
+   HERO
+====================================================== */
+.hero {
+  margin-top: 80px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 60px;
+}
+
+.hero h1 {
+  font-size: 56px;
+  line-height: 1.1;
+}
+
+.hero p {
+  font-size: 18px;
+  opacity: 0.9;
+  margin-top: 20px;
+}
+
+.hero .cta {
+  margin-top: 30px;
+}
+
+/* ======================================================
+   CARDS
+====================================================== */
+.cards {
+  margin-top: 100px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 40px;
+}
+
+.card {
+  background: var(--card);
+  backdrop-filter: blur(14px);
+  border-radius: 24px;
+  padding: 30px;
+  animation: float 4s ease-in-out infinite alternate;
+}
+
+.card h3 {
+  font-size: 22px;
+  margin-bottom: 16px;
+}
+
+.card label {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.card input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  margin: 6px 0 14px;
+}
+
+/* ======================================================
+   ACTIONS
+====================================================== */
+.actions {
+  margin-top: 80px;
+  text-align: center;
+}
+
+.actions button {
+  margin: 10px;
+  animation: glow 3s ease-in-out infinite alternate;
+}
+
+/* ======================================================
+   FOOTER / LOG
+====================================================== */
+#log {
+  margin-top: 60px;
+  background: rgba(0,0,0,0.4);
+  border-radius: 18px;
+  padding: 20px;
+  min-height: 80px;
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+  <div class="logo">DAO Treasury</div>
+  <button id="connect">Connect Wallet</button>
+</header>
+
+<section class="hero">
+  <div>
+    <h1>Decentralized<br/>Treasury Control</h1>
+    <p>
+      Create proposals, vote with your wallet, and
+      release ADA from the treasury only after quorum.
+    </p>
+    <div class="cta">
+      <!--<button id="propose">Create Proposal</button>-->
+    </div>
+  </div>
+</section>
+
+<section class="cards">
+
+  <div class="card">
+    <h3>📝 Create Proposal</h3>
+    <label>Members (comma separated)</label>
+    <input id="members" placeholder="addr1..., addr1..." />
+    <label>Quorum</label>
+    <input id="quorum" type="number" />
+    <label>Recipient Address</label>
+    <input id="recipient" placeholder="addr1..." />
+    <label>Amount (ADA)</label>
+    <input id="amount" type="number" />
+    <button id="propose">Submit Proposal</button>
+  </div>
+
+  <div class="card">
+    <h3>🗳️ Vote</h3>
+    <p>Approve a proposal using your wallet signature.</p>
+    <button id="vote">Vote YES</button>
+  </div>
+
+  <div class="card">
+    <h3>💸 Execute</h3>
+    <p>Release funds once quorum is reached.</p>
+    <button id="execute">Execute Proposal</button>
+  </div>
+
+</section>
+
+<pre id="log">Waiting for action…</pre>
+
+</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
