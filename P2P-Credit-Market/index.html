@@ -17,7 +17,6 @@
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       color: #fff;
       min-height: 100vh;
-      padding: 30px 20px;
       position: relative;
       overflow-x: hidden;
     }
@@ -79,18 +78,61 @@
       }
     }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 40px;
-      font-size: 3em;
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 60px;
+      animation: fadeInUp 0.6s ease;
+    }
+
+    .logo {
+      font-size: 2.5em;
+      font-weight: 700;
       background: linear-gradient(135deg, #ff6b6b 0%, #ffc371 50%, #48dbfb 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      text-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
-      animation: fadeInUp 0.8s ease;
+      letter-spacing: 1px;
+    }
+
+    .hero {
+      margin-bottom: 60px;
+      animation: fadeInUp 0.6s ease 0.1s both;
+    }
+
+    .hero h1 {
+      font-size: 3.5em;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ffc371 50%, #48dbfb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
       font-weight: 700;
       letter-spacing: 1px;
+    }
+
+    .hero p {
+      font-size: 1.2em;
+      opacity: 0.9;
+      color: rgba(255, 255, 255, 0.85);
+      max-width: 700px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
     }
 
     h2 {
@@ -117,20 +159,11 @@
       50% { opacity: 0.6; transform: scaleY(0.8); }
     }
 
-    .container {
-      max-width: 950px;
-      margin: auto;
-      padding: 0 20px;
-      position: relative;
-      z-index: 1;
-    }
-
     .card {
       background: rgba(30, 42, 56, 0.85);
       backdrop-filter: blur(20px);
       border-radius: 20px;
       padding: 30px;
-      margin-bottom: 25px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
                   0 0 0 1px rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -239,6 +272,8 @@
       font-size: 18px;
       padding: 18px;
       animation: glow 3s ease-in-out infinite;
+      width: auto;
+      padding: 18px 40px;
     }
 
     #connect:hover {
@@ -310,9 +345,17 @@
     }
 
     /* Responsive */
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 2em;
+    @media (max-width: 1024px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 2.5em;
+      }
+
+      .hero p {
+        font-size: 1.1em;
       }
 
       .card {
@@ -351,36 +394,45 @@
 </head>
 
 <body>
-  <h1>💎 DeFi Marketplace</h1>
-
   <div class="container">
-
-    <div class="card">
+    <header>
+      <div class="logo">💎 DeFi Marketplace</div>
       <button id="connect">🔗 Connect Lace Wallet</button>
-      <div class="log" id="log">Not connected</div>
-    </div>
+    </header>
 
-    <div class="card">
-      <h2>📊 Borrower: Post Loan Offer</h2>
-      <div class="row">
-        <input id="collateral" placeholder="Collateral ADA" />
-        <input id="principal" placeholder="Principal ADA" />
+    <section class="hero">
+      <h1>Peer-to-Peer<br/>Credit Market</h1>
+      <p>
+        Post loan offers, browse available deals, and execute trustless lending
+        transactions on the Cardano blockchain.
+      </p>
+    </section>
+
+    <div class="cards">
+      <div class="card">
+        <h2>📊 Borrower: Post Loan Offer</h2>
+        <div class="row">
+          <input id="collateral" placeholder="Collateral ADA" />
+          <input id="principal" placeholder="Principal ADA" />
+        </div>
+        <input id="interest" placeholder="Interest ADA" />
+        <button id="postOffer">Post Offer</button>
       </div>
-      <input id="interest" placeholder="Interest ADA" />
-      <button id="postOffer">Post Offer</button>
+
+      <div class="card">
+        <h2>💰 Lender: Available Offers</h2>
+        <button id="refresh">Refresh Offers</button>
+        <div id="offers"></div>
+      </div>
+
+      <div class="card">
+        <h2>💳 Borrower: Repay Loan</h2>
+        <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 10px;">Complete your loan repayment to unlock collateral.</p>
+        <button id="repay">Repay Loan</button>
+      </div>
     </div>
 
-    <div class="card">
-      <h2>💰 Lender: Available Offers</h2>
-      <button id="refresh">Refresh Offers</button>
-      <div id="offers"></div>
-    </div>
-
-    <div class="card">
-      <h2>💳 Borrower: Repay Loan</h2>
-      <button id="repay">Repay Loan</button>
-    </div>
-
+    <div class="log" id="log">Not connected</div>
   </div>
 
 <script type="module" src="credit.js"></script>
