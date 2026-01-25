@@ -1,122 +1,262 @@
-import { Lucid, Blockfrost, Data, Constr, fromText } from "https://unpkg.com/lucid-cardano@0.10.11/web/mod.js";
+import {
+  Lucid,
+  Blockfrost,
+  Constr,
+  Data,
+} from "https://unpkg.com/lucid-cardano@0.10.11/web/mod.js";
 
-// -------------------------
-// Lucid Setup
-// -------------------------
-const BLOCKFROST_PROJECT_ID = "preprodYjRkHfcazNkL0xxG9C2RdUbUoTrG7wip";
+/* =====================================================
+   ESCROW DATUM SCHEMA
+===================================================== */
 
-const lucid = await Lucid.new(
-  new Blockfrost(
-    "https://cardano-preprod.blockfrost.io/api/v0",
-    BLOCKFROST_PROJECT_ID
-  ),
-  "Preprod"
-);
-
-// -------------------------
-// Escrow Script Address
-// -------------------------
-const ESCROW_ADDRESS = "addr_test1wrlvp5amfskax5wurj59gqhuajudk940976uckxpxd5zrvqpdl3zp";
-
-// -------------------------
-// UI Elements
-// -------------------------
-const connectBtn = document.getElementById("connect-btn");
-const lockBtn = document.getElementById("lock-btn");
-const amountInput = document.getElementById("lock-amount");
-const statusDiv = document.getElementById("status");
-
-// -------------------------
-// Wallet Connection
-// -------------------------
-let connectedAddress = null;
-
-async function connectWallet() {
-  if (!window.cardano || !window.cardano.lace) {
-    alert("⚠️ Lace wallet not found!");
-    return;
-  }
-
-  try {
-    const api = await window.cardano.lace.enable();
-    lucid.selectWallet(api);
-    connectedAddress = await lucid.wallet.address();
-    showStatus(`✅ Connected to Lace: ${connectedAddress}`);
-    lockBtn.disabled = false;
-  } catch (err) {
-    showStatus(`❌ Wallet connection failed: ${err}`, true);
-  }
-}
-
-connectBtn.addEventListener("click", connectWallet);
-
-// -------------------------
-// Lock ADA to Escrow
-// -------------------------
-lockBtn.addEventListener("click", async () => {
-  if (!connectedAddress) {
-    showStatus("⚠️ Connect your wallet first.", true);
-    return;
-  }
-
-  const amount = parseFloat(amountInput.value);
-  if (!amount || amount <= 0) {
-    showStatus("⚠️ Enter a valid ADA amount.", true);
-    return;
-  }
-
-  try {
-    showStatus(`🔄 Preparing transaction to lock ${amount} ADA...`);
-
-    // Get buyer payment credential
-    const { paymentCredential } = lucid.utils.getAddressDetails(connectedAddress);
-    const buyerPkh = paymentCredential.hash;
-
-    // Example seller and deadline
-    const sellerPkh = "00000000000000000000000000000000000000000000000000000000";
-    const deadline = BigInt(Date.now() + 3600_000); // 1 hour from now
-
-    // Construct EscrowDatum using Constr(0, [...])
-    const datum = new Constr(0, [
-      Data.to(buyerPkh),
-      Data.to(sellerPkh),
-      Data.to(BigInt(Math.floor(amount * 1_000_000))),
-      Data.to(deadline),
-      Data.to(""),
-      Data.to("")
-    ]);
-
-    // Construct redeemer as Constr(0, []) for PaySeller
-    const redeemer = new Constr(0, []); // 0 = PaySeller variant
-    const userUtxos = await lucid.wallet.getUtxos();
-
-    // Build transaction
-    const tx = await lucid
-      .newTx()
-      .collectFrom(userUtxos, Data.void()) 
-      .payToContract(
-        ESCROW_ADDRESS,
-        { inline: Data.to(datum) },
-        { lovelace: BigInt(Math.floor(amount * 1_000_000)) }
-      )
-      .complete({ changeAddress: connectedAddress });
-
-    const signedTx = await tx.sign().complete();
-    const txHash = await signedTx.submit();
-
-    showStatus(`✅ Locked ${amount} ADA! TxHash: ${txHash}`);
-  } catch (err) {
-    console.error(err);
-    showStatus(`❌ Lock failed: ${err.message || err}`, true);
-  }
+const EscrowDatum = Data.Object({
+  buyer: Data.Bytes(),
+  seller: Data.Bytes(),
+  amount: Data.Integer(),
+  delivered: Data.Boolean(),
 });
 
-// -------------------------
-// Helper
-// -------------------------
-function showStatus(msg, isError = false) {
-  statusDiv.textContent = msg;
-  statusDiv.style.color = isError ? "red" : "green";
+/* =====================================================
+   CONFIG
+===================================================== */
+
+const BLOCKFROST_URL = "https://cardano-preprod.blockfrost.io/api/v0";
+const BLOCKFROST_KEY = "preprodYjRkHfcazNkL0xxG9C2RdUbUoTrG7wip";
+const NETWORK = "Preprod";
+
+/* =====================================================
+   PLUTUS SCRIPT (REPLACE WITH YOUR CBOR)
+===================================================== */
+
+const SCRIPT_CBOR = "590c8e0100003232323232332232323232323232323322323233223232323232323232323322323232323232322323232322322323253353232325333350021533553353300f3500122002350032222003102f13357389211173656c6c6572206e6f74207369676e65640002e153355335350032222001102f13357389211664656c6976657279206e6f7420636f6e6669726d65640002e15335333573466e20ccc038ccd54c0504800540494084cc040d400c888800cd400488008044044d400c88880080b80bc40bc4cd5ce2490f73656c6c6572206e6f7420706169640002e102e102e1533553353300f3500122002350032222004102f13357389201106275796572206e6f74207369676e65640002e153355335350032222001102e102f102f133573892111616c72656164792064656c6976657265640002e102e153353300f3500122002350032222004102f13357389201106275796572206e6f74207369676e65640002e1533553353300f3500122002350032222004102f13357389201106275796572206e6f74207369676e65640002e1533553355335350032222001102e102f102f13357389211a64656c697665727920616c726561647920636f6e6669726d65640002e15335333573466e20ccc038ccd54c0504800540494084cc040d400c8888010d400488008044044d400c88880080b80bc40bc4cd5ce249126275796572206e6f7420726566756e6465640002e102e102e3333573466e1cd55cea80224000466442466002006004646464646464646464646464646666ae68cdc39aab9d500c480008cccccccccccc88888888888848cccccccccccc00403403002c02802402001c01801401000c008cd40a40a8d5d0a80619a8148151aba1500b33502902b35742a014666aa05aeb940b0d5d0a804999aa816bae502c35742a01066a05206e6ae85401cccd540b40e1d69aba150063232323333573466e1cd55cea801240004664424660020060046464646666ae68cdc39aab9d5002480008cc8848cc00400c008cd4109d69aba150023043357426ae8940088c98c811ccd5ce02382402289aab9e5001137540026ae854008c8c8c8cccd5cd19b8735573aa004900011991091980080180119a8213ad35742a00460866ae84d5d1280111931902399ab9c047048045135573ca00226ea8004d5d09aba2500223263204333573808608808226aae7940044dd50009aba1500533502975c6ae854010ccd540b40d08004d5d0a801999aa816bae200135742a004606c6ae84d5d1280111931901f99ab9c03f04003d135744a00226ae8940044d5d1280089aba25001135744a00226ae8940044d5d1280089aba25001135744a00226ae8940044d55cf280089baa00135742a008604c6ae84d5d1280211931901899ab9c03103202f3333573466e1d4015200621222200123333573466e1d4019200421222200423333573466e1d401d200221222200323333573466e1d4021200021222200223263203333573806606806206005e05c6666ae68cdc39aab9d5009480008cccc888848cccc00401401000c008dd71aba15009375c6ae854020dd69aba15007302b357426ae89401c8c98c80bccd5ce01781801688178b09aab9e50011375400226aae74dd500089aba25001135744a00226aae7940044dd500091119191800802990009aa8151119a800a4000446a00444a66a666ae68cdc78010048158150980380089803001990009aa8149119a800a4000446a00444a66a666ae68cdc7801003815014880089803001911a801111111111111299a999aa980b8900099a80c11299a801108018800a8119299a999ab9a3371e01c00205e05c26a04a0022a0480084205e205a446a002444444444444666aa602424002446a00444446a0084466a0044a66a666ae68cdc780b80081b01a899a81380300408041004280f8052450012233553007120012350012233550150023355300a12001235001223355018002333500123302a4800000488cc0ac0080048cc0a800520000013355300712001235001223355015002333500123355300b1200123500122335501900235500d0010012233355500800f00200123355300b1200123500122335501900235500c00100133355500300a002001111222333553004120015010335530071200123500122335501500235500900133355300412001223500222533533355300c120013233500e223335003220020020013500122001123300122533500210261001023235001223300a002005006100313350140040035011001335530071200123500122323355016003300100532001355027225335001135500a003221350022253353300c002008112223300200a0041300600300232001355020221122253350011002221330050023335530071200100500400111212223003004112122230010043200135501d22112253350011500e22133500f300400233553006120010040013200135501c2211222533500113500322001221333500522002300400233355300712001005004001122123300100300222333573466e3c00800405c05848c88c008dd6000990009aa80d111999aab9f0012500a233500930043574200460066ae880080688c8c8cccd5cd19b8735573aa004900011991091980080180118079aba150023005357426ae8940088c98c8064cd5ce00c80d00b89aab9e5001137540024646464646666ae68cdc39aab9d5004480008cccc888848cccc00401401000c008c8c8c8cccd5cd19b8735573aa0049000119910919800801801180c1aba15002335010017357426ae8940088c98c8078cd5ce00f00f80e09aab9e5001137540026ae854010ccd54021d728039aba150033232323333573466e1d4005200423212223002004357426aae79400c8cccd5cd19b875002480088c84888c004010dd71aba135573ca00846666ae68cdc3a801a400042444006464c6404066ae700800840780740704d55cea80089baa00135742a00466a018eb8d5d09aba2500223263201a33573803403603026ae8940044d5d1280089aab9e500113754002266aa002eb9d6889119118011bab00132001355017223233335573e0044a010466a00e66aa012600c6aae754008c014d55cf280118021aba20030181357420022244004244244660020080062244246600200600424464646666ae68cdc3a800a400046a00e600a6ae84d55cf280191999ab9a3370ea00490011280391931900a19ab9c014015012011135573aa00226ea800448488c00800c44880048c8c8cccd5cd19b875001480188c848888c010014c01cd5d09aab9e500323333573466e1d400920042321222230020053009357426aae7940108cccd5cd19b875003480088c848888c004014c01cd5d09aab9e500523333573466e1d40112000232122223003005375c6ae84d55cf280311931900919ab9c01201301000f00e00d135573aa00226ea80048c8c8cccd5cd19b8735573aa004900011991091980080180118029aba15002375a6ae84d5d1280111931900719ab9c00e00f00c135573ca00226ea80048c8cccd5cd19b8735573aa002900011bae357426aae7940088c98c8030cd5ce00600680509baa001232323232323333573466e1d4005200c21222222200323333573466e1d4009200a21222222200423333573466e1d400d2008233221222222233001009008375c6ae854014dd69aba135744a00a46666ae68cdc3a8022400c4664424444444660040120106eb8d5d0a8039bae357426ae89401c8cccd5cd19b875005480108cc8848888888cc018024020c030d5d0a8049bae357426ae8940248cccd5cd19b875006480088c848888888c01c020c034d5d09aab9e500b23333573466e1d401d2000232122222223005008300e357426aae7940308c98c8054cd5ce00a80b00980900880800780700689aab9d5004135573ca00626aae7940084d55cf280089baa0012323232323333573466e1d400520022333222122333001005004003375a6ae854010dd69aba15003375a6ae84d5d1280191999ab9a3370ea0049000119091180100198041aba135573ca00c464c6401c66ae7003803c03002c4d55cea80189aba25001135573ca00226ea80048c8c8cccd5cd19b875001480088c8488c00400cdd71aba135573ca00646666ae68cdc3a8012400046424460040066eb8d5d09aab9e500423263200b33573801601801201026aae7540044dd500089119191999ab9a3370ea00290021091100091999ab9a3370ea00490011190911180180218031aba135573ca00846666ae68cdc3a801a400042444004464c6401866ae700300340280240204d55cea80089baa0012323333573466e1d40052002200523333573466e1d40092000200523263200833573801001200c00a26aae74dd5000891001091000a4c92010350543100120012233700004002224646002002446600660040040021";
+
+const script = {
+  type: "PlutusV2",
+  script: SCRIPT_CBOR,
+};
+
+/* =====================================================
+   GLOBAL STATE
+===================================================== */
+
+let lucid;
+let walletAddress;
+let scriptAddress;
+
+/* =====================================================
+   INIT
+===================================================== */
+
+async function init() {
+  lucid = await Lucid.new(
+    new Blockfrost(BLOCKFROST_URL, BLOCKFROST_KEY),
+    NETWORK
+  );
+
+  const api = await window.cardano.lace.enable();
+  lucid.selectWallet(api);
+
+  walletAddress = await lucid.wallet.address();
+  scriptAddress = lucid.utils.validatorToAddress(script);
+
+  log("Wallet connected");
+  log("Script: " + scriptAddress);
 }
 
+/* =====================================================
+   DATUM HELPERS
+===================================================== */
 
+function mkEscrowDatum(buyer, seller, amount, delivered) {
+  return Data.to(
+    {
+      buyer,
+      seller,
+      amount,
+      delivered,
+    },
+    EscrowDatum
+  );
+}
+
+/* =====================================================
+   REDEEMERS
+===================================================== */
+
+const lockRedeemer     = Data.to(new Constr(0, []));
+const confirmRedeemer  = Data.to(new Constr(1, []));
+const claimRedeemer    = Data.to(new Constr(2, []));
+const refundRedeemer   = Data.to(new Constr(3, []));
+
+/* =====================================================
+   LOCK FUNDS (BUYER)
+===================================================== */
+
+async function lockFunds() {
+  const amountAda =
+    BigInt(document.getElementById("amount").value) * 1_000_000n;
+
+  const sellerAddr = "addr_test1qqe5zn0qmu9hga5xlqp4ae4cxq4g0vmtyac0g2zv0mh5kfhsn2ld9h4unte6gjsml94j9rsk8kktpvf0dqznl629esdsk76wfv";
+  const sellerPkh =
+    lucid.utils.getAddressDetails(sellerAddr).paymentCredential.hash;
+
+  const buyerPkh =
+    lucid.utils.getAddressDetails(walletAddress)
+      .paymentCredential.hash;
+
+  const datum = mkEscrowDatum(
+    buyerPkh,
+    sellerPkh,
+    amountAda,
+    false
+  );
+
+  const tx = await lucid
+    .newTx()
+    .payToContract(
+      scriptAddress,
+      { inline: datum },
+      { lovelace: amountAda }
+    )
+    .addSignerKey(buyerPkh)
+    .complete();
+
+  const signed = await tx.sign().complete();
+  const txHash = await signed.submit();
+
+  log("Funds locked: " + txHash);
+}
+
+/* =====================================================
+   CONFIRM DELIVERY (BUYER)
+===================================================== */
+
+async function confirmDelivery() {
+  const buyerPkh =
+    lucid.utils.getAddressDetails(walletAddress)
+      .paymentCredential.hash;
+
+  const utxos = await lucid.utxosAt(scriptAddress);
+  console.log ("utxos", utxos)
+
+  const escrowUtxo = utxos.find((u) => {
+    const d = Data.from(u.datum, EscrowDatum);
+    return d.buyer === buyerPkh && !d.delivered;
+  });
+  console.log ("escrowUtxo", escrowUtxo)
+
+  if (!escrowUtxo) return log("No active escrow found");
+
+  const d = Data.from(escrowUtxo.datum, EscrowDatum);
+
+  const newDatum = mkEscrowDatum(
+    d.buyer,
+    d.seller,
+    d.amount,
+    true
+  );
+
+  const tx = await lucid
+    .newTx()
+    .collectFrom([escrowUtxo], confirmRedeemer)
+    .attachSpendingValidator(script)
+    .payToContract(
+      scriptAddress,
+      { inline: newDatum },
+      { lovelace: d.amount }
+    )
+    .addSignerKey(buyerPkh)
+    .complete();
+
+  const signed = await tx.sign().complete();
+  const txHash = await signed.submit();
+
+  log("Delivery confirmed: " + txHash);
+}
+
+/* =====================================================
+   CLAIM FUNDS (SELLER)
+===================================================== */
+
+async function claimFunds() {
+  const sellerPkh =
+    lucid.utils.getAddressDetails(walletAddress)
+      .paymentCredential.hash;
+
+  const utxos = await lucid.utxosAt(scriptAddress);
+
+  const escrowUtxo = utxos.find((u) => {
+    const d = Data.from(u.datum, EscrowDatum);
+    return d.seller === sellerPkh && d.delivered;
+  });
+
+  if (!escrowUtxo) return log("No claimable escrow");
+
+  const d = Data.from(escrowUtxo.datum, EscrowDatum);
+
+//   const sellerAddr = lucid.utils.credentialToAddress({
+//     type: "Key",
+//     hash: sellerPkh,
+//   });
+
+  const tx = await lucid
+    .newTx()
+    .collectFrom([escrowUtxo], claimRedeemer)
+    .attachSpendingValidator(script)
+    .payToAddress(walletAddress, { lovelace: d.amount })
+    .addSignerKey(sellerPkh)
+    .complete();
+
+  const signed = await tx.sign().complete();
+  const txHash = await signed.submit();
+
+  log("Funds claimed: " + txHash);
+}
+
+/* =====================================================
+   REFUND BUYER
+===================================================== */
+
+async function refundBuyer() {
+  const buyerPkh =
+    lucid.utils.getAddressDetails(walletAddress)
+      .paymentCredential.hash;
+
+  const utxos = await lucid.utxosAt(scriptAddress);
+
+  const escrowUtxo = utxos.find((u) => {
+    const d = Data.from(u.datum, EscrowDatum);
+    return d.buyer === buyerPkh && !d.delivered;
+  });
+
+  if (!escrowUtxo) return log("No refundable escrow");
+
+  const d = Data.from(escrowUtxo.datum, EscrowDatum);
+
+  const tx = await lucid
+    .newTx()
+    .collectFrom([escrowUtxo], refundRedeemer)
+    .attachSpendingValidator(script)
+    .payToAddress(walletAddress, { lovelace: d.amount })
+    .addSignerKey(buyerPkh)
+    .complete();
+
+  const signed = await tx.sign().complete();
+  const txHash = await signed.submit();
+
+  log("Refund successful: " + txHash);
+}
+
+/* =====================================================
+   UI BINDINGS
+===================================================== */
+
+function log(msg) {
+  document.getElementById("log").innerText = msg;
+}
+
+document.getElementById("init").onclick = init;
+document.getElementById("lockFunds").onclick = lockFunds;
+document.getElementById("confirmDelivery").onclick = confirmDelivery;
+document.getElementById("claimFunds").onclick = claimFunds;
+document.getElementById("refundBuyer").onclick = refundBuyer;
