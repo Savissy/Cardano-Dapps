@@ -1,42 +1,627 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Cardano Escrow DApp</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Escrow dApp</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+      color: #fff;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5em;
+      margin-bottom: 40px;
+      background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: slideDown 0.6s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #init {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto 40px;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+      }
+      50% {
+        box-shadow: 0 4px 25px rgba(255, 107, 53, 0.5);
+      }
+    }
+
+    #init:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+    }
+
+    #init:active {
+      transform: translateY(0);
+    }
+
+    .cart-summary {
+      background: rgba(45, 45, 45, 0.9);
+      border: 2px solid rgba(255, 107, 53, 0.4);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      backdrop-filter: blur(10px);
+      animation: cardSlide 0.6s ease-out;
+    }
+
+    @keyframes cardSlide {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .cart-summary h2 {
+      color: #ff8c42;
+      margin-bottom: 20px;
+      font-size: 1.8em;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cart-items {
+      margin-bottom: 20px;
+    }
+
+    .cart-item {
+      background: rgba(26, 26, 26, 0.5);
+      border: 1px solid rgba(255, 107, 53, 0.2);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .cart-item:hover {
+      border-color: rgba(255, 107, 53, 0.4);
+      transform: translateX(5px);
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-name {
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 5px;
+    }
+
+    .item-details {
+      font-size: 0.9em;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .item-price {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #ff8c42;
+    }
+
+    .cart-totals {
+      background: rgba(26, 26, 26, 0.6);
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      font-size: 1.1em;
+    }
+
+    .total-row.grand-total {
+      border-top: 2px solid rgba(255, 107, 53, 0.5);
+      margin-top: 10px;
+      padding-top: 15px;
+      font-size: 1.4em;
+      font-weight: 700;
+      color: #ff8c42;
+    }
+
+    .volatility-notice {
+      background: linear-gradient(135deg, rgba(255, 107, 53, 0.15) 0%, rgba(255, 140, 66, 0.15) 100%);
+      border: 2px solid rgba(255, 107, 53, 0.4);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      animation: slideIn 0.6s ease-out 0.3s backwards;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .volatility-notice-icon {
+      font-size: 1.5em;
+      color: #ff8c42;
+      min-width: 30px;
+    }
+
+    .volatility-notice-content {
+      flex: 1;
+    }
+
+    .volatility-notice-title {
+      font-weight: 600;
+      color: #ff8c42;
+      margin-bottom: 8px;
+      font-size: 1.1em;
+    }
+
+    .volatility-notice-text {
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.6;
+      font-size: 0.95em;
+    }
+
+    .ada-amount {
+      display: inline-block;
+      background: rgba(255, 107, 53, 0.2);
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      color: #ff8c42;
+      margin: 5px 0;
+    }
+
+    .card {
+      background: rgba(45, 45, 45, 0.8);
+      border: 2px solid rgba(255, 107, 53, 0.3);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      animation: cardSlide 0.6s ease-out backwards;
+    }
+
+    .card:nth-child(4) {
+      animation-delay: 0.1s;
+    }
+
+    .card:nth-child(5) {
+      animation-delay: 0.2s;
+    }
+
+    .card:nth-child(6) {
+      animation-delay: 0.3s;
+    }
+
+    .card:hover {
+      border-color: rgba(255, 107, 53, 0.6);
+      box-shadow: 0 8px 30px rgba(255, 107, 53, 0.2);
+      transform: translateY(-4px);
+    }
+
+    h2 {
+      color: #ff8c42;
+      margin-bottom: 20px;
+      font-size: 1.5em;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      background: rgba(26, 26, 26, 0.6);
+      border: 2px solid rgba(255, 107, 53, 0.3);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1em;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    input:focus {
+      border-color: #ff8c42;
+      box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
+    }
+
+    button:not(#init) {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1em;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-right: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2);
+    }
+
+    button:not(#init):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255, 107, 53, 0.3);
+    }
+
+    button:not(#init):active {
+      transform: translateY(0);
+    }
+
+    #lockFunds {
+      width: 100%;
+      margin-right: 0;
+      padding: 14px;
+      font-size: 1.05em;
+    }
+
+    #log {
+      background: rgba(26, 26, 26, 0.8);
+      border: 2px solid rgba(255, 107, 53, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      color: #ff8c42;
+      font-size: 0.9em;
+      line-height: 1.6;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: 'Courier New', monospace;
+    }
+
+    #log::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #log::-webkit-scrollbar-track {
+      background: rgba(26, 26, 26, 0.4);
+      border-radius: 10px;
+    }
+
+    #log::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+      border-radius: 10px;
+    }
+
+    .empty-cart {
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1.1em;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2em;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      button:not(#init) {
+        width: 100%;
+        margin-right: 0;
+      }
+
+      .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .total-row {
+        font-size: 1em;
+      }
+
+      .total-row.grand-total {
+        font-size: 1.2em;
+      }
+    }
+  </style>
 </head>
 <body>
 
-  <header>
-    <div class="container">
-      <h1>🔐 Cardano Escrow DApp</h1>
-      <button id="connect-btn" class="btn primary">Connect Wallet</button>
-    </div>
-  </header>
+<div class="container">
+  <h1>Coxygen Payment Gateway</h1>
 
-  <main class="container">
-    <h3>🧱 Escrow Interaction</h3>
+  <button id="init">Connect Wallet</button>
 
-    <div class="card">
-      <p id="escrow-address" class="hidden">
-        addr_test1wrlvp5amfskax5wurj59gqhuajudk940976uckxpxd5zrvqpdl3zp
-      </p>
+  <!-- Back to Store Button -->
+  <div style="text-align: center; margin-bottom: 20px;">
+    <a href="product.html" style="display: inline-block; padding: 10px 24px; background: rgba(255, 107, 53, 0.2); color: #ff8c42; border: 2px solid rgba(255, 107, 53, 0.5); border-radius: 10px; text-decoration: none; font-weight: 500; transition: all 0.3s ease;">
+      ← Back to Store
+    </a>
+  </div>
 
-      <div class="form-row">
-        <label for="lock-amount" class="label-inline">Amount (ADA)</label>
-        <input id="lock-amount" type="number" min="0.1" step="0.1" placeholder="5.0" class="form-control amount-input" />
-      </div>
-
-      <div class="row">
-        <button id="lock-btn" class="btn secondary" disabled>Lock to Escrow</button>
-        <button id="redeem-btn" class="btn primary" disabled>Redeem / Refund</button>
-      </div>
+  <!-- Cart Summary Section -->
+  <div class="cart-summary">
+    <h2>
+      <span>🛒</span>
+      Cart Summary
+    </h2>
+    
+    <div id="cartItemsContainer" class="cart-items">
+      <!-- Cart items will be populated by JavaScript -->
+      <div class="empty-cart">Your cart is empty</div>
     </div>
 
-    <div id="status" class="status">Status: idle</div>
-  </main>
+    <div class="cart-totals">
+      <div class="total-row">
+        <span>Subtotal:</span>
+        <span id="subtotal">$0.00</span>
+      </div>
+      <div class="total-row grand-total">
+        <span>Total (USD):</span>
+        <span id="cartTotal">$0.00</span>
+      </div>
+    </div>
 
-  <script type="module" src="app.js"></script>
+    <div class="volatility-notice">
+      <div class="volatility-notice-icon">⚠️</div>
+      <div class="volatility-notice-content">
+        <div class="volatility-notice-title">Market Volatility Notice</div>
+        <div class="volatility-notice-text">
+          Due to cryptocurrency market volatility, the ADA equivalent of your total may fluctuate. 
+          Please pay the current ADA equivalent. Prices were pegged at 1 ADA to $1
+          <!--<div class="ada-amount" id="adaEquivalent">0 ADA</div>-->
+          <!--<small style="display: block; margin-top: 8px; opacity: 0.8;">Exchange rate is updated in real-time</small>-->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Lock Funds (Buyer)</h2>
+    <input id="amount" placeholder="Amount (ADA)">
+    <button id="lockFunds">Lock Funds</button>
+  </div>
+
+  <div class="card">
+    <h2>Buyer Actions</h2>
+    <button id="confirmDelivery">Confirm Delivery</button>
+    <button id="refundBuyer">Refund Buyer</button>
+  </div>
+
+  <div class="card">
+    <h2>Seller Actions</h2>
+    <button id="claimFunds">Claim Funds</button>
+  </div>
+
+  <pre id="log"></pre>
+</div>
+
+<script type="module">
+  // Cart data structure
+  let cartData = {
+    items: [],
+    total: 0
+  };
+
+  // Mock ADA price (in USD) - in production, fetch from an API
+  let adaPrice = 0.45; // Example: 1 ADA = $0.45
+
+  // Function to load cart from localStorage
+  function loadCart() {
+    console.log('=== Loading Cart ===');
+    console.log('All localStorage keys:', Object.keys(localStorage));
+    
+    // Try loading from coxygenCart first
+    let savedCart = localStorage.getItem('coxygenCart');
+    console.log('coxygenCart raw data:', savedCart);
+    
+    // If coxygenCart exists, use it
+    if (savedCart && savedCart !== 'undefined' && savedCart !== 'null') {
+      try {
+        cartData = JSON.parse(savedCart);
+        console.log('Successfully loaded coxygenCart:', cartData);
+        renderCart();
+        return;
+      } catch (e) {
+        console.error('Error parsing coxygenCart:', e);
+      }
+    }
+    
+    // If coxygenCart doesn't exist, try the regular cart
+    const regularCart = localStorage.getItem('cart');
+    console.log('Regular cart raw data:', regularCart);
+    
+    if (regularCart && regularCart !== 'undefined' && regularCart !== 'null') {
+      try {
+        const parsedCart = JSON.parse(regularCart);
+        console.log('Successfully parsed regular cart:', parsedCart);
+        
+        // Convert regular cart format to coxygenCart format
+        cartData = {
+          items: parsedCart.map(item => ({
+            name: item.title || item.name,
+            quantity: item.quantity,
+            price: item.price,
+            id: item.id
+          })),
+          total: parsedCart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+        };
+        
+        console.log('Converted cart data:', cartData);
+        renderCart();
+        return;
+      } catch (e) {
+        console.error('Error parsing regular cart:', e);
+      }
+    }
+    
+    // If no cart found, show empty state
+    console.log('No cart data found in localStorage');
+    renderCart();
+  }
+
+  // Function to render cart items
+  function renderCart() {
+    console.log('Rendering cart...', cartData);
+    const container = document.getElementById('cartItemsContainer');
+    const subtotalEl = document.getElementById('subtotal');
+    const totalEl = document.getElementById('cartTotal');
+    const adaEquivalentEl = document.getElementById('adaEquivalent');
+    const amountInput = document.getElementById('amount');
+
+    if (!cartData.items || cartData.items.length === 0) {
+      container.innerHTML = `
+        <div class="empty-cart">
+          <p style="margin-bottom: 15px;">Your cart is empty. Please go back to the store and add items.</p>
+          <a href="index.html" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%); color: white; border-radius: 10px; text-decoration: none; font-weight: 500;">
+            Go to Store
+          </a>
+        </div>
+      `;
+      subtotalEl.textContent = '₳0.00';
+      totalEl.textContent = '₳0.00';
+      adaEquivalentEl.textContent = '0 ADA';
+      amountInput.value = '';
+      return;
+    }
+
+    // Render cart items
+    container.innerHTML = cartData.items.map(item => `
+      <div class="cart-item">
+        <div class="item-info">
+          <div class="item-name">${item.name}</div>
+          <div class="item-details">Quantity: ${item.quantity} × ₳${item.price.toFixed(2)}</div>
+        </div>
+        <div class="item-price">₳${(item.quantity * item.price).toFixed(2)}</div>
+      </div>
+    `).join('');
+
+    // Calculate and display totals
+    const total = cartData.items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+    subtotalEl.textContent = `₳${total.toFixed(2)}`;
+    totalEl.textContent = `$${total.toFixed(2)}`;
+    
+    // Calculate ADA equivalent
+    const adaAmount = (total / adaPrice).toFixed(2);
+    adaEquivalentEl.textContent = `${adaAmount} ADA`;
+    amountInput.value = adaAmount;
+    
+    console.log('Cart rendered successfully. Total:', total);
+  }
+
+  // Function to fetch current ADA price (mock - replace with real API)
+  async function updateAdaPrice() {
+    // In production, fetch from CoinGecko, CoinMarketCap, or your preferred API
+    // Example: const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd');
+    // const data = await response.json();
+    // adaPrice = data.cardano.usd;
+    
+    // For now, using mock data
+    adaPrice = 0.45 + (Math.random() * 0.05 - 0.025); // Simulate price fluctuation
+    renderCart();
+  }
+
+  // Initialize cart on page load
+  window.addEventListener('DOMContentLoaded', () => {
+    console.log('Page loaded, initializing cart...');
+    loadCart();
+  });
+
+  // Also try loading immediately
+  loadCart();
+
+  // Update ADA price every 30 seconds
+  setInterval(updateAdaPrice, 30000);
+
+  // Listen for cart updates from the e-commerce page
+  window.addEventListener('storage', (e) => {
+    console.log('Storage event detected:', e.key);
+    if (e.key === 'coxygenCart' || e.key === 'cart') {
+      loadCart();
+    }
+  });
+
+  // Listen for manual refresh triggers
+  window.addEventListener('focus', () => {
+    console.log('Window focused, reloading cart...');
+    loadCart();
+  });
+</script>
+
+<script type="module" src="app.js"></script>
 </body>
 </html>
