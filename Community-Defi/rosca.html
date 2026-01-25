@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROSCA Circle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --green-primary: #16a34a;
+  --green-dark: #15803d;
+  --green-light: #4ade80;
+  --white: #ffffff;
+  --text: #e8eaed;
+  --text-muted: #a0a4b8;
+  --border: rgba(255, 255, 255, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+  color: var(--text);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(22, 163, 74, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(22, 163, 74, 0.05) 0%, transparent 40%);
+  pointer-events: none;
+  animation: pulse 20s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dots" width="60" height="60" patternUnits="userSpaceOnUse"><circle cx="30" cy="30" r="1.5" fill="rgba(22,163,74,0.08)"/></pattern></defs><rect width="60" height="60" fill="url(%23dots)"/></svg>');
+  pointer-events: none;
+}
+
+.container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 40px 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.back-btn {
+  padding: 12px 24px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 30px;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  background: rgba(255,255,255,0.15);
+  transform: translateY(-2px);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.topbar h1 {
+  font-size: 3rem;
+  background: linear-gradient(135deg, var(--green-primary) 0%, var(--green-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+.topbar p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.topbar button {
+  padding: 16px 32px;
+  background: linear-gradient(135deg, var(--green-primary), var(--green-dark));
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 700;
+  color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.topbar button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(22, 163, 74, 0.5);
+}
+
+.card {
+  background: rgba(30, 35, 62, 0.6);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 35px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(22, 163, 74, 0.15);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: rgba(22, 163, 74, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(22, 163, 74, 0.2);
+}
+
+.card h2 {
+  font-size: 1.75rem;
+  margin-bottom: 8px;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 30px;
+}
+
+textarea {
+  grid-column: span 1;
+  min-height: 120px;
+  resize: vertical;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  background: rgba(10, 14, 39, 0.6);
+  color: var(--text);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--green-primary);
+  background: rgba(10, 14, 39, 0.8);
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.15);
+  transform: translateY(-2px);
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+button.primary {
+  margin-top: 28px;
+  padding: 18px;
+  width: 100%;
+  background: linear-gradient(135deg, #e84393 0%, #fd79a8 100%);
+  border: none;
+  border-radius: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  color: white;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(232, 67, 147, 0.3);
+}
+
+button.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(232, 67, 147, 0.5);
+}
+
+.circles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 28px;
+  margin-top: 28px;
+}
+
+.circles-grid:empty::before {
+  content: 'No active circles yet. Create one to get started!';
+  display: block;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  font-style: italic;
+  grid-column: 1 / -1;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+}
+
+.log {
+  margin-top: 40px;
+}
+
+.log h3 {
+  font-size: 1.4rem;
+  margin-bottom: 16px;
+  color: var(--green-primary);
+  font-weight: 700;
+}
+
+.log pre {
+  background: rgba(10, 14, 39, 0.8);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(22, 163, 74, 0.2);
+  color: var(--green-primary);
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  min-height: 60px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 24px 16px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .topbar h1 {
+    font-size: 2rem;
+  }
+
+  .topbar p {
+    font-size: 1rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .circles-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 24px;
+  }
+
+  .card h2 {
+    font-size: 1.4rem;
+  }
+}
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <a href="comb.html" class="back-btn">← Back to Home</a>
+    
+    <header class="topbar">
+      <div>
+        <h1>🌸 ROSCA Circle (Esusu)</h1>
+        <p>Decentralized Rotating Savings on Cardano</p>
+      </div>
+      <button id="connect">Connect Wallet</button>
+    </header>
+
+    <section class="card">
+      <h2>👥 Create Savings Circle</h2>
+      <div class="form-grid" style="margin-top: 40px;">
+        <div>
+          <label>Deposit Amount (ADA)</label>
+          <input id="amount" placeholder="10" />
+        </div>
+        <div>
+          <label>Participants (one address per line)</label>
+          <textarea id="participants" placeholder="addr1...&#10;addr2...&#10;addr3..."></textarea>
+        </div>
+        <div>
+          <label>Payout Order</label>
+          <textarea id="order" placeholder="0&#10;1&#10;2"></textarea>
+        </div>
+      </div>
+      <button class="primary" id="createCircle">Create Circle</button>
+    </section>
+
+    <section class="card">
+      <h2>📦 Your Active ROSCA Circle</h2>
+      <div id="circles" class="circles-grid">
+        <!-- circle cards injected here by JavaScript -->
+      </div>
+    </section>
+
+    <section class="card log">
+      <h3>Status</h3>
+      <pre id="log">Waiting...</pre>
+    </section>
+  </div>
+
+  <script type="module" src="rosca.js"></script>
+</body>
+</html>
