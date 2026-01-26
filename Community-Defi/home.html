@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cardano DeFi - Empowering Communities Through Decentralized Finance</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    /* Navigation */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 60px;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #dc2626 0%, #fff 50%, #16a34a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo svg {
+      width: 40px;
+      height: 40px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 35px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #555;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #dc2626;
+    }
+
+    .nav-cta {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      color: white;
+      padding: 12px 28px;
+      border-radius: 25px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+      padding: 120px 60px;
+      position: relative;
+      overflow: hidden;
+      min-height: 600px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(220, 38, 38, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(22, 163, 74, 0.1) 0%, transparent 50%);
+      animation: pulse 15s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 900px;
+    }
+
+    .hero h1 {
+      font-size: 56px;
+      color: white;
+      margin-bottom: 24px;
+      line-height: 1.2;
+      animation: fadeInUp 0.8s ease;
+    }
+
+    .hero p {
+      font-size: 20px;
+      color: #e5e7eb;
+      margin-bottom: 40px;
+      animation: fadeInUp 1s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      animation: fadeInUp 1.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      color: white;
+      padding: 16px 40px;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: white;
+      padding: 16px 40px;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(22, 163, 74, 0.4);
+    }
+
+    /* Floating Icons */
+    .floating-icons {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    .icon-float {
+      position: absolute;
+      font-size: 40px;
+      animation: float 6s ease-in-out infinite;
+      opacity: 0.6;
+    }
+
+    .icon-1 { top: 15%; left: 10%; animation-delay: 0s; }
+    .icon-2 { top: 25%; right: 15%; animation-delay: 1s; }
+    .icon-3 { bottom: 20%; left: 15%; animation-delay: 2s; }
+    .icon-4 { bottom: 30%; right: 12%; animation-delay: 1.5s; }
+    .icon-5 { top: 50%; left: 8%; animation-delay: 2.5s; }
+    .icon-6 { top: 60%; right: 10%; animation-delay: 0.5s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-25px) rotate(5deg); }
+      50% { transform: translateY(-15px) rotate(-5deg); }
+      75% { transform: translateY(-20px) rotate(3deg); }
+    }
+
+    /* Features Section */
+    .features {
+      padding: 100px 60px;
+      background: white;
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+
+    .features-header h2 {
+      font-size: 42px;
+      margin-bottom: 20px;
+      color: #1f2937;
+    }
+
+    .features-header p {
+      font-size: 18px;
+      color: #6b7280;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 80px;
+      max-width: 1200px;
+      margin: 0 auto;
+      align-items: center;
+    }
+
+    /* DAO Visual */
+    .dao-visual {
+      position: relative;
+      height: 450px;
+    }
+
+    .dao-circle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 200px;
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 20px 60px rgba(220, 38, 38, 0.4);
+      animation: rotate 20s linear infinite;
+    }
+
+    .dao-circle::before {
+      content: '🏛️';
+      font-size: 80px;
+    }
+
+    @keyframes rotate {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .dao-node {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background: white;
+      border: 3px solid #dc2626;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      animation: pulse-node 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-node {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .node-1 { top: 10%; left: 50%; transform: translateX(-50%); animation-delay: 0s; }
+    .node-2 { top: 50%; right: 5%; animation-delay: 0.5s; }
+    .node-3 { bottom: 10%; left: 50%; transform: translateX(-50%); animation-delay: 1s; }
+    .node-4 { top: 50%; left: 5%; animation-delay: 1.5s; }
+
+    /* ROSCA Visual */
+    .rosca-visual {
+      position: relative;
+      height: 450px;
+    }
+
+    .rosca-circle-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 300px;
+    }
+
+    .rosca-member {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 24px;
+      box-shadow: 0 8px 20px rgba(22, 163, 74, 0.4);
+      animation: pulse-member 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-member {
+      0%, 100% { transform: scale(1); box-shadow: 0 8px 20px rgba(22, 163, 74, 0.4); }
+      50% { transform: scale(1.15); box-shadow: 0 12px 30px rgba(22, 163, 74, 0.6); }
+    }
+
+    .member-1 { top: 0; left: 50%; transform: translateX(-50%); animation-delay: 0s; }
+    .member-2 { top: 25%; right: 0; animation-delay: 0.3s; }
+    .member-3 { top: 75%; right: 0; animation-delay: 0.6s; }
+    .member-4 { bottom: 0; left: 50%; transform: translateX(-50%); animation-delay: 0.9s; }
+    .member-5 { top: 75%; left: 0; animation-delay: 1.2s; }
+    .member-6 { top: 25%; left: 0; animation-delay: 1.5s; }
+
+    .rosca-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px;
+      height: 120px;
+      background: white;
+      border: 4px solid #16a34a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .feature-content h3 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #1f2937;
+    }
+
+    .feature-content p {
+      font-size: 16px;
+      color: #6b7280;
+      line-height: 1.8;
+      margin-bottom: 15px;
+    }
+
+    .feature-list {
+      list-style: none;
+      margin-top: 30px;
+    }
+
+    .feature-list li {
+      padding: 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 16px;
+      color: #374151;
+    }
+
+    .feature-list li::before {
+      content: '✓';
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+
+    .feature-list.red li::before {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+    }
+
+    /* How It Works */
+    .how-it-works {
+      padding: 100px 60px;
+      background: #f9fafb;
+    }
+
+    .how-it-works h2 {
+      text-align: center;
+      font-size: 42px;
+      margin-bottom: 60px;
+      color: #1f2937;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .step-card {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .step-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    }
+
+    .step-number {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 auto 20px;
+    }
+
+    .step-card:nth-child(2) .step-number {
+      background: linear-gradient(135deg, #fff, #e5e7eb);
+      color: #1f2937;
+      border: 3px solid #6b7280;
+    }
+
+    .step-card:nth-child(3) .step-number {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+    }
+
+    .step-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .step-card h3 {
+      font-size: 22px;
+      margin-bottom: 15px;
+      color: #1f2937;
+    }
+
+    .step-card p {
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    /* Stats Section */
+    .stats {
+      padding: 80px 60px;
+      background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+      color: white;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .stat-item h3 {
+      font-size: 48px;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #dc2626, #16a34a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+    }
+
+    .stat-item p {
+      font-size: 16px;
+      color: #9ca3af;
+    }
+
+    /* Testimonials */
+    .testimonials {
+      padding: 100px 60px;
+      background: white;
+    }
+
+    .testimonials h2 {
+      text-align: center;
+      font-size: 42px;
+      margin-bottom: 60px;
+      color: #1f2937;
+    }
+
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .testimonial {
+      background: #f9fafb;
+      padding: 35px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      transition: all 0.3s;
+    }
+
+    .testimonial:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    }
+
+    .testimonial-text {
+      color: #4b5563;
+      line-height: 1.8;
+      margin-bottom: 25px;
+      font-style: italic;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .author-avatar {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #dc2626, #16a34a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 20px;
+    }
+
+    .author-info h4 {
+      font-size: 17px;
+      margin-bottom: 4px;
+      color: #1f2937;
+    }
+
+    .author-info p {
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      padding: 100px 60px;
+      background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+      text-align: center;
+      color: white;
+    }
+
+    .cta-section h2 {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .cta-section p {
+      font-size: 20px;
+      color: #e5e7eb;
+      margin-bottom: 40px;
+    }
+
+    /* Footer */
+    footer {
+      background: #111827;
+      color: white;
+      padding: 60px;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+    }
+
+    .footer-section h3 {
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    .footer-section ul {
+      list-style: none;
+    }
+
+    .footer-section ul li {
+      margin-bottom: 12px;
+    }
+
+    .footer-section a {
+      color: #9ca3af;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .footer-section a:hover {
+      color: white;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .social-icon {
+      width: 40px;
+      height: 40px;
+      background: #374151;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .social-icon:hover {
+      background: #dc2626;
+      transform: translateY(-3px);
+    }
+
+    @media (max-width: 768px) {
+      .features-grid,
+      .steps-grid,
+      .testimonial-grid,
+      .stats-grid,
+      .footer-content {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      nav {
+        padding: 20px 30px;
+      }
+
+      .hero,
+      .features,
+      .how-it-works,
+      .testimonials,
+      .cta-section,
+      footer {
+        padding: 60px 30px;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .dao-visual,
+      .rosca-visual {
+        height: 350px;
+      }
+
+      .hero-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <div class="logo">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 5L35 12.5V27.5L20 35L5 27.5V12.5L20 5Z" fill="#dc2626"/>
+        <path d="M20 15L27.5 18.75V25L20 28.75L12.5 25V18.75L20 15Z" fill="white"/>
+      </svg>
+      Coxy DeFi
+    </div>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#testimonials">Testimonials</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="comb.html" class="btn-primary">Launch App</a>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="floating-icons">
+      <div class="icon-float icon-1">🏛️</div>
+      <div class="icon-float icon-2">🌸</div>
+      <div class="icon-float icon-3">💰</div>
+      <div class="icon-float icon-4">🤝</div>
+      <div class="icon-float icon-5">📊</div>
+      <div class="icon-float icon-6">🔐</div>
+    </div>
+    <div class="hero-content">
+      <h1>Empowering Communities Through Decentralized Finance</h1>
+      <p>Build democratic treasuries and collaborative savings circles on the Cardano blockchain. Transparent, secure, and community-driven.</p>
+      <div class="hero-buttons">
+        <a href="comb.html" class="btn-primary">Get Started</a>
+        <a href="#how-it-works" class="btn-secondary">Learn More</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="features-header">
+      <h2>Two Powerful Platforms, One Mission</h2>
+      <p>Whether you're managing organizational funds or building community savings, we've got you covered with blockchain-powered solutions.</p>
+    </div>
+
+    <!-- DAO Treasury Feature -->
+    <div class="features-grid">
+      <div class="dao-visual">
+        <div class="dao-circle"></div>
+        <div class="dao-node node-1">👤</div>
+        <div class="dao-node node-2">👤</div>
+        <div class="dao-node node-3">👤</div>
+        <div class="dao-node node-4">👤</div>
+      </div>
+      
+      <div class="feature-content">
+        <h3>DAO Treasury Management</h3>
+        <p>Democratize decision-making with our decentralized autonomous organization treasury platform. Create proposals, vote collectively, and execute financial decisions with complete transparency.</p>
+        <p>Perfect for communities, organizations, and groups that want to manage funds democratically without central authority.</p>
+        <ul class="feature-list red">
+          <li>Proposal-based governance system</li>
+          <li>Member voting with wallet signatures</li>
+          <li>Quorum-based fund releases</li>
+          <li>Transparent transaction history</li>
+          <li>Multi-signature security</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ROSCA Feature -->
+    <div class="features-grid" style="margin-top: 100px;">
+      <div class="feature-content">
+        <h3>ROSCA Savings Circles</h3>
+        <p>Reimagine traditional rotating savings and credit associations (ROSCA) for the blockchain era. Create trusted savings groups where members contribute regularly and receive payouts in turns.</p>
+        <p>Known as "Esusu" in many cultures, this time-tested method of community finance is now automated, transparent, and trustless on Cardano.</p>
+        <ul class="feature-list">
+          <li>Automated contribution tracking</li>
+          <li>Scheduled payout rotation</li>
+          <li>Smart contract enforcement</li>
+          <li>No intermediaries needed</li>
+          <li>Complete transparency for all members</li>
+        </ul>
+      </div>
+
+      <div class="rosca-visual">
+        <div class="rosca-circle-container">
+          <div class="rosca-member member-1">1</div>
+          <div class="rosca-member member-2">2</div>
+          <div class="rosca-member member-3">3</div>
+          <div class="rosca-member member-4">4</div>
+          <div class="rosca-member member-5">5</div>
+          <div class="rosca-member member-6">6</div>
+          <div class="rosca-center">💰</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-it-works" id="how-it-works">
+    <h2>How It Works</h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <div class="step-icon">🔗</div>
+        <h3>Connect Your Wallet</h3>
+        <p>Link your Cardano wallet (Lace, Nami, or any compatible wallet) to get started. No personal information required.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <div class="step-icon">⚙️</div>
+        <h3>Choose Your Platform</h3>
+        <p>Select DAO Treasury for governance or ROSCA Circle for savings. Set up parameters, add members, and configure rules.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <div class="step-icon">🚀</div>
+        <h3>Start Managing Funds</h3>
+        <p>Create proposals, vote on decisions, deposit contributions, or receive payouts. Everything is transparent on the blockchain.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <h3>$2.5M+</h3>
+        <p>Total Value Locked</p>
+      </div>
+      <div class="stat-item">
+        <h3>500+</h3>
+        <p>Active Communities</p>
+      </div>
+      <div class="stat-item">
+        <h3>15K+</h3>
+        <p>Users Worldwide</p>
+      </div>
+      <div class="stat-item">
+        <h3>99.9%</h3>
+        <p>Uptime</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials" id="testimonials">
+    <h2>What Our Users Say</h2>
+    <div class="testimonial-grid">
+      <div class="testimonial">
+        <p class="testimonial-text">"Managing our community treasury has never been easier. Every member can see where funds go, and decisions are made collectively. It's true democracy in action!"</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">AK</div>
+          <div class="author-info">
+            <h4>Adebayo Kofi</h4>
+            <p>DAO Organizer</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial">
+        <p class="testimonial-text">"The ROSCA platform helped our group save for business investments. The automation and transparency eliminated all the trust issues we had with traditional methods."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">MN</div>
+          <div class="author-info">
+            <h4>Maria Nguyen</h4>
+            <p>Small Business Owner</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial">
+        <p class="testimonial-text">"As a tech-savvy organization, we needed blockchain solutions for governance. This platform gave us exactly what we needed with an intuitive interface our non-technical members could use."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">JD</div>
+          <div class="author-info">
+            <h4>James Davidson</h4>
+            <p>Tech Community Lead</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <h2>Ready to Transform Your Community Finance?</h2>
+    <p>Join thousands of users already managing funds democratically and transparently on Cardano</p>
+    <a href="comb.html" class="btn-primary" style="font-size: 18px; padding: 18px 50px;">Launch Platform Now</a>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <div class="logo" style="color: white; margin-bottom: 20px; font-size: 20px;">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 35px; height: 35px;">
+            <path d="M20 5L35 12.5V27.5L20 35L5 27.5V12.5L20 5Z" fill="#dc2626"/>
+            <path d="M20 15L27.5 18.75V25L20 28.75L12.5 25V18.75L20 15Z" fill="white"/>
+          </svg>
+          Coxy DeFi
+        </div>
+        <p style="color: #9ca3af; line-height: 1.6; font-size: 14px;">Empowering communities with decentralized finance solutions. Built on Cardano for transparency, security, and scalability.</p>
+        <div class="social-links">
+          <div class="social-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+          </div>
+          <div class="social-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+              <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+            </svg>
+          </div>
+          <div class="social-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+          </div>
+          <div class="social-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+              <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h3>Platform</h3>
+        <ul>
+          <li><a href="#">DAO Treasury</a></li>
+          <li><a href="#">ROSCA Circles</a></li>
+          <li><a href="#">Features</a></li>
+          <li><a href="#">How It Works</a></li>
+          <li><a href="#">Documentation</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Resources</h3>
+        <ul>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Tutorials</a></li>
+          <li><a href="#">FAQs</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Support</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Legal</h3>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Cookie Policy</a></li>
+          <li><a href="#">Security</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 60px; padding-top: 30px; border-top: 1px solid #374151; color: #9ca3af;">
+      <p>&copy; 2026 Cardano DeFi Platform. Built with ❤️ on Cardano Blockchain.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // Scroll animation observer
+    const observerOptions = {
+      threshold: 0.15,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+
+    // Observe all animated elements
+    document.querySelectorAll('.step-card, .testimonial, .stat-item').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(30px)';
+      el.style.transition = 'all 0.6s ease-out';
+      observer.observe(el);
+    });
+
+    // Counter animation for stats
+    function animateCounter(element, target) {
+      let current = 0;
+      const increment = target / 100;
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          element.textContent = target;
+          clearInterval(timer);
+        } else {
+          element.textContent = Math.floor(current);
+        }
+      }, 20);
+    }
+
+    // Trigger counter animation when stats section is visible
+    const statsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const statNumbers = entry.target.querySelectorAll('.stat-item h3');
+          statNumbers.forEach(stat => {
+            const text = stat.textContent;
+            if (text.includes('$')) {
+              stat.textContent = '$2.5M+';
+            } else if (text.includes('+')) {
+              const num = parseInt(text.replace(/\D/g, ''));
+              stat.textContent = num + '+';
+            } else if (text.includes('%')) {
+              stat.textContent = '99.9%';
+            }
+          });
+          statsObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    const statsSection = document.querySelector('.stats');
+    if (statsSection) {
+      statsObserver.observe(statsSection);
+    }
+
+    // Add parallax effect to floating icons
+    window.addEventListener('scroll', () => {
+      const scrolled = window.pageYOffset;
+      const floatingIcons = document.querySelectorAll('.icon-float');
+      floatingIcons.forEach((icon, index) => {
+        const speed = 0.5 + (index * 0.1);
+        icon.style.transform = `translateY(${scrolled * speed}px)`;
+      });
+    });
+  </script>
+</body>
+</html>
