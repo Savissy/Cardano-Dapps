@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cardano DeFi - User Documentation</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    /* Header */
+    .doc-header {
+      background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+      color: white;
+      padding: 30px 40px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .doc-header h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .doc-header p {
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    /* Layout */
+    .doc-container {
+      display: flex;
+      min-height: calc(100vh - 100px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: #f9fafb;
+      border-right: 1px solid #e5e7eb;
+      padding: 30px 0;
+      position: sticky;
+      top: 100px;
+      height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+
+    .sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 3px;
+    }
+
+    .sidebar h3 {
+      padding: 0 20px;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #6b7280;
+      margin-bottom: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      margin-bottom: 25px;
+    }
+
+    .sidebar ul li a {
+      display: block;
+      padding: 10px 20px;
+      color: #374151;
+      text-decoration: none;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+      font-size: 14px;
+    }
+
+    .sidebar ul li a:hover {
+      background: #e5e7eb;
+      color: #dc2626;
+      border-left-color: #dc2626;
+    }
+
+    .sidebar ul li a.active {
+      background: #fee2e2;
+      color: #dc2626;
+      border-left-color: #dc2626;
+      font-weight: 600;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 40px 60px;
+      max-width: 900px;
+    }
+
+    .section {
+      margin-bottom: 60px;
+      scroll-margin-top: 120px;
+    }
+
+    .section h2 {
+      font-size: 32px;
+      color: #1f2937;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 3px solid #dc2626;
+      display: inline-block;
+    }
+
+    .section h3 {
+      font-size: 24px;
+      color: #dc2626;
+      margin: 30px 0 16px 0;
+    }
+
+    .section h4 {
+      font-size: 18px;
+      color: #16a34a;
+      margin: 20px 0 12px 0;
+    }
+
+    .section p {
+      margin-bottom: 16px;
+      color: #4b5563;
+      font-size: 16px;
+    }
+
+    .section ul, .section ol {
+      margin-left: 25px;
+      margin-bottom: 20px;
+      color: #4b5563;
+    }
+
+    .section li {
+      margin-bottom: 10px;
+      line-height: 1.7;
+    }
+
+    /* Call-out boxes */
+    .info-box {
+      background: #dbeafe;
+      border-left: 4px solid #3b82f6;
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 4px;
+    }
+
+    .warning-box {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 4px;
+    }
+
+    .success-box {
+      background: #d1fae5;
+      border-left: 4px solid #16a34a;
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 4px;
+    }
+
+    .error-box {
+      background: #fee2e2;
+      border-left: 4px solid #dc2626;
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 4px;
+    }
+
+    .box-title {
+      font-weight: 700;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    /* Code blocks */
+    code {
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      color: #dc2626;
+    }
+
+    pre {
+      background: #1f2937;
+      color: #e5e7eb;
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 20px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* Step cards */
+    .step-card {
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 25px;
+      margin: 20px 0;
+      transition: all 0.3s;
+    }
+
+    .step-card:hover {
+      border-color: #dc2626;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);
+    }
+
+    .step-number {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    .step-card.green .step-number {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+    }
+
+    .step-card h4 {
+      color: #1f2937;
+      margin: 0 0 12px 0;
+      font-size: 18px;
+    }
+
+    /* Diagrams */
+    .diagram {
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 30px;
+      margin: 30px 0;
+      text-align: center;
+    }
+
+    .diagram svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .diagram-title {
+      font-size: 14px;
+      color: #6b7280;
+      margin-top: 15px;
+      font-style: italic;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 25px 0;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    th {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      color: white;
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 15px;
+      border-bottom: 1px solid #e5e7eb;
+      color: #4b5563;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: #f9fafb;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+
+    .badge-red {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .badge-green {
+      background: #d1fae5;
+      color: #16a34a;
+    }
+
+    .badge-gray {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    /* Back to top button */
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+    }
+
+    .back-to-top.visible {
+      opacity: 1;
+    }
+
+    .back-to-top:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .doc-container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .main-content {
+        padding: 30px 20px;
+      }
+
+      .section h2 {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="doc-header">
+    <h1>📚 Coxy DeFi Platform Documentation</h1>
+    <p>Comprehensive guide to DAO Treasury Management and ROSCA Savings Circles</p>
+  </div>
+
+  <!-- Main Container -->
+  <div class="doc-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <h3>Table of Contents</h3>
+      <ul>
+        <li><a href="#introduction" class="active">Introduction</a></li>
+        <li><a href="#getting-started">Getting Started</a></li>
+        <li><a href="#problems-solutions">Problems & Solutions</a></li>
+      </ul>
+
+      <h3>DAO Treasury</h3>
+      <ul>
+        <li><a href="#dao-overview">Overview</a></li>
+        <li><a href="#dao-architecture">Architecture</a></li>
+        <li><a href="#dao-guide">Step-by-Step Guide</a></li>
+        <li><a href="#dao-features">Features</a></li>
+      </ul>
+
+      <h3>ROSCA Circles</h3>
+      <ul>
+        <li><a href="#rosca-overview">Overview</a></li>
+        <li><a href="#rosca-architecture">Architecture</a></li>
+        <li><a href="#rosca-guide">Step-by-Step Guide</a></li>
+        <li><a href="#rosca-features">Features</a></li>
+      </ul>
+
+      <h3>Additional Resources</h3>
+      <ul>
+        <li><a href="#security">Security</a></li>
+        <li><a href="#troubleshooting">Troubleshooting</a></li>
+        <li><a href="#faq">FAQs</a></li>
+        <li><a href="#support">Support</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Introduction -->
+      <section id="introduction" class="section">
+        <h2>Introduction</h2>
+        <p>Welcome to the Coxy DeFi Platform documentation. This comprehensive guide will help you understand and effectively use our two powerful decentralized finance solutions:</p>
+        
+        <ul>
+          <li><strong style="color: #dc2626;">DAO Treasury Management</strong> - Democratic governance for organizational funds</li>
+          <li><strong style="color: #16a34a;">ROSCA Savings Circles</strong> - Community-based rotating savings and credit</li>
+        </ul>
+
+        <div class="info-box">
+          <div class="box-title">💡 What is Coxy DeFi?</div>
+          <p>Coxy DeFi is a blockchain-based platform that enables communities to manage finances transparently and democratically without intermediaries. Built on the Cardano blockchain, it offers security, scalability, and low transaction costs.</p>
+        </div>
+
+        <h3>Why Choose Our Platform?</h3>
+        <p>Our platform addresses critical challenges in traditional financial systems:</p>
+        
+        <table>
+          <thead>
+            <tr>
+              <th>Traditional Systems</th>
+              <th>Our Solution</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Centralized control</td>
+              <td><span class="badge badge-green">Decentralized governance</span></td>
+            </tr>
+            <tr>
+              <td>Lack of transparency</td>
+              <td><span class="badge badge-green">Full blockchain transparency</span></td>
+            </tr>
+            <tr>
+              <td>High fees & intermediaries</td>
+              <td><span class="badge badge-green">Direct peer-to-peer, low fees</span></td>
+            </tr>
+            <tr>
+              <td>Trust-based systems</td>
+              <td><span class="badge badge-green">Smart contract enforcement</span></td>
+            </tr>
+            <tr>
+              <td>Slow decision-making</td>
+              <td><span class="badge badge-green">Rapid on-chain voting</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Getting Started -->
+      <section id="getting-started" class="section">
+        <h2>Getting Started</h2>
+        
+        <h3>Prerequisites</h3>
+        <p>Before using the platform, ensure you have:</p>
+        
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h4>Cardano Wallet</h4>
+          <p>Install a compatible Cardano wallet such as:</p>
+          <ul>
+            <li><strong>Lace Wallet</strong> - Browser extension (Recommended)</li>
+            <li><strong>Nami Wallet</strong> - Browser extension</li>
+            <li><strong>Eternl</strong> - Mobile and web</li>
+            <li><strong>Yoroi</strong> - Mobile and browser</li>
+          </ul>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h4>ADA Tokens</h4>
+          <p>Ensure your wallet has sufficient ADA for:</p>
+          <ul>
+            <li>Transaction fees (typically 0.17 - 0.5 ADA per transaction)</li>
+            <li>DAO contributions or ROSCA deposits</li>
+            <li>Smart contract interactions</li>
+          </ul>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h4>Basic Blockchain Knowledge</h4>
+          <p>Familiarize yourself with:</p>
+          <ul>
+            <li>Wallet addresses (starts with "addr1...")</li>
+            <li>Transaction signing and confirmation</li>
+            <li>Gas fees and network congestion</li>
+          </ul>
+        </div>
+
+        <div class="warning-box">
+          <div class="box-title">⚠️ Vote Carefully</div>
+          <p>Votes are permanent and cannot be changed once submitted. Always verify the proposal details before voting.</p>
+        </div>
+
+        <h3>Executing a Proposal</h3>
+
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h4>Check Quorum Status</h4>
+          <p>Verify that the proposal has received the required number of votes. The system displays current vote count.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h4>Trigger Execution</h4>
+          <p>Once quorum is reached, click "Execute Proposal" in the Execute section.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h4>Confirm Transaction</h4>
+          <p>Sign the execution transaction. The smart contract will verify quorum and release funds to the recipient.</p>
+        </div>
+
+        <div class="success-box">
+          <div class="box-title">✅ Funds Released</div>
+          <p>The recipient will receive the specified ADA amount. All participants can verify the transaction on the Cardano blockchain explorer.</p>
+        </div>
+      </section>
+
+      <!-- DAO Features -->
+      <section id="dao-features" class="section">
+        <h2>DAO Treasury Features</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Description</th>
+              <th>Benefit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Multi-Signature</strong></td>
+              <td>Requires multiple approvals before fund release</td>
+              <td>Prevents single-point control and fraud</td>
+            </tr>
+            <tr>
+              <td><strong>Flexible Quorum</strong></td>
+              <td>Set custom vote thresholds per proposal</td>
+              <td>Adapts to different decision importance</td>
+            </tr>
+            <tr>
+              <td><strong>Member Management</strong></td>
+              <td>Define voting members for each proposal</td>
+              <td>Control who participates in decisions</td>
+            </tr>
+            <tr>
+              <td><strong>Transparent History</strong></td>
+              <td>All actions recorded on blockchain</td>
+              <td>Complete audit trail</td>
+            </tr>
+            <tr>
+              <td><strong>Instant Execution</strong></td>
+              <td>Automated fund release when quorum met</td>
+              <td>No manual intervention needed</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ROSCA Overview -->
+      <section id="rosca-overview" class="section">
+        <h2>ROSCA Savings Circles</h2>
+        <span class="badge badge-green">Savings</span>
+        <span class="badge badge-green">Community</span>
+        <span class="badge badge-green">Rotation</span>
+
+        <h3>What is ROSCA?</h3>
+        <p>ROSCA (Rotating Savings and Credit Association) is a traditional community savings method where members contribute fixed amounts regularly, and each member receives the full pot in turns according to a predetermined order.</p>
+
+        <div class="info-box">
+          <div class="box-title">🌍 Cultural Context</div>
+          <p>ROSCAs are known by different names globally:</p>
+          <ul>
+            <li><strong>Esusu</strong> - Nigeria and West Africa</li>
+            <li><strong>Stokvel</strong> - South Africa</li>
+            <li><strong>Tandas</strong> - Mexico and Latin America</li>
+            <li><strong>Hui</strong> - China</li>
+            <li><strong>Chit Fund</strong> - India</li>
+          </ul>
+          <p>Our platform digitizes this centuries-old practice with blockchain security.</p>
+        </div>
+
+        <h3>How ROSCA Works</h3>
+        <p>A simple example with 6 members contributing 10 ADA per month:</p>
+
+        <div class="diagram">
+          <svg viewBox="0 0 600 350" xmlns="http://www.w3.org/2000/svg">
+            <!-- Central Pot -->
+            <rect x="250" y="150" width="100" height="80" rx="10" fill="#16a34a" opacity="0.9"/>
+            <text x="300" y="185" font-size="24" fill="white" text-anchor="middle">💰</text>
+            <text x="300" y="210" font-size="12" fill="white" text-anchor="middle" font-weight="bold">60 ADA</text>
+            
+            <!-- Members in Circle -->
+            <g id="member1">
+              <circle cx="300" cy="50" r="30" fill="#15803d" opacity="0.8"/>
+              <text x="300" y="60" font-size="18" fill="white" text-anchor="middle" font-weight="bold">1</text>
+              <text x="300" y="25" font-size="10" fill="#333" text-anchor="middle">Month 1</text>
+            </g>
+            
+            <g id="member2">
+              <circle cx="450" cy="120" r="30" fill="#15803d" opacity="0.8"/>
+              <text x="450" y="130" font-size="18" fill="white" text-anchor="middle" font-weight="bold">2</text>
+              <text x="480" y="120" font-size="10" fill="#333">Month 2</text>
+            </g>
+            
+            <g id="member3">
+              <circle cx="450" cy="250" r="30" fill="#15803d" opacity="0.8"/>
+              <text x="450" y="260" font-size="18" fill="white" text-anchor="middle" font-weight="bold">3</text>
+              <text x="480" y="260" font-size="10" fill="#333">Month 3</text>
+            </g>
+            
+            <g id="member4">
+              <circle cx="300" cy="320" r="30" fill="#15803d" opacity="0.8"/>
+              <text x="300" y="330" font-size="18" fill="white" text-anchor="middle" font-weight="bold">4</text>
+              <text x="300" y="310" font-size="10" fill="#333" text-anchor="middle">Month 4</text>
+            </g>
+            
+            <g id="member5">
+              <circle cx="150" cy="250" r="30" fill="#15803d" opacity="0.8"/>
+              <text x="150" y="260" font-size="18" fill="white" text-anchor="middle" font-weight="bold">5</text>
+              <text x="110" y="260" font-size="10" fill="#333" text-anchor="end">Month 5</text>
+            </g>
+            
+            <g id="member6">
+              <circle cx="150" cy="120" r="30" fill="#15803d" opacity="0.8"/>
+              <text x="150" y="130" font-size="18" fill="white" text-anchor="middle" font-weight="bold">6</text>
+              <text x="110" y="120" font-size="10" fill="#333" text-anchor="end">Month 6</text>
+            </g>
+            
+            <!-- Arrows showing flow -->
+            <path d="M 300 80 L 300 140" stroke="#dc2626" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+            
+            <defs>
+              <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                <polygon points="0 0, 10 5, 0 10" fill="#dc2626"/>
+              </marker>
+            </defs>
+          </svg>
+          <div class="diagram-title">ROSCA Rotation: Each member receives 60 ADA when their turn comes</div>
+        </div>
+
+        <h3>Key Concepts</h3>
+
+        <h4>Deposit Amount</h4>
+        <p>The fixed amount each member contributes per round (e.g., 10 ADA).</p>
+
+        <h4>Participants</h4>
+        <p>List of wallet addresses participating in the circle. Order matters for payout sequence.</p>
+
+        <h4>Payout Order</h4>
+        <p>The sequence in which members receive their turn (0, 1, 2, 3...). This is set at creation and cannot be changed.</p>
+
+        <h4>Round</h4>
+        <p>A complete cycle where one member receives a payout. If there are 6 members, the circle completes after 6 rounds.</p>
+      </section>
+
+      <!-- ROSCA Architecture -->
+      <section id="rosca-architecture" class="section">
+        <h2>ROSCA Circle Architecture</h2>
+
+        <div class="diagram">
+          <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+            <!-- Timeline -->
+            <line x1="50" y1="150" x2="650" y2="150" stroke="#6b7280" stroke-width="2"/>
+            
+            <!-- Round markers -->
+            <circle cx="100" cy="150" r="8" fill="#16a34a"/>
+            <text x="100" y="135" font-size="12" fill="#333" text-anchor="middle" font-weight="bold">Round 1</text>
+            <text x="100" y="180" font-size="10" fill="#16a34a" text-anchor="middle">All deposit</text>
+            <text x="100" y="195" font-size="10" fill="#16a34a" text-anchor="middle">Member 1 pays</text>
+            
+            <circle cx="220" cy="150" r="8" fill="#16a34a"/>
+            <text x="220" y="135" font-size="12" fill="#333" text-anchor="middle" font-weight="bold">Round 2</text>
+            <text x="220" y="180" font-size="10" fill="#16a34a" text-anchor="middle">All deposit</text>
+            <text x="220" y="195" font-size="10" fill="#16a34a" text-anchor="middle">Member 2 pays</text>
+            
+            <circle cx="340" cy="150" r="8" fill="#16a34a"/>
+            <text x="340" y="135" font-size="12" fill="#333" text-anchor="middle" font-weight="bold">Round 3</text>
+            <text x="340" y="180" font-size="10" fill="#16a34a" text-anchor="middle">All deposit</text>
+            <text x="340" y="195" font-size="10" fill="#16a34a" text-anchor="middle">Member 3 pays</text>
+            
+            <circle cx="460" cy="150" r="8" fill="#6b7280"/>
+            <text x="460" y="135" font-size="12" fill="#333" text-anchor="middle" font-weight="bold">Round 4</text>
+            <text x="460" y="180" font-size="10" fill="#6b7280" text-anchor="middle">Continues...</text>
+            
+            <circle cx="580" cy="150" r="8" fill="#6b7280"/>
+            <text x="580" y="135" font-size="12" fill="#333" text-anchor="middle" font-weight="bold">Round N</text>
+            <text x="580" y="180" font-size="10" fill="#6b7280" text-anchor="middle">Final round</text>
+            
+            <!-- Smart Contract Box -->
+            <rect x="250" y="30" width="200" height="60" rx="8" fill="#dc2626" opacity="0.1" stroke="#dc2626" stroke-width="2"/>
+            <text x="350" y="55" font-size="14" fill="#dc2626" text-anchor="middle" font-weight="bold">Smart Contract</text>
+            <text x="350" y="75" font-size="11" fill="#333" text-anchor="middle">Enforces rotation</text>
+          </svg>
+          <div class="diagram-title">ROSCA Timeline: Automated rotation ensures fair distribution</div>
+        </div>
+
+        <h3>System Flow</h3>
+        <ol>
+          <li><strong style="color: #16a34a;">Circle Creation:</strong> Organizer sets deposit amount, participants, and payout order</li>
+          <li><strong style="color: #16a34a;">Deposits:</strong> All members deposit their contribution</li>
+          <li><strong style="color: #16a34a;">Smart Contract Lock:</strong> Funds held securely until payout conditions met</li>
+          <li><strong style="color: #16a34a;">Automated Payout:</strong> System releases funds to current beneficiary</li>
+          <li><strong style="color: #16a34a;">Rotation:</strong> Next member becomes beneficiary for following round</li>
+          <li><strong style="color: #16a34a;">Completion:</strong> Circle concludes after all members receive payout</li>
+        </ol>
+      </section>
+
+      <!-- ROSCA Step-by-Step Guide -->
+      <section id="rosca-guide" class="section">
+        <h2>ROSCA Circle: Step-by-Step Guide</h2>
+
+        <h3>Creating a Savings Circle</h3>
+
+        <div class="step-card green">
+          <div class="step-number">1</div>
+          <h4>Access ROSCA Platform</h4>
+          <p>From the homepage, click "Launch ROSCA Platform" to access the ROSCA Circle interface.</p>
+        </div>
+
+        <div class="step-card green">
+          <div class="step-number">2</div>
+          <h4>Connect Wallet</h4>
+          <p>Click "Connect Wallet" and approve the connection request from your wallet.</p>
+        </div>
+
+        <div class="step-card green">
+          <div class="step-number">3</div>
+          <h4>Configure Circle Parameters</h4>
+          <p>In the "Create Savings Circle" section, enter:</p>
+          <ul>
+            <li><code>Deposit Amount (ADA)</code>: Amount each member contributes per round</li>
+            <li><code>Participants</code>: One wallet address per line, in payout order</li>
+            <li><code>Payout Order</code>: Sequence numbers (0, 1, 2, 3...)</li>
+          </ul>
+          <pre>Example for 4 members:
+Deposit: 10 ADA
+
+Participants:
+addr1qxabc...
+addr1qxdef...
+addr1qxghi...
+addr1qxjkl...
+
+Payout Order:
+0
+1
+2
+3</pre>
+        </div>
+
+        <div class="step-card green">
+          <div class="step-number">4</div>
+          <h4>Create Circle</h4>
+          <p>Click "Create Circle" and sign the transaction. The smart contract will be deployed to the blockchain.</p>
+        </div>
+
+        <div class="success-box">
+          <div class="box-title">✅ Circle Created</div>
+          <p>Share the circle details with all participants. They can now view the circle and make deposits when their turn comes.</p>
+        </div>
+
+        <h3>Participating in a Circle</h3>
+
+        <div class="step-card green">
+          <div class="step-number">1</div>
+          <h4>View Your Circle</h4>
+          <p>Active circles you're part of will appear in the "Your Active ROSCA Circle" section.</p>
+        </div>
+
+        <div class="step-card green">
+          <div class="step-number">2</div>
+          <h4>Make Deposit</h4>
+          <p>When it's your turn or when deposits are due, click "Deposit" on the circle card.</p>
+        </div>
+
+        <div class="step-card green">
+          <div class="step-number">3</div>
+          <h4>Receive Payout</h4>
+          <p>When your position in the payout order is reached, the smart contract automatically sends you the collected funds.</p>
+        </div>
+
+        <div class="warning-box">
+          <div class="box-title">⚠️ Important Commitment</div>
+          <p>Once you join a ROSCA, you're committed to depositing for all rounds. Failing to deposit can break the circle for all members. Only join circles you can afford to complete.</p>
+        </div>
+      </section>
+
+      <!-- ROSCA Features -->
+      <section id="rosca-features" class="section">
+        <h2>ROSCA Circle Features</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Description</th>
+              <th>Benefit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Automated Rotation</strong></td>
+              <td>Smart contract manages payout sequence</td>
+              <td>No disputes over who gets paid when</td>
+            </tr>
+            <tr>
+              <td><strong>Trustless Operation</strong></td>
+              <td>Funds locked in smart contract</td>
+              <td>Eliminates organizer fraud risk</td>
+            </tr>
+            <tr>
+              <td><strong>Transparent Tracking</strong></td>
+              <td>All deposits and payouts on blockchain</td>
+              <td>Complete accountability</td>
+            </tr>
+            <tr>
+              <td><strong>Flexible Configuration</strong></td>
+              <td>Custom amounts and member counts</td>
+              <td>Adapts to different group needs</td>
+            </tr>
+            <tr>
+              <td><strong>Instant Payouts</strong></td>
+              <td>Automatic distribution when conditions met</td>
+              <td>No waiting for manual processing</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Security -->
+      <section id="security" class="section">
+        <h2>Security Best Practices</h2>
+
+        <div class="error-box">
+          <div class="box-title">🔒 Critical Security Rules</div>
+          <ul>
+            <li><strong>Never share your seed phrase</strong> - Not with support, not with members, not with anyone</li>
+            <li><strong>Verify all addresses</strong> - Always double-check wallet addresses before sending funds</li>
+            <li><strong>Use hardware wallets</strong> - For large amounts, consider Ledger or Trezor</li>
+            <li><strong>Check transaction details</strong> - Review amounts and recipients before signing</li>
+            <li><strong>Beware of phishing</strong> - Only use official platform URLs</li>
+          </ul>
+        </div>
+
+        <h3>Smart Contract Security</h3>
+        <p>Our platform uses audited smart contracts with the following security features:</p>
+        <ul>
+          <li><strong>Immutable Logic:</strong> Code cannot be changed after deployment</li>
+          <li><strong>Multi-Signature Protection:</strong> DAO requires multiple approvals</li>
+          <li><strong>Time Locks:</strong> ROSCA enforces rotation schedules</li>
+          <li><strong>Access Control:</strong> Only authorized wallets can perform actions</li>
+          <li><strong>Emergency Pause:</strong> Critical bug protection (requires governance vote)</li>
+        </ul>
+
+        <h3>Wallet Security Tips</h3>
+        <div class="step-card">
+          <h4>Use Strong Passwords</h4>
+          <p>Create unique, complex passwords for your wallet. Use a password manager to store them securely.</p>
+        </div>
+
+        <div class="step-card">
+          <h4>Enable Two-Factor Authentication</h4>
+          <p>If your wallet supports 2FA, enable it for additional security.</p>
+        </div>
+
+        <div class="step-card">
+          <h4>Backup Your Seed Phrase</h4>
+          <p>Write down your 12-24 word seed phrase and store it in a secure, offline location. Consider using a metal backup.</p>
+        </div>
+
+        <div class="step-card">
+          <h4>Keep Software Updated</h4>
+          <p>Regularly update your wallet software and browser to patch security vulnerabilities.</p>
+        </div>
+      </section>
+
+      <!-- Troubleshooting -->
+      <section id="troubleshooting" class="section">
+        <h2>Troubleshooting</h2>
+
+        <h3>Wallet Won't Connect</h3>
+        <p><strong>Problem:</strong> Connection popup doesn't appear or fails.</p>
+        <p><strong>Solutions:</strong></p>
+        <ul>
+          <li>Refresh the page and try again</li>
+          <li>Check if your wallet extension is enabled</li>
+          <li>Try a different browser (Chrome, Firefox, Brave)</li>
+          <li>Clear browser cache and cookies</li>
+          <li>Ensure wallet is unlocked and on Cardano mainnet</li>
+        </ul>
+
+        <h3>Transaction Pending Too Long</h3>
+        <p><strong>Problem:</strong> Transaction submitted but not confirming.</p>
+        <p><strong>Solutions:</strong></p>
+        <ul>
+          <li>Wait 5-10 minutes for network congestion to clear</li>
+          <li>Check Cardano network status at <code>cardanoscan.io</code></li>
+          <li>Verify transaction hash in blockchain explorer</li>
+          <li>If stuck after 30 minutes, contact support with transaction hash</li>
+        </ul>
+
+        <h3>Insufficient Funds Error</h3>
+        <p><strong>Problem:</strong> Transaction fails with "insufficient funds" message.</p>
+        <p><strong>Solutions:</strong></p>
+        <ul>
+          <li>Ensure you have enough ADA for both the action AND transaction fees (~0.5 ADA extra)</li>
+          <li>Check your wallet balance</li>
+          <li>Wait for any pending transactions to complete</li>
+          <li>Try reducing the amount slightly</li>
+        </ul>
+
+        <h3>Can't Find My Circle/Proposal</h3>
+        <p><strong>Problem:</strong> Created circle or proposal doesn't appear.</p>
+        <p><strong>Solutions:</strong></p>
+        <ul>
+          <li>Ensure transaction was confirmed (check wallet history)</li>
+          <li>Refresh the page</li>
+          <li>Verify you're connected with the correct wallet</li>
+          <li>Check if you're on the right platform (DAO vs ROSCA)</li>
+          <li>Wait a few minutes for blockchain indexing</li>
+        </ul>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq" class="section">
+        <h2>Frequently Asked Questions</h2>
+
+        <h3>General Questions</h3>
+
+        <h4>Q: What is Cardano?</h4>
+        <p>A: Cardano is a blockchain platform that enables smart contracts and decentralized applications. It's known for low fees, fast transactions, and strong security through peer-reviewed research.</p>
+
+        <h4>Q: Do I need technical knowledge to use the platform?</h4>
+        <p>A: No. While blockchain concepts help, our interface is designed for non-technical users. Just follow the step-by-step guides in this documentation.</p>
+
+        <h4>Q: How much does it cost to use?</h4>
+        <p>A: The platform itself is free. You only pay Cardano network transaction fees (typically 0.17-0.5 ADA per transaction). There are no platform fees or subscriptions.</p>
+
+        <h4>Q: Is my money safe?</h4>
+        <p>A: Yes. Funds are secured by smart contracts on the Cardano blockchain. No individual (including us) can access or control your funds. Only the pre-programmed rules can move funds.</p>
+
+        <h3>DAO Questions</h3>
+
+        <h4>Q: Can I change a proposal after submitting?</h4>
+        <p>A: No. Proposals are immutable once on-chain. Always double-check details before submitting.</p>
+
+        <h4>Q: What happens if we don't reach quorum?</h4>
+        <p>A: The proposal remains open indefinitely until quorum is reached. Funds stay locked in the treasury and no execution can occur.</p>
+
+        <h4>Q: Can I vote multiple times?</h4>
+        <p>A: No. Each wallet address can vote only once per proposal. Votes cannot be changed.</p>
+
+        <h4>Q: Who can trigger execution?</h4>
+        <p>A: Any member can trigger execution once quorum is met. The smart contract verifies quorum automatically.</p>
+
+        <h3>ROSCA Questions</h3>
+
+        <h4>Q: What if someone doesn't deposit?</h4>
+        <p>A: The smart contract enforces deposits. If a member fails to deposit, the circle cannot progress. Choose trustworthy participants.</p>
+
+        <h4>Q: Can I leave a circle early?</h4>
+        <p>A: No. Joining a ROSCA is a binding commitment. Leaving disrupts all other members. Only join circles you can complete.</p>
+
+        <h4>Q: Can the payout order be changed?</h4>
+        <p>A: No. The payout order is set at creation and enforced by the smart contract. It cannot be altered.</p>
+
+        <h4>Q: What happens if I receive my payout early?</h4>
+        <p>A: You're still required to deposit for all remaining rounds. The circle isn't complete until all members have received their payout.</p>
+      </section>
+
+      <!-- Support -->
+      <section id="support" class="section">
+        <h2>Support & Resources</h2>
+
+        <div class="info-box">
+          <div class="box-title">📧 Contact Support</div>
+          <p>Need help? Our support team is here to assist you.</p>
+          <ul>
+            <li><strong>Email:</strong> support@coxydefi.com</li>
+            <li><strong>Response Time:</strong> 24-48 hours</li>
+            <li><strong>Hours:</strong> Monday-Friday, 9 AM - 6 PM UTC</li>
+          </ul>
+        </div>
+
+        <h3>Community Resources</h3>
+        <ul>
+          <li><strong>Discord Community:</strong> Join discussions and get peer support</li>
+          <li><strong>Telegram Group:</strong> Real-time chat with other users</li>
+          <li><strong>Twitter:</strong> Follow @CoxyDeFi for updates and tips</li>
+          <li><strong>YouTube Tutorials:</strong> Video guides for visual learners</li>
+        </ul>
+
+        <h3>Developer Resources</h3>
+        <p>For developers interested in integrating or building on our platform:</p>
+        <ul>
+          <li><strong>API Documentation:</strong> docs.coxydefi.com/api</li>
+          <li><strong>Smart Contract Code:</strong> github.com/coxydefi/contracts</li>
+          <li><strong>SDK:</strong> npm install @coxydefi/sdk</li>
+        </ul>
+
+        <h3>Reporting Issues</h3>
+        <p>Found a bug or security vulnerability?</p>
+        <div class="error-box">
+          <div class="box-title">🐛 Bug Reports</div>
+          <p>Email: bugs@coxydefi.com with:</p>
+          <ul>
+            <li>Detailed description of the issue</li>
+            <li>Steps to reproduce</li>
+            <li>Screenshots if applicable</li>
+            <li>Your wallet address (for investigation only)</li>
+          </ul>
+        </div>
+
+        <div class="error-box">
+          <div class="box-title">🔐 Security Vulnerabilities</div>
+          <p>For security issues, email: security@coxydefi.com</p>
+          <p>We offer bug bounties for responsibly disclosed vulnerabilities.</p>
+        </div>
+
+        <div class="success-box">
+          <div class="box-title">✅ You're All Set!</div>
+          <p>You now have all the information needed to use the Coxy DeFi Platform effectively. Start by connecting your wallet and exploring either DAO Treasury or ROSCA Circles based on your needs.</p>
+          <p style="margin-top: 15px;"><strong>Happy DeFi-ing! 🚀</strong></p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Back to Top Button -->
+  <div class="back-to-top" id="backToTop">
+    ↑
+  </div>
+
+  <script>
+    // Active navigation highlighting
+    const sections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('.sidebar a');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (window.pageYOffset >= sectionTop - 150) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+          link.classList.add('active');
+        }
+      });
+    });
+
+    // Smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Back to top button
+    const backToTop = document.getElementById('backToTop');
+
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) {
+        backToTop.classList.add('visible');
+      } else {
+        backToTop.classList.remove('visible');
+      }
+    });
+
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  </script>
+</body>
