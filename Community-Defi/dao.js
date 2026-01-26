@@ -235,21 +235,28 @@ async function execute() {
   );
   console.log("d", d);
 
-  if (walletPkh != d.recipient)
-    return log("You're not the recipient");
+  // if (walletPkh != d.recipient)
+  //   return log("You're not the recipient");
 
-  // const recipientAddress =
-  //   lucid.utils.credentialToAddress({
-  //     type: "Key",
-  //     hash: d.recipient,
-  //   });
+  const isMember = d.members.some(
+    (m) => m === walletPkh
+  );
+
+  if (!isMember)
+    return log("Wallet is not a registered DAO member");
+
+  const recipientAddress =
+    lucid.utils.credentialToAddress({
+      type: "Key",
+      hash: d.recipient,
+    });
 
   const tx = await lucid
     .newTx()
     .collectFrom([proposalUtxo], execRedeemer)
     .attachSpendingValidator(script)
     .payToAddress(
-      walletAddress,
+      recipientAddress,
       { lovelace: d.amount }
     )
     .addSignerKey(walletPkh)
