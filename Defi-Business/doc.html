@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice Finance - Complete Documentation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --red: #dc2626;
+      --red-dark: #991b1b;
+      --red-light: #fef2f2;
+      --green: #16a34a;
+      --green-dark: #15803d;
+      --green-light: #f0fdf4;
+      --white: #ffffff;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--gray-800);
+      line-height: 1.7;
+      background: var(--gray-50);
+    }
+
+    /* Header */
+    .header {
+      background: var(--white);
+      padding: 20px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--red), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-links {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .header-links a {
+      text-decoration: none;
+      color: var(--gray-700);
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .header-links a:hover {
+      color: var(--red);
+    }
+
+    .btn-home {
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      color: var(--white);
+      padding: 10px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-home:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+    }
+
+    /* Layout */
+    .docs-container {
+      display: flex;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--white);
+      padding: 40px 0;
+      position: sticky;
+      top: 80px;
+      height: calc(100vh - 80px);
+      overflow-y: auto;
+      border-right: 1px solid var(--gray-200);
+    }
+
+    .sidebar-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gray-600);
+      padding: 0 30px;
+      margin-bottom: 15px;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+    }
+
+    .sidebar-nav li {
+      margin-bottom: 5px;
+    }
+
+    .sidebar-nav a {
+      display: block;
+      padding: 12px 30px;
+      color: var(--gray-700);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-nav a:hover {
+      background: var(--gray-50);
+      color: var(--red);
+      border-left-color: var(--red);
+    }
+
+    .sidebar-nav a.active {
+      background: var(--red-light);
+      color: var(--red);
+      border-left-color: var(--red);
+      font-weight: 600;
+    }
+
+    .sidebar-nav .sub-item {
+      padding-left: 50px;
+      font-size: 13px;
+    }
+
+    /* Main Content */
+    .content {
+      flex: 1;
+      padding: 60px 80px;
+      max-width: 1000px;
+    }
+
+    .content h1 {
+      font-size: 48px;
+      color: var(--gray-900);
+      margin-bottom: 20px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .content h2 {
+      font-size: 36px;
+      color: var(--gray-900);
+      margin-top: 60px;
+      margin-bottom: 20px;
+      font-weight: 700;
+      padding-bottom: 15px;
+      border-bottom: 3px solid var(--gray-200);
+    }
+
+    .content h3 {
+      font-size: 24px;
+      color: var(--gray-800);
+      margin-top: 40px;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .content h4 {
+      font-size: 18px;
+      color: var(--gray-800);
+      margin-top: 25px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .lead-text {
+      font-size: 20px;
+      color: var(--gray-600);
+      margin-bottom: 40px;
+      line-height: 1.8;
+    }
+
+    .content p {
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+
+    .content ul, .content ol {
+      margin-bottom: 25px;
+      padding-left: 30px;
+    }
+
+    .content li {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    /* Alert Boxes */
+    .alert {
+      padding: 20px 25px;
+      border-radius: 12px;
+      margin: 30px 0;
+      border-left: 4px solid;
+    }
+
+    .alert-info {
+      background: var(--green-light);
+      border-color: var(--green);
+      color: var(--green-dark);
+    }
+
+    .alert-warning {
+      background: var(--red-light);
+      border-color: var(--red);
+      color: var(--red-dark);
+    }
+
+    .alert h4 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Code Blocks */
+    .code-block {
+      background: var(--gray-900);
+      color: var(--green);
+      padding: 25px;
+      border-radius: 12px;
+      margin: 25px 0;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      border: 1px solid var(--gray-700);
+    }
+
+    /* Step Cards */
+    .step-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin: 30px 0;
+    }
+
+    .step-card {
+      background: var(--white);
+      border: 2px solid var(--gray-200);
+      border-radius: 16px;
+      padding: 30px;
+      transition: all 0.3s;
+    }
+
+    .step-card:hover {
+      border-color: var(--green);
+      box-shadow: 0 10px 30px rgba(22, 163, 74, 0.1);
+      transform: translateY(-5px);
+    }
+
+    .step-number {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      color: var(--white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .step-card:nth-child(2) .step-number {
+      background: linear-gradient(135deg, var(--gray-600), var(--gray-700));
+    }
+
+    .step-card:nth-child(3) .step-number {
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+    }
+
+    .step-card h4 {
+      margin-top: 0;
+      color: var(--gray-900);
+    }
+
+    /* Architecture Diagram */
+    .diagram {
+      background: var(--white);
+      padding: 40px;
+      border-radius: 16px;
+      margin: 40px 0;
+      border: 2px solid var(--gray-200);
+      text-align: center;
+    }
+
+    .diagram svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Feature Grid */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 25px;
+      margin: 30px 0;
+    }
+
+    .feature-box {
+      background: var(--white);
+      border: 2px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 25px;
+      transition: all 0.3s;
+    }
+
+    .feature-box:hover {
+      border-color: var(--red);
+      box-shadow: 0 8px 25px rgba(220, 38, 38, 0.1);
+    }
+
+    .feature-icon {
+      font-size: 36px;
+      margin-bottom: 15px;
+    }
+
+    .feature-box h4 {
+      margin-top: 0;
+      color: var(--red);
+    }
+
+    /* Table */
+    .table-container {
+      overflow-x: auto;
+      margin: 30px 0;
+      border-radius: 12px;
+      border: 1px solid var(--gray-200);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--white);
+    }
+
+    th {
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      color: var(--white);
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    td {
+      padding: 15px;
+      border-bottom: 1px solid var(--gray-200);
+      font-size: 14px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: var(--gray-50);
+    }
+
+    /* TOC */
+    .toc {
+      background: var(--white);
+      border: 2px solid var(--green);
+      border-radius: 12px;
+      padding: 30px;
+      margin: 40px 0;
+    }
+
+    .toc h3 {
+      margin-top: 0;
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toc ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .toc li {
+      margin-bottom: 12px;
+    }
+
+    .toc a {
+      color: var(--gray-700);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .toc a:hover {
+      color: var(--green);
+    }
+
+    /* Scroll to top button */
+    .scroll-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      color: var(--white);
+      border: none;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 999;
+    }
+
+    .scroll-top.visible {
+      opacity: 1;
+    }
+
+    .scroll-top:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar {
+        display: none;
+      }
+
+      .content {
+        padding: 40px 30px;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 20px 30px;
+      }
+
+      .content h1 {
+        font-size: 36px;
+      }
+
+      .content h2 {
+        font-size: 28px;
+      }
+
+      .step-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">📄 Invoice Finance</div>
+    <div class="header-links">
+      <a href="#overview">Overview</a>
+      <a href="#getting-started">Getting Started</a>
+      <a href="#guides">Guides</a>
+      <a href="index.html" class="btn-home">← Back to Home</a>
+    </div>
+  </header>
+
+  <div class="docs-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Documentation</div>
+      <ul class="sidebar-nav">
+        <li><a href="#overview" class="active">Overview</a></li>
+        <li><a href="#problem" class="sub-item">The Problem</a></li>
+        <li><a href="#solution" class="sub-item">Our Solution</a></li>
+        <li><a href="#features" class="sub-item">Key Features</a></li>
+        <li><a href="#architecture">System Architecture</a></li>
+        <li><a href="#getting-started">Getting Started</a></li>
+        <li><a href="#wallet-setup" class="sub-item">Wallet Setup</a></li>
+        <li><a href="#connect-wallet" class="sub-item">Connect Wallet</a></li>
+        <li><a href="#user-guides">User Guides</a></li>
+        <li><a href="#issuer-guide" class="sub-item">For Invoice Issuers</a></li>
+        <li><a href="#investor-guide" class="sub-item">For Investors</a></li>
+        <li><a href="#managing-invoices" class="sub-item">Managing Invoices</a></li>
+        <li><a href="#smart-contracts">Smart Contracts</a></li>
+        <li><a href="#nft-structure" class="sub-item">NFT Structure</a></li>
+        <li><a href="#security" class="sub-item">Security</a></li>
+        <li><a href="#fees">Fees & Pricing</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#support">Support</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+      <!-- Overview Section -->
+      <section id="overview">
+        <h1>📄 Invoice Finance Documentation</h1>
+        <p class="lead-text">
+          Welcome to the comprehensive documentation for Invoice Finance - the decentralized platform revolutionizing invoice financing through blockchain technology on the Cardano network.
+        </p>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+          <h3>📚 Table of Contents</h3>
+          <ul>
+            <li><a href="#overview">1. Overview</a></li>
+            <li><a href="#architecture">2. System Architecture</a></li>
+            <li><a href="#getting-started">3. Getting Started</a></li>
+            <li><a href="#user-guides">4. User Guides</a></li>
+            <li><a href="#smart-contracts">5. Smart Contracts & Security</a></li>
+            <li><a href="#fees">6. Fees & Pricing</a></li>
+            <li><a href="#faq">7. Frequently Asked Questions</a></li>
+            <li><a href="#support">8. Support & Resources</a></li>
+          </ul>
+        </div>
+
+        <h2 id="problem">The Problem</h2>
+        <p>
+          Traditional invoice financing presents significant challenges for businesses worldwide, particularly small and medium enterprises (SMEs):
+        </p>
+
+        <div class="feature-grid">
+          <div class="feature-box">
+            <div class="feature-icon">⏰</div>
+            <h4>Cash Flow Constraints</h4>
+            <p>Businesses often wait 30-90 days for invoice payments, creating severe cash flow bottlenecks that hinder operations and growth.</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-icon">🏦</div>
+            <h4>Limited Access to Capital</h4>
+            <p>Traditional banks and factoring companies impose strict credit requirements, lengthy approval processes, and high fees that exclude many businesses.</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-icon">💸</div>
+            <h4>High Costs</h4>
+            <p>Factoring fees typically range from 1-5% of invoice value, with additional hidden charges significantly reducing business profitability.</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-icon">🔒</div>
+            <h4>Lack of Transparency</h4>
+            <p>Opaque pricing structures, complex terms, and limited visibility into the funding process create uncertainty and mistrust.</p>
+          </div>
+        </div>
+
+        <h2 id="solution">Our Solution</h2>
+        <p>
+          Invoice Finance leverages blockchain technology to create a transparent, efficient, and accessible invoice financing marketplace that benefits both invoice issuers and investors.
+        </p>
+
+        <div class="alert alert-info">
+          <h4>💡 Key Innovation</h4>
+          <p>
+            By tokenizing invoices as NFTs on the Cardano blockchain, we create verifiable, tradeable digital assets that can be funded instantly by a global pool of investors, eliminating traditional intermediaries and reducing costs.
+          </p>
+        </div>
+
+        <h3>How It Works</h3>
+        <p>Our platform operates on a simple three-step process:</p>
+
+        <div class="step-cards">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h4>Tokenize</h4>
+            <p>Business uploads their invoice to the platform. The invoice is verified and automatically minted as a unique NFT on the Cardano blockchain with all relevant metadata.</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h4>Fund</h4>
+            <p>Investors browse available invoice NFTs in the marketplace and fund invoices they find attractive. Smart contracts handle the secure transfer of funds to the invoice issuer.</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h4>Repay</h4>
+            <p>When the original debtor pays the invoice, the issuer repays the investor through the smart contract. The investor receives the agreed-upon return, and the NFT is burned.</p>
+          </div>
+        </div>
+
+        <h2 id="features">Key Features</h2>
+
+        <div class="feature-grid">
+          <div class="feature-box">
+            <div class="feature-icon">⚡</div>
+            <h4>Instant NFT Minting</h4>
+            <p>Invoices are automatically converted into NFTs within seconds of upload, creating immutable on-chain records.</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-icon">🌍</div>
+            <h4>Global Marketplace</h4>
+            <p>Access funding from investors worldwide, increasing competition and improving rates for invoice issuers.</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-icon">🔐</div>
+            <h4>Smart Contract Security</h4>
+            <p>All transactions are secured by Cardano smart contracts, eliminating counterparty risk and ensuring transparent execution.</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-icon">📊</div>
+            <h4>Complete Transparency</h4>
+            <p>Every transaction is recorded on-chain, providing full visibility into invoice status, funding terms, and payment history.</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-icon">💰</div>
+            <h4>Competitive Rates</h4>
+            <p>Market-driven pricing ensures fair rates, typically 50-70% lower than traditional factoring services.</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-icon">🚀</div>
+            <h4>Fast Funding</h4>
+            <p>Receive funds within minutes of investor acceptance, not weeks like traditional channels.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Architecture Section -->
+      <section id="architecture">
+        <h2>System Architecture</h2>
+        <p>
+          Invoice Finance is built on a robust, decentralized architecture leveraging Cardano blockchain technology for maximum security, transparency, and efficiency.
+        </p>
+
+        <h3>Technical Stack</h3>
+        <ul>
+          <li><strong>Blockchain:</strong> Cardano (Proof-of-Stake)</li>
+          <li><strong>Smart Contracts:</strong> Plutus (Cardano's native smart contract language)</li>
+          <li><strong>Wallet Integration:</strong> Cardano wallet connectors (Nami, Eternl, Flint)</li>
+          <li><strong>NFT Standard:</strong> CIP-25 (Cardano NFT metadata standard)</li>
+          <li><strong>Frontend:</strong> Modern web technologies (HTML5, CSS3, JavaScript)</li>
+        </ul>
+
+        <div class="diagram">
+          <h3>System Flow Diagram</h3>
+          <svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+            <!-- Invoice Issuer -->
+            <rect x="50" y="50" width="180" height="100" fill="#fef2f2" stroke="#dc2626" stroke-width="3" rx="10"/>
+            <text x="140" y="90" text-anchor="middle" font-size="16" font-weight="bold" fill="#dc2626">Invoice Issuer</text>
+            <text x="140" y="115" text-anchor="middle" font-size="14" fill="#991b1b">Uploads Invoice</text>
+
+            <!-- Platform -->
+            <rect x="310" y="50" width="180" height="100" fill="#f9fafb" stroke="#4b5563" stroke-width="3" rx="10"/>
+            <text x="400" y="85" text-anchor="middle" font-size="16" font-weight="bold" fill="#1f2937">Invoice Finance</text>
+            <text x="400" y="105" text-anchor="middle" font-size="14" fill="#4b5563">Platform</text>
+            <text x="400" y="125" text-anchor="middle" font-size="12" fill="#6b7280">(Web DApp)</text>
+
+            <!-- Investor -->
+            <rect x="570" y="50" width="180" height="100" fill="#f0fdf4" stroke="#16a34a" stroke-width="3" rx="10"/>
+            <text x="660" y="90" text-anchor="middle" font-size="16" font-weight="bold" fill="#16a34a">Investor</text>
+            <text x="660" y="115" text-anchor="middle" font-size="14" fill="#15803d">Funds Invoice</text>
+
+            <!-- Cardano Blockchain -->
+            <rect x="210" y="250" width="380" height="120" fill="#0f1419" stroke="#16a34a" stroke-width="3" rx="10"/>
+            <text x="400" y="285" text-anchor="middle" font-size="18" font-weight="bold" fill="#ffffff">Cardano Blockchain</text>
+            <text x="400" y="310" text-anchor="middle" font-size="14" fill="#e5e7eb">Smart Contracts Layer</text>
+            <text x="400" y="335" text-anchor="middle" font-size="13" fill="#9ca3af">• NFT Minting • Escrow • Payment Processing</text>
+
+            <!-- NFT Storage -->
+            <rect x="100" y="450" width="200" height="100" fill="#f9fafb" stroke="#dc2626" stroke-width="2" rx="10"/>
+            <text x="200" y="485" text-anchor="middle" font-size="16" font-weight="bold" fill="#dc2626">NFT Metadata</text>
+            <text x="200" y="510" text-anchor="middle" font-size="13" fill="#6b7280">Invoice Details</text>
+            <text x="200" y="530" text-anchor="middle" font-size="13" fill="#6b7280">Terms & Conditions</text>
+
+            <!-- Transaction History -->
+            <rect x="500" y="450" width="200" height="100" fill="#f9fafb" stroke="#16a34a" stroke-width="2" rx="10"/>
+            <text x="600" y="485" text-anchor="middle" font-size="16" font-weight="bold" fill="#16a34a">On-Chain Records</text>
+            <text x="600" y="510" text-anchor="middle" font-size="13" fill="#6b7280">Funding History</text>
+            <text x="600" y="530" text-anchor="middle" font-size="13" fill="#6b7280">Repayment Status</text>
+
+            <!-- Arrows -->
+            <!-- Issuer to Platform -->
+            <path d="M 230 100 L 310 100" stroke="#dc2626" stroke-width="2" fill="none" marker-end="url(#arrowRed)"/>
+            <text x="270" y="90" text-anchor="middle" font-size="11" fill="#dc2626">Upload</text>
+
+            <!-- Platform to Investor -->
+            <path d="M 490 100 L 570 100" stroke="#16a34a" stroke-width="2" fill="none" marker-end="url(#arrowGreen)"/>
+            <text x="530" y="90" text-anchor="middle" font-size="11" fill="#16a34a">Browse</text>
+
+            <!-- Platform to Blockchain -->
+            <path d="M 400 150 L 400 250" stroke="#4b5563" stroke-width="2" fill="none" marker-end="url(#arrowGray)"/>
+            <text x="430" y="200" text-anchor="middle" font-size="11" fill="#4b5563">Interact</text>
+
+            <!-- Blockchain to NFT -->
+            <path d="M 280 370 L 220 450" stroke="#dc2626" stroke-width="2" fill="none" marker-end="url(#arrowRed)"/>
+            <text x="230" y="410" text-anchor="middle" font-size="11" fill="#dc2626">Store</text>
+
+            <!-- Blockchain to History -->
+            <path d="M 520 370 L 580 450" stroke="#16a34a" stroke-width="2" fill="none" marker-end="url(#arrowGreen)"/>
+            <text x="570" y="410" text-anchor="middle" font-size="11" fill="#16a34a">Record</text>
+
+            <!-- Arrow markers -->
+            <defs>
+              <marker id="arrowRed" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,6 L9,3 z" fill="#dc2626" />
+              </marker>
+              <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,6 L9,3 z" fill="#16a34a" />
+              </marker>
+              <marker id="arrowGray" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,6 L9,3 z" fill="#4b5563" />
+              </marker>
+            </defs>
+          </svg>
+        </div>
+
+        <h3>Data Flow</h3>
+        <ol>
+          <li><strong>Invoice Upload:</strong> Issuer uploads invoice document through the web interface</li>
+          <li><strong>Verification:</strong> Platform validates invoice authenticity and extracts metadata</li>
+          <li><strong>NFT Minting:</strong> Smart contract mints unique NFT representing the invoice</li>
+          <li><strong>Marketplace Listing:</strong> NFT appears in the available invoices marketplace</li>
+          <li><strong>Investor Funding:</strong> Investor reviews and funds the invoice NFT</li>
+          <li><strong>Fund Transfer:</strong> Smart contract transfers funds from investor to issuer</li>
+          <li><strong>Repayment:</strong> Issuer repays investor when original debtor pays</li>
+          <li><strong>NFT Burning:</strong> Upon successful repayment, NFT is burned to complete the cycle</li>
+        </ol>
+      </section>
+
+      <!-- Getting Started -->
+      <section id="getting-started">
+        <h2>Getting Started</h2>
+        <p>
+          Follow these simple steps to begin using Invoice Finance, whether you're looking to fund your invoices or invest in invoice financing opportunities.
+        </p>
+
+        <h3 id="wallet-setup">Wallet Setup</h3>
+        <p>
+          To use Invoice Finance, you'll need a Cardano-compatible wallet. We support the following wallets:
+        </p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Wallet</th>
+                <th>Type</th>
+                <th>Download Link</th>
+                <th>Features</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Nami</strong></td>
+                <td>Browser Extension</td>
+                <td>namiwallet.io</td>
+                <td>Easy to use, NFT support</td>
+              </tr>
+              <tr>
+                <td><strong>Eternl</strong></td>
+                <td>Browser Extension / Mobile</td>
+                <td>eternl.io</td>
+                <td>Advanced features, Multi-account</td>
+              </tr>
+              <tr>
+                <td><strong>Flint</strong></td>
+                <td>Browser Extension</td>
+                <td>flint-wallet.com</td>
+                <td>User-friendly, Secure</td>
+              </tr>
+              <tr>
+                <td><strong>Yoroi</strong></td>
+                <td>Browser Extension / Mobile</td>
+                <td>yoroi-wallet.com</td>
+                <td>EMURGO official wallet</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Installation Steps:</h4>
+        <ol>
+          <li>Visit the official website of your chosen wallet</li>
+          <li>Download and install the browser extension or mobile app</li>
+          <li>Create a new wallet (save your recovery phrase securely!)</li>
+          <li>Fund your wallet with ADA (Cardano's native cryptocurrency)</li>
+          <li>You're ready to connect to Invoice Finance!</li>
+        </ol>
+
+        <div class="alert alert-warning">
+          <h4>⚠️ Security Warning</h4>
+          <p>
+            Never share your recovery phrase with anyone. Invoice Finance will never ask for your recovery phrase. Store it securely offline. Anyone with access to your recovery phrase can access your funds.
+          </p>
+        </div>
+
+        <h3 id="connect-wallet">Connecting Your Wallet</h3>
+        <p>Once you have a Cardano wallet set up:</p>
+
+        <ol>
+          <li>Navigate to <strong>Invoice Finance</strong> platform</li>
+          <li>Click the <strong>"Connect Wallet"</strong> button in the top right corner</li>
+          <li>Select your wallet from the list of available options</li>
+          <li>Approve the connection request in your wallet</li>
+          <li>Your wallet address will appear, confirming successful connection</li>
+        </ol>
+
+        <div class="code-block">
+Status: Wallet Connected ✓
+Address: addr1q9x7j2...k3m9p8
+Balance: 1,250 ADA
+Network: Mainnet
+        </div>
+      </section>
+
+      <!-- User Guides -->
+      <section id="user-guides">
+        <h2>User Guides</h2>
+
+        <h3 id="issuer-guide">For Invoice Issuers</h3>
+        <p>
+          If you're a business looking to unlock working capital by financing your invoices, follow this comprehensive guide.
+        </p>
+
+        <h4>Step 1: Access Create Invoice Page</h4>
+        <ul>
+          <li>From the home dashboard, click on <strong>"Create Invoice"</strong> card</li>
+          <li>Or click the <strong>"Get Started"</strong> button in the hero section</li>
+          <li>Ensure your wallet is connected before proceeding</li>
+        </ul>
+
+        <h4>Step 2: Prepare Your Invoice</h4>
+        <p>Before uploading, ensure your invoice includes:</p>
+        <ul>
+          <li>Invoice number and date</li>
+          <li>Your business details (name, address, contact)</li>
+          <li>Debtor/customer details</li>
+          <li>Itemized list of goods/services</li>
+          <li>Total amount due</li>
+          <li>Payment terms (net 30, net 60, etc.)</li>
+          <li>Due date</li>
+        </ul>
+
+        <h4>Step 3: Upload Invoice Document</h4>
+        <div class="step-cards">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h4>Click "Choose File"</h4>
+            <p>Select your invoice document from your computer. Supported formats: PDF, PNG, JPG.</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h4>Enter Face Value</h4>
+            <p>Input the total invoice amount in ADA. This is the amount your customer owes.</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h4>Set Repayment Amount</h4>
+            <p>Enter the amount you'll pay back to investors, including their return (typically 3-8% above face value).</p>
+          </div>
+        </div>
+
+        <h4>Step 4: Create Invoice NFT</h4>
+        <ul>
+          <li>Review all details carefully</li>
+          <li>Click <strong>"Create Invoice NFT"</strong> button</li>
+          <li>Confirm the transaction in your wallet</li>
+          <li>Wait for blockchain confirmation (typically 20-60 seconds)</li>
+          <li>Your invoice NFT is now minted and listed in the marketplace!</li>
+        </ul>
+
+        <div class="code-block">
+✓ Invoice uploaded successfully
+✓ NFT minting initiated...
+✓ Transaction confirmed on Cardano blockchain
+✓ Invoice NFT created: INV-2026-001
+✓ Listed in marketplace - awaiting funding
+        </div>
+
+        <h4>Step 5: Receive Funding</h4>
+        <p>Once an investor funds your invoice:</p>
+        <ul>
+          <li>You'll receive a notification of the funding</li>
+          <li>Funds are transferred to your wallet within seconds</li>
+          <li>The invoice NFT ownership transfers to the investor</li>
+          <li>You can now use the funds for business operations</li>
+        </ul>
+
+        <h4>Step 6: Manage Repayment</h4>
+        <p>When your customer pays the original invoice:</p>
+        <ul>
+          <li>Navigate to <strong>"My Funded Invoices"</strong> section</li>
+          <li>Find the invoice that was paid by your customer</li>
+          <li>Click <strong>"Repay Investor"</strong> button</li>
+          <li>Confirm payment of the repayment amount in your wallet</li>
+          <li>Upon confirmation, the investor receives their return</li>
+          <li>The invoice NFT is burned, completing the cycle</li>
+        </ul>
+
+        <div class="alert alert-info">
+          <h4>💡 Pro Tip</h4>
+          <p>
+            To get the best rates, set competitive repayment amounts. Check similar invoices in the marketplace to gauge market rates. Typically, a 5-7% premium attracts investors quickly.
+          </p>
+        </div>
+
+        <h3 id="investor-guide">For Investors</h3>
+        <p>
+          If you're looking to invest in invoice financing and earn returns, this guide will walk you through the process.
+        </p>
+
+        <h4>Step 1: Browse Available Invoices</h4>
+        <ul>
+          <li>From the home dashboard, click <strong>"Available Invoices"</strong></li>
+          <li>View all invoice NFTs currently seeking funding</li>
+          <li>Each card displays key information about the invoice</li>
+        </ul>
+
+        <h4>Step 2: Evaluate Investment Opportunities</h4>
+        <p>When reviewing invoices, consider:</p>
+        <ul>
+          <li><strong>Face Value:</strong> The original invoice amount</li>
+          <li><strong>Repayment Amount:</strong> What you'll receive back</li>
+          <li><strong>Return Rate:</strong> Your profit percentage</li>
+          <li><strong>Time to Maturity:</strong> How long until expected repayment</li>
+          <li><strong>Issuer History:</strong> Track record of previous repayments</li>
+        </ul>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Invoice ID</th>
+                <th>Face Value</th>
+                <th>Your Investment</th>
+                <th>Repayment</th>
+                <th>Return</th>
+                <th>Due Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>INV-2026-045</td>
+                <td>1,000 ADA</td>
+                <td>950 ADA</td>
+                <td>1,000 ADA</td>
+                <td>5.26%</td>
+                <td>30 days</td>
+              </tr>
+              <tr>
+                <td>INV-2026-046</td>
+                <td>5,000 ADA</td>
+                <td>4,700 ADA</td>
+                <td>5,000 ADA</td>
+                <td>6.38%</td>
+                <td>60 days</td>
+              </tr>
+              <tr>
+                <td>INV-2026-047</td>
+                <td>2,500 ADA</td>
+                <td>2,400 ADA</td>
+                <td>2,500 ADA</td>
+                <td>4.17%</td>
+                <td>45 days</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Step 3: Fund an Invoice</h4>
+        <div class="step-cards">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h4>Select Invoice</h4>
+            <p>Click on an invoice card to view full details and click "Fund This Invoice".</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h4>Review Terms</h4>
+            <p>Carefully review the investment amount, expected return, and repayment terms.</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h4>Confirm Funding</h4>
+            <p>Confirm the transaction in your wallet. The invoice NFT transfers to you automatically.</p>
+          </div>
+        </div>
+
+        <h4>Step 4: Track Your Investments</h4>
+        <ul>
+          <li>Navigate to <strong>"My Funded Invoices"</strong> dashboard</li>
+          <li>View all invoices you've funded</li>
+          <li>Monitor repayment status and due dates</li>
+          <li>Track your overall portfolio performance</li>
+        </ul>
+
+        <h4>Step 5: Receive Repayment</h4>
+        <p>When the issuer repays the invoice:</p>
+        <ul>
+          <li>You'll receive a notification</li>
+          <li>The repayment amount is automatically transferred to your wallet</li>
+          <li>The invoice NFT is burned</li>
+          <li>Your investment plus return is now available in your wallet</li>
+        </ul>
+
+        <div class="alert alert-info">
+          <h4>💡 Investment Strategy</h4>
+          <p>
+            Diversify your investments across multiple invoices to spread risk. Start with smaller amounts to learn the platform. Check issuer history and repayment track record before investing large amounts.
+          </p>
+        </div>
+
+        <h3 id="managing-invoices">Managing Your Invoices</h3>
+        <h4>Dashboard Overview</h4>
+        <p>Your dashboard provides real-time insights into your invoice financing activities:</p>
+        <ul>
+          <li><strong>Total Value:</strong> Sum of all active invoices</li>
+          <li><strong>Funded Amount:</strong> Total capital deployed (investors) or received (issuers)</li>
+          <li><strong>Expected Returns:</strong> Projected earnings or repayment obligations</li>
+          <li><strong>Active Invoices:</strong> Number of currently funded invoices</li>
+          <li><strong>Completed Transactions:</strong> History of successful repayments</li>
+        </ul>
+
+        <h4>Invoice Status States</h4>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Description</th>
+                <th>Action Available</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong style="color: #dc2626;">Pending</strong></td>
+                <td>Invoice NFT minted, awaiting investor funding</td>
+                <td>Cancel listing (issuer)</td>
+              </tr>
+              <tr>
+                <td><strong style="color: #16a34a;">Funded</strong></td>
+                <td>Investor has funded the invoice</td>
+                <td>Process repayment (issuer)</td>
+              </tr>
+              <tr>
+                <td><strong style="color: #4b5563;">Repaid</strong></td>
+                <td>Invoice fully repaid, NFT burned</td>
+                <td>View history</td>
+              </tr>
+              <tr>
+                <td><strong style="color: #dc2626;">Overdue</strong></td>
+                <td>Past due date without repayment</td>
+                <td>Contact support / resolution</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Smart Contracts -->
+      <section id="smart-contracts">
+        <h2>Smart Contracts & Security</h2>
+        <p>
+          Invoice Finance leverages Cardano's Plutus smart contracts to ensure secure, transparent, and automated execution of all financing transactions.
+        </p>
+
+        <h3 id="nft-structure">NFT Structure</h3>
+        <p>Each invoice NFT contains the following metadata:</p>
+
+        <div class="code-block">
+{
+  "721": {
+    "policy_id": "a1b2c3d4...",
+    "asset_name": "INV-2026-001",
+    "name": "Invoice #2026-001",
+    "description": "Tokenized invoice financing",
+    "image": "ipfs://Qm...",
+    "invoice_data": {
+      "face_value": 1000,
+      "repayment_amount": 1050,
+      "currency": "ADA",
+      "due_date": "2026-03-30",
+      "issuer": "addr1q9x7j2...",
+      "creation_date": "2026-01-29",
+      "status": "pending"
+    }
+  }
+}
+        </div>
+
+        <h3>Smart Contract Functions</h3>
+
+        <h4>1. Mint Invoice NFT</h4>
+        <p>Creates a unique NFT representing the invoice with embedded metadata.</p>
+        <ul>
+          <li>Validates invoice data</li>
+          <li>Generates unique asset identifier</li>
+          <li>Records issuer address as initial owner</li>
+          <li>Lists NFT in marketplace contract</li>
+        </ul>
+
+        <h4>2. Fund Invoice</h4>
+        <p>Transfers funds from investor to issuer and updates NFT ownership.</p>
+        <ul>
+          <li>Verifies investor has sufficient funds</li>
+          <li>Transfers face value minus discount to issuer</li>
+          <li>Transfers NFT ownership to investor</li>
+          <li>Updates invoice status to "funded"</li>
+          <li>Records transaction on-chain</li>
+        </ul>
+
+        <h4>3. Process Repayment</h4>
+        <p>Handles repayment from issuer to investor upon invoice maturity.</p>
+        <ul>
+          <li>Verifies issuer identity</li>
+          <li>Transfers repayment amount to investor</li>
+          <li>Burns the invoice NFT</li>
+          <li>Updates status to "repaid"</li>
+          <li>Records completion on-chain</li>
+        </ul>
+
+        <h3 id="security">Security Measures</h3>
+
+        <div class="feature-grid">
+          <div class="feature-box">
+            <div class="feature-icon">🔐</div>
+            <h4>Cryptographic Security</h4>
+            <p>All transactions are secured by Cardano's cryptographic protocols, ensuring data integrity and preventing tampering.</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-icon">🛡️</div>
+            <h4>Smart Contract Audits</h4>
+            <p>Our Plutus smart contracts undergo rigorous third-party security audits to identify and eliminate vulnerabilities.</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-icon">💎</div>
+            <h4>Immutable Records</h4>
+            <p>Once recorded on the Cardano blockchain, invoice data and transactions cannot be altered or deleted.</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-icon">🔍</div>
+            <h4>Transparent Operations</h4>
+            <p>All platform activities are publicly verifiable on the blockchain, ensuring complete transparency.</p>
+          </div>
+        </div>
+
+        <div class="alert alert-warning">
+          <h4>⚠️ Security Best Practices</h4>
+          <ul>
+            <li>Always verify you're on the official Invoice Finance domain</li>
+            <li>Never share your private keys or recovery phrase</li>
+            <li>Use hardware wallets for large amounts</li>
+            <li>Enable 2FA on your email and wallet accounts</li>
+            <li>Regularly update your wallet software</li>
+            <li>Be cautious of phishing attempts</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Fees & Pricing -->
+      <section id="fees">
+        <h2>Fees & Pricing</h2>
+        <p>
+          Invoice Finance operates on a transparent fee structure with minimal costs to maximize value for both issuers and investors.
+        </p>
+
+        <h3>Platform Fees</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Fee</th>
+                <th>Who Pays</th>
+                <th>When Charged</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Invoice NFT Minting</td>
+                <td>2 ADA</td>
+                <td>Invoice Issuer</td>
+                <td>At creation</td>
+              </tr>
+              <tr>
+                <td>Platform Service Fee</td>
+                <td>1% of face value</td>
+                <td>Invoice Issuer</td>
+                <td>Upon funding</td>
+              </tr>
+              <tr>
+                <td>Funding Transaction</td>
+                <td>Network fee (~0.17 ADA)</td>
+                <td>Investor</td>
+                <td>When funding</td>
+              </tr>
+              <tr>
+                <td>Repayment Processing</td>
+                <td>0.5% of repayment</td>
+                <td>Invoice Issuer</td>
+                <td>Upon repayment</td>
+              </tr>
+              <tr>
+                <td>Early Cancellation</td>
+                <td>1 ADA</td>
+                <td>Invoice Issuer</td>
+                <td>If cancelled before funding</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Cost Comparison</h3>
+        <p>See how Invoice Finance compares to traditional factoring services:</p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Provider</th>
+                <th>Setup Fee</th>
+                <th>Service Fee</th>
+                <th>Total Cost (on $10K)</th>
+                <th>Time to Fund</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background: #f0fdf4;">
+                <td><strong>Invoice Finance</strong></td>
+                <td>$5</td>
+                <td>1%</td>
+                <td>$105</td>
+                <td>&lt; 1 hour</td>
+              </tr>
+              <tr>
+                <td>Traditional Bank</td>
+                <td>$200-500</td>
+                <td>2-5%</td>
+                <td>$400-700</td>
+                <td>2-4 weeks</td>
+              </tr>
+              <tr>
+                <td>Factoring Company</td>
+                <td>$100-300</td>
+                <td>1.5-5%</td>
+                <td>$250-800</td>
+                <td>1-2 weeks</td>
+              </tr>
+              <tr>
+                <td>Online Lender</td>
+                <td>$50-150</td>
+                <td>1-3%</td>
+                <td>$150-450</td>
+                <td>3-7 days</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="alert alert-info">
+          <h4>💡 Cost Savings</h4>
+          <p>
+            Invoice Finance typically saves businesses 50-70% in financing costs compared to traditional options, while providing funding 100x faster.
+          </p>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq">
+        <h2>Frequently Asked Questions</h2>
+
+        <h3>General Questions</h3>
+
+        <h4>What is invoice financing?</h4>
+        <p>
+          Invoice financing allows businesses to access immediate cash by selling their outstanding invoices at a discount. Instead of waiting 30-90 days for customer payment, businesses receive funds immediately and repay investors when the customer pays.
+        </p>
+
+        <h4>Why use blockchain for invoice financing?</h4>
+        <p>
+          Blockchain technology provides transparency, security, and efficiency. Smart contracts automate the entire process, eliminate intermediaries, reduce costs, and create immutable records of all transactions. NFTs make invoices tradeable digital assets.
+        </p>
+
+        <h4>Do I need cryptocurrency experience?</h4>
+        <p>
+          While basic understanding of cryptocurrency wallets is helpful, our platform is designed to be user-friendly. Follow our getting started guide to set up your wallet and begin using the platform within minutes.
+        </p>
+
+        <h4>What happens if an invoice isn't repaid?</h4>
+        <p>
+          While we implement verification measures, invoice financing carries inherent risk. We recommend investors diversify across multiple invoices and issuers. We're developing a reputation system and dispute resolution mechanism for future releases.
+        </p>
+
+        <h3>For Invoice Issuers</h3>
+
+        <h4>What types of invoices can I finance?</h4>
+        <p>
+          You can finance B2B invoices for goods or services already delivered to creditworthy customers. Invoices should be legitimate, unpaid, and not yet at the due date. We currently don't support invoices to individual consumers or government contracts.
+        </p>
+
+        <h4>How quickly can I get funded?</h4>
+        <p>
+          Once you create your invoice NFT, funding can happen within minutes if investors find your terms attractive. On average, competitive invoices are funded within 1-4 hours.
+        </p>
+
+        <h4>What discount rate should I offer?</h4>
+        <p>
+          Typical discount rates range from 3-8% depending on invoice amount, due date, and your reputation. Check similar invoices in the marketplace to gauge competitive rates. Higher discounts (lower costs to you) attract investors faster.
+        </p>
+
+        <h3>For Investors</h3>
+
+        <h4>What returns can I expect?</h4>
+        <p>
+          Returns typically range from 3-8% for short-term financing (30-90 days), which annualizes to 12-32%. Actual returns depend on the discount rate offered by issuers and the invoice term length.
+        </p>
+
+        <h4>How do I assess risk?</h4>
+        <p>
+          Review the invoice details, issuer's repayment history, and customer reputation. Start with smaller investments, diversify across multiple invoices, and consider invoice maturity dates. Higher returns generally indicate higher perceived risk.
+        </p>
+
+        <h4>Can I sell my invoice NFT before maturity?</h4>
+        <p>
+          Currently, invoice NFTs are held until repayment. We're developing a secondary marketplace where investors can sell their invoice NFTs to other investors before maturity, providing additional liquidity.
+        </p>
+
+        <h3>Technical Questions</h3>
+
+        <h4>Which Cardano wallets are supported?</h4>
+        <p>
+          We support all major Cardano wallets including Nami, Eternl, Flint, Yoroi, and any wallet implementing the CIP-30 standard (Cardano dApp connector).
+        </p>
+
+        <h4>What are the network fees?</h4>
+        <p>
+          Cardano network fees (transaction fees) are minimal, typically 0.17-0.35 ADA per transaction. These fees go to stake pool operators who secure the network, not to Invoice Finance.
+        </p>
+
+        <h4>Is my data secure?</h4>
+        <p>
+          Yes. Invoice metadata is stored on the Cardano blockchain using IPFS for document storage. All transactions are secured by cryptography. Your wallet private keys never leave your device.
+        </p>
+
+        <h4>Can I use this from any country?</h4>
+        <p>
+          Invoice Finance is accessible globally as a decentralized platform. However, users are responsible for complying with their local regulations regarding cryptocurrency use and business financing.
+        </p>
+      </section>
+
+      <!-- Support -->
+      <section id="support">
+        <h2>Support & Resources</h2>
+
+        <h3>Getting Help</h3>
+        <p>
+          If you need assistance or have questions not covered in this documentation, we're here to help.
+        </p>
+
+        <div class="feature-grid">
+          <div class="feature-box">
+            <div class="feature-icon">📧</div>
+            <h4>Email Support</h4>
+            <p>Send detailed inquiries to:<br><strong>support@invoicefinance.io</strong></p>
+            <p style="font-size: 13px; color: #6b7280;">Response time: 24-48 hours</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-icon">💬</div>
+            <h4>Community Discord</h4>
+            <p>Join our Discord server for real-time community support and updates.</p>
+            <p style="font-size: 13px; color: #6b7280;">Active 24/7</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-icon">🐦</div>
+            <h4>Twitter</h4>
+            <p>Follow <strong>@InvoiceFinance</strong> for announcements, tips, and platform updates.</p>
+            <p style="font-size: 13px; color: #6b7280;">Daily updates</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-icon">📚</div>
+            <h4>Knowledge Base</h4>
+            <p>Access video tutorials, guides, and articles in our knowledge base.</p>
+            <p style="font-size: 13px; color: #6b7280;">50+ articles</p>
+          </div>
+        </div>
+
+        <h3>Additional Resources</h3>
+        <ul>
+          <li><strong>Developer Documentation:</strong> API docs and integration guides for businesses</li>
+          <li><strong>Video Tutorials:</strong> Step-by-step walkthrough videos for all platform features</li>
+          <li><strong>Blog:</strong> Industry insights, platform updates, and invoice financing education</li>
+          <li><strong>Whitepaper:</strong> Technical specification and protocol design document</li>
+          <li><strong>GitHub:</strong> Open-source components and community contributions</li>
+        </ul>
+
+        <h3>Feedback & Suggestions</h3>
+        <p>
+          We're constantly improving Invoice Finance based on user feedback. Share your ideas, report bugs, or suggest features:
+        </p>
+        <ul>
+          <li><strong>Feature Requests:</strong> features@invoicefinance.io</li>
+          <li><strong>Bug Reports:</strong> bugs@invoicefinance.io</li>
+          <li><strong>Partnerships:</strong> partnerships@invoicefinance.io</li>
+        </ul>
+
+        <div class="alert alert-info">
+          <h4>🚀 Stay Updated</h4>
+          <p>
+            Subscribe to our newsletter to receive monthly updates about new features, platform improvements, and invoice financing best practices delivered to your inbox.
+          </p>
+        </div>
+
+        <h3>Legal & Compliance</h3>
+        <ul>
+          <li><a href="#" style="color: var(--red); text-decoration: none;">Terms of Service</a></li>
+          <li><a href="#" style="color: var(--red); text-decoration: none;">Privacy Policy</a></li>
+          <li><a href="#" style="color: var(--red); text-decoration: none;">AML/KYC Policy</a></li>
+          <li><a href="#" style="color: var(--red); text-decoration: none;">Risk Disclosure</a></li>
+        </ul>
+
+        <div style="margin-top: 80px; padding-top: 40px; border-top: 2px solid var(--gray-200); text-align: center; color: var(--gray-600);">
+          <p>
+            <strong>Invoice Finance</strong> - Decentralized Invoice Financing on Cardano<br>
+            Built with ❤️ for businesses and investors worldwide<br>
+            © 2026 Invoice Finance. All rights reserved.
+          </p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Scroll to top button -->
+  <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</button>
+
+  <script>
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          
+          // Update active state in sidebar
+          document.querySelectorAll('.sidebar-nav a').forEach(link => {
+            link.classList.remove('active');
+          });
+          this.classList.add('active');
+        }
+      });
+    });
+
+    // Show/hide scroll to top button
+    window.addEventListener('scroll', () => {
+      const scrollTop = document.getElementById('scrollTop');
+      if (window.pageYOffset > 300) {
+        scrollTop.classList.add('visible');
+      } else {
+        scrollTop.classList.remove('visible');
+      }
+    });
+
+    // Update active sidebar link on scroll
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.sidebar-nav a[href^="#"]');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (pageYOffset >= sectionTop - 100) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+          link.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
