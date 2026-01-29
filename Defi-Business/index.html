@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice Finance - Tokenized Invoice Financing on Cardano</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    /* Navigation */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 60px;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #dc2626 0%, #fff 50%, #16a34a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 35px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #555;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #dc2626;
+    }
+
+    .nav-cta {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      color: white;
+      padding: 12px 28px;
+      border-radius: 25px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+      padding: 120px 60px;
+      position: relative;
+      overflow: hidden;
+      min-height: 650px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(220, 38, 38, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(22, 163, 74, 0.12) 0%, transparent 50%);
+      animation: pulse 15s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 950px;
+    }
+
+    .hero h1 {
+      font-size: 62px;
+      color: white;
+      margin-bottom: 24px;
+      line-height: 1.15;
+      font-weight: 800;
+      animation: fadeInUp 0.8s ease;
+    }
+
+    .hero p {
+      font-size: 22px;
+      color: #e5e7eb;
+      margin-bottom: 40px;
+      line-height: 1.6;
+      animation: fadeInUp 1s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      animation: fadeInUp 1.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      color: white;
+      padding: 18px 45px;
+      border: none;
+      border-radius: 30px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(220, 38, 38, 0.5);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: white;
+      padding: 18px 45px;
+      border: none;
+      border-radius: 30px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(22, 163, 74, 0.5);
+    }
+
+    /* Floating Invoices */
+    .floating-invoices {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    .invoice-float {
+      position: absolute;
+      animation: floatInvoice 8s ease-in-out infinite;
+      opacity: 0.15;
+    }
+
+    .invoice-1 { top: 15%; left: 8%; animation-delay: 0s; font-size: 50px; }
+    .invoice-2 { top: 20%; right: 12%; animation-delay: 1.5s; font-size: 45px; }
+    .invoice-3 { bottom: 25%; left: 15%; animation-delay: 3s; font-size: 55px; }
+    .invoice-4 { bottom: 20%; right: 10%; animation-delay: 2s; font-size: 48px; }
+    .invoice-5 { top: 55%; left: 5%; animation-delay: 4s; font-size: 42px; }
+    .invoice-6 { top: 65%; right: 8%; animation-delay: 1s; font-size: 52px; }
+
+    @keyframes floatInvoice {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-30px) rotate(8deg); }
+      50% { transform: translateY(-20px) rotate(-8deg); }
+      75% { transform: translateY(-25px) rotate(5deg); }
+    }
+
+    /* Features Section */
+    .features {
+      padding: 120px 60px;
+      background: white;
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 90px;
+    }
+
+    .features-header h2 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      color: #1f2937;
+      font-weight: 800;
+    }
+
+    .features-header p {
+      font-size: 20px;
+      color: #6b7280;
+      max-width: 750px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 100px;
+      max-width: 1300px;
+      margin: 0 auto;
+      align-items: center;
+    }
+
+    /* Invoice Visual */
+    .invoice-visual {
+      position: relative;
+      height: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .invoice-stack {
+      position: relative;
+      width: 350px;
+      height: 450px;
+    }
+
+    .invoice-doc {
+      position: absolute;
+      width: 280px;
+      height: 360px;
+      background: linear-gradient(135deg, #fff, #f9fafb);
+      border-radius: 16px;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+      padding: 30px;
+      border: 3px solid #e5e7eb;
+    }
+
+    .invoice-doc-1 {
+      top: 0;
+      left: 0;
+      z-index: 3;
+      animation: invoicePulse 3s ease-in-out infinite;
+    }
+
+    .invoice-doc-2 {
+      top: 20px;
+      left: 25px;
+      z-index: 2;
+      opacity: 0.7;
+      transform: rotate(5deg);
+    }
+
+    .invoice-doc-3 {
+      top: 40px;
+      left: 50px;
+      z-index: 1;
+      opacity: 0.5;
+      transform: rotate(8deg);
+    }
+
+    @keyframes invoicePulse {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-15px) scale(1.05); }
+    }
+
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #dc2626;
+    }
+
+    .invoice-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #dc2626;
+    }
+
+    .invoice-number {
+      font-size: 14px;
+      color: #6b7280;
+      font-weight: 600;
+    }
+
+    .invoice-line {
+      height: 8px;
+      background: linear-gradient(90deg, #dc2626, #16a34a);
+      border-radius: 4px;
+      margin: 12px 0;
+      opacity: 0.3;
+    }
+
+    .invoice-line.short {
+      width: 60%;
+    }
+
+    .nft-badge {
+      position: absolute;
+      bottom: 30px;
+      right: -30px;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 8px 25px rgba(22, 163, 74, 0.4);
+      animation: badgePulse 2s ease-in-out infinite;
+    }
+
+    @keyframes badgePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .feature-content h3 {
+      font-size: 38px;
+      margin-bottom: 25px;
+      color: #1f2937;
+      font-weight: 800;
+    }
+
+    .feature-content p {
+      font-size: 18px;
+      color: #6b7280;
+      line-height: 1.8;
+      margin-bottom: 18px;
+    }
+
+    .feature-list {
+      list-style: none;
+      margin-top: 35px;
+    }
+
+    .feature-list li {
+      padding: 14px 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 17px;
+      color: #374151;
+      font-weight: 500;
+    }
+
+    .feature-list li::before {
+      content: '✓';
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-weight: 800;
+      font-size: 16px;
+    }
+
+    .feature-list.red li::before {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+    }
+
+    /* How It Works */
+    .how-it-works {
+      padding: 120px 60px;
+      background: #f9fafb;
+    }
+
+    .how-it-works h2 {
+      text-align: center;
+      font-size: 48px;
+      margin-bottom: 70px;
+      color: #1f2937;
+      font-weight: 800;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 45px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    .step-card {
+      background: white;
+      padding: 45px 35px;
+      border-radius: 24px;
+      text-align: center;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+      transition: all 0.4s;
+      position: relative;
+      border: 2px solid transparent;
+    }
+
+    .step-card:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+      border-color: #dc2626;
+    }
+
+    .step-number {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 800;
+      margin: 0 auto 25px;
+    }
+
+    .step-card:nth-child(2) .step-number {
+      background: linear-gradient(135deg, #fff, #e5e7eb);
+      color: #1f2937;
+      border: 4px solid #6b7280;
+    }
+
+    .step-card:nth-child(3) .step-number {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+    }
+
+    .step-icon {
+      font-size: 56px;
+      margin-bottom: 25px;
+    }
+
+    .step-card h3 {
+      font-size: 24px;
+      margin-bottom: 18px;
+      color: #1f2937;
+      font-weight: 700;
+    }
+
+    .step-card p {
+      color: #6b7280;
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    /* Stats */
+    .stats {
+      padding: 90px 60px;
+      background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+      color: white;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 50px;
+      max-width: 1300px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .stat-item h3 {
+      font-size: 56px;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #dc2626, #16a34a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 900;
+    }
+
+    .stat-item p {
+      font-size: 18px;
+      color: #9ca3af;
+      font-weight: 500;
+    }
+
+    /* Testimonials */
+    .testimonials {
+      padding: 120px 60px;
+      background: white;
+    }
+
+    .testimonials h2 {
+      text-align: center;
+      font-size: 48px;
+      margin-bottom: 70px;
+      color: #1f2937;
+      font-weight: 800;
+    }
+
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 45px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    .testimonial {
+      background: #f9fafb;
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.07);
+      transition: all 0.4s;
+      border: 2px solid transparent;
+    }
+
+    .testimonial:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+      border-color: #16a34a;
+    }
+
+    .testimonial-text {
+      color: #4b5563;
+      line-height: 1.9;
+      margin-bottom: 28px;
+      font-style: italic;
+      font-size: 16px;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .author-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #dc2626, #16a34a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 22px;
+    }
+
+    .author-info h4 {
+      font-size: 18px;
+      margin-bottom: 5px;
+      color: #1f2937;
+      font-weight: 700;
+    }
+
+    .author-info p {
+      font-size: 15px;
+      color: #6b7280;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      padding: 120px 60px;
+      background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+      text-align: center;
+      color: white;
+    }
+
+    .cta-section h2 {
+      font-size: 52px;
+      margin-bottom: 25px;
+      font-weight: 800;
+    }
+
+    .cta-section p {
+      font-size: 22px;
+      color: #e5e7eb;
+      margin-bottom: 45px;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    footer {
+      background: #111827;
+      color: white;
+      padding: 70px 60px 40px;
+    }
+
+    .footer-content {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 50px;
+      margin-bottom: 50px;
+    }
+
+    .footer-section h3 {
+      margin-bottom: 25px;
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .footer-section ul {
+      list-style: none;
+    }
+
+    .footer-section ul li {
+      margin-bottom: 14px;
+    }
+
+    .footer-section a {
+      color: #9ca3af;
+      text-decoration: none;
+      transition: color 0.3s;
+      font-size: 15px;
+    }
+
+    .footer-section a:hover {
+      color: white;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 18px;
+      margin-top: 25px;
+    }
+
+    .social-icon {
+      width: 45px;
+      height: 45px;
+      background: #374151;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .social-icon:hover {
+      background: #dc2626;
+      transform: translateY(-4px);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 40px;
+      border-top: 1px solid #374151;
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .features-grid,
+      .steps-grid,
+      .testimonial-grid,
+      .stats-grid,
+      .footer-content {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      nav,
+      .hero,
+      .features,
+      .how-it-works,
+      .testimonials,
+      .cta-section,
+      footer {
+        padding-left: 30px;
+        padding-right: 30px;
+      }
+
+      .hero h1 {
+        font-size: 38px;
+      }
+
+      .invoice-visual {
+        height: 400px;
+      }
+
+      .hero-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <div class="logo">
+      📄 Invoice Finance
+    </div>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#testimonials">Testimonials</a></li>
+    </ul>
+    <a href="home.html" class="nav-cta">Launch App</a>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="floating-invoices">
+      <div class="invoice-float invoice-1">📄</div>
+      <div class="invoice-float invoice-2">📋</div>
+      <div class="invoice-float invoice-3">📃</div>
+      <div class="invoice-float invoice-4">📜</div>
+      <div class="invoice-float invoice-5">📄</div>
+      <div class="invoice-float invoice-6">📋</div>
+    </div>
+    <div class="hero-content">
+      <h1>Transform Invoices into Instant Liquidity</h1>
+      <p>Tokenize your invoices as NFTs on Cardano blockchain, get funded instantly, and unlock working capital without waiting for payment terms</p>
+      <div class="hero-buttons">
+        <a href="home.html" class="btn-primary">Get Started</a>
+        <a href="doc.html" class="btn-secondary">Learn More</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="features-header">
+      <h2>Revolutionary Invoice Financing</h2>
+      <p>Leverage blockchain technology to convert your outstanding invoices into NFTs and access immediate funding from a decentralized marketplace of investors</p>
+    </div>
+
+    <!-- Tokenization Feature -->
+    <div class="features-grid">
+      <div class="invoice-visual">
+        <div class="invoice-stack">
+          <div class="invoice-doc invoice-doc-3"></div>
+          <div class="invoice-doc invoice-doc-2"></div>
+          <div class="invoice-doc invoice-doc-1">
+            <div class="invoice-header">
+              <div class="invoice-title">INVOICE</div>
+              <div class="invoice-number">#2026-001</div>
+            </div>
+            <div class="invoice-line"></div>
+            <div class="invoice-line short"></div>
+            <div class="invoice-line"></div>
+            <div class="invoice-line short"></div>
+            <div class="invoice-line"></div>
+          </div>
+          <div class="nft-badge">🎨 NFT Token</div>
+        </div>
+      </div>
+      
+      <div class="feature-content">
+        <h3>Instant Invoice Tokenization</h3>
+        <p>Upload your invoice document and watch it automatically transform into a unique NFT on the Cardano blockchain. Each invoice becomes a tradeable digital asset with verifiable authenticity.</p>
+        <p>Our smart contracts ensure complete transparency and immutability, protecting both issuers and investors throughout the financing process.</p>
+        <ul class="feature-list red">
+          <li>Automatic NFT minting upon upload</li>
+          <li>Immutable on-chain record</li>
+          <li>Cryptographic verification</li>
+          <li>Instant marketplace listing</li>
+          <li>Full ownership transparency</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Funding Feature -->
+    <div class="features-grid" style="margin-top: 120px;">
+      <div class="feature-content">
+        <h3>Decentralized Funding Marketplace</h3>
+        <p>Access a global pool of investors ready to fund your invoices. Set your terms, and let the marketplace connect you with capital providers seeking returns on invoice financing.</p>
+        <p>Skip traditional banks and factoring companies. Get funded within minutes, not weeks, with transparent terms and competitive rates driven by market demand.</p>
+        <ul class="feature-list">
+          <li>Instant funding availability</li>
+          <li>Competitive market-driven rates</li>
+          <li>No credit checks required</li>
+          <li>Smart contract escrow</li>
+          <li>Automated repayment handling</li>
+        </ul>
+      </div>
+
+      <div class="invoice-visual">
+        <svg width="450" height="450" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <!-- Central Hub -->
+          <circle cx="100" cy="100" r="30" fill="url(#redGradient)" opacity="0.9">
+            <animate attributeName="r" values="30;35;30" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <text x="100" y="108" font-size="28" fill="white" text-anchor="middle" font-weight="bold">💰</text>
+          
+          <!-- Investor Nodes -->
+          <circle cx="100" cy="30" r="18" fill="#16a34a" opacity="0.8">
+            <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+          </circle>
+          <text x="100" y="36" font-size="16" fill="white" text-anchor="middle">👤</text>
+          
+          <circle cx="165" cy="65" r="18" fill="#16a34a" opacity="0.8">
+            <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" begin="0.4s" repeatCount="indefinite"/>
+          </circle>
+          <text x="165" y="71" font-size="16" fill="white" text-anchor="middle">👤</text>
+          
+          <circle cx="165" cy="135" r="18" fill="#16a34a" opacity="0.8">
+            <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" begin="0.8s" repeatCount="indefinite"/>
+          </circle>
+          <text x="165" y="141" font-size="16" fill="white" text-anchor="middle">👤</text>
+          
+          <circle cx="100" cy="170" r="18" fill="#16a34a" opacity="0.8">
+            <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" begin="1.2s" repeatCount="indefinite"/>
+          </circle>
+          <text x="100" y="176" font-size="16" fill="white" text-anchor="middle">👤</text>
+          
+          <circle cx="35" cy="135" r="18" fill="#16a34a" opacity="0.8">
+            <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" begin="1.6s" repeatCount="indefinite"/>
+          </circle>
+          <text x="35" y="141" font-size="16" fill="white" text-anchor="middle">👤</text>
+          
+          <circle cx="35" cy="65" r="18" fill="#16a34a" opacity="0.8">
+            <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" begin="2s" repeatCount="indefinite"/>
+          </circle>
+          <text x="35" y="71" font-size="16" fill="white" text-anchor="middle">👤</text>
+          
+          <!-- Connection Lines -->
+          <line x1="100" y1="70" x2="100" y2="48" stroke="#6b7280" stroke-width="2" stroke-dasharray="4,4" opacity="0.4"/>
+          <line x1="130" y1="100" x2="147" y2="82" stroke="#6b7280" stroke-width="2" stroke-dasharray="4,4" opacity="0.4"/>
+          <line x1="130" y1="100" x2="147" y2="118" stroke="#6b7280" stroke-width="2" stroke-dasharray="4,4" opacity="0.4"/>
+          <line x1="100" y1="130" x2="100" y2="152" stroke="#6b7280" stroke-width="2" stroke-dasharray="4,4" opacity="0.4"/>
+          <line x1="70" y1="100" x2="53" y2="118" stroke="#6b7280" stroke-width="2" stroke-dasharray="4,4" opacity="0.4"/>
+          <line x1="70" y1="100" x2="53" y2="82" stroke="#6b7280" stroke-width="2" stroke-dasharray="4,4" opacity="0.4"/>
+          
+          <defs>
+            <linearGradient id="redGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#dc2626;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#991b1b;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-it-works" id="how-it-works">
+    <h2>How It Works</h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <div class="step-icon">📤</div>
+        <h3>Upload Invoice</h3>
+        <p>Submit your unpaid invoice to our platform. Our system verifies the invoice details and creates a unique NFT representation on the Cardano blockchain.</p>
+      </div>
+      
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <div class="step-icon">🤝</div>
+        <h3>Get Matched</h3>
+        <p>Investors browse available invoices and bid on funding opportunities. You receive competitive offers within minutes based on invoice value and terms.</p>
+      </div>
+      
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <div class="step-icon">💸</div>
+        <h3>Receive Funds</h3>
+        <p>Accept an offer and receive immediate payment minus a small discount. Smart contracts handle the entire transaction securely on the blockchain.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <h3>$2.5B+</h3>
+        <p>Total Invoice Volume</p>
+      </div>
+      <div class="stat-item">
+        <h3>15K+</h3>
+        <p>Active Users</p>
+      </div>
+      <div class="stat-item">
+        <h3>98.7%</h3>
+        <p>Repayment Rate</p>
+      </div>
+      <div class="stat-item">
+        <h3>< 1hr</h3>
+        <p>Average Funding Time</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials" id="testimonials">
+    <h2>What Our Users Say</h2>
+    <div class="testimonial-grid">
+      <div class="testimonial">
+        <div class="testimonial-text">
+          "Invoice Finance transformed our cash flow management. We went from waiting 90 days for payments to having immediate access to working capital. The platform is intuitive and the funding process is incredibly fast."
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar">SM</div>
+          <div class="author-info">
+            <h4>Sarah Mitchell</h4>
+            <p>CEO, TechFlow Solutions</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial">
+        <div class="testimonial-text">
+          "As an investor, I love the transparency and security of blockchain-based invoice financing. The returns are competitive and the smart contracts give me complete confidence in the process."
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar">JC</div>
+          <div class="author-info">
+            <h4>James Chen</h4>
+            <p>Private Investor</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial">
+        <div class="testimonial-text">
+          "We've financed over $500K in invoices through this platform. The rates are fair, the process is seamless, and we no longer have to deal with traditional banks or factoring companies."
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar">RP</div>
+          <div class="author-info">
+            <h4>Rachel Park</h4>
+            <p>CFO, Global Logistics Inc</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <h2>Ready to Transform Your Cash Flow?</h2>
+    <p>Join thousands of businesses unlocking liquidity through tokenized invoice financing</p>
+    <div class="hero-buttons">
+      <a href="home.html" class="btn-primary">Get Started Now</a>
+      <a href="#features" class="btn-secondary">Explore Features</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Invoice Finance</h3>
+        <p style="color: #9ca3af; line-height: 1.8; margin-top: 15px;">
+          Blockchain-powered invoice financing platform built on Cardano. Instant liquidity for businesses worldwide.
+        </p>
+        <div class="social-links">
+          <div class="social-icon">𝕏</div>
+          <div class="social-icon">in</div>
+          <div class="social-icon">ⓓ</div>
+          <div class="social-icon">📱</div>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h3>Platform</h3>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#security">Security</a></li>
+          <li><a href="doc.html">API Docs</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Company</h3>
+        <ul>
+          <li><a href="#about">About Us</a></li>
+          <li><a href="#blog">Blog</a></li>
+          <li><a href="#careers">Careers</a></li>
+          <li><a href="#press">Press Kit</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Legal</h3>
+        <ul>
+          <li><a href="#terms">Terms of Service</a></li>
+          <li><a href="#privacy">Privacy Policy</a></li>
+          <li><a href="#compliance">Compliance</a></li>
+          <li><a href="#cookies">Cookie Policy</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 Invoice Finance. All rights reserved. Built on Cardano Blockchain.</p>
+    </div>
+  </footer>
+</body>
+</html>
