@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice Financing DApp</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --red: #dc2626;
+      --red-dark: #991b1b;
+      --green: #16a34a;
+      --green-dark: #15803d;
+      --white: #ffffff;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-600: #4b5563;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
+      color: var(--gray-800);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      background: var(--white);
+      padding: 20px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--red), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      color: var(--white);
+    }
+
+    .btn.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+    }
+
+    .btn.success {
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      color: var(--white);
+    }
+
+    .btn.success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4);
+    }
+
+    .btn.secondary {
+      background: var(--white);
+      color: var(--gray-800);
+      border: 2px solid var(--gray-200);
+    }
+
+    .btn.secondary:hover {
+      background: var(--gray-50);
+      border-color: var(--gray-600);
+    }
+
+    /* Page Container */
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Home Page */
+    .home-hero {
+      text-align: center;
+      padding: 100px 60px 80px;
+      color: var(--white);
+      position: relative;
+      overflow: hidden;
+      min-height: 500px;
+    }
+
+    .home-hero::before {
+      content: '';
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(220, 38, 38, 0.2), transparent);
+      top: -100px;
+      right: -100px;
+      animation: float-blob-1 8s ease-in-out infinite;
+    }
+
+    .home-hero::after {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(22, 163, 74, 0.2), transparent);
+      bottom: -100px;
+      left: -100px;
+      animation: float-blob-2 10s ease-in-out infinite;
+    }
+
+    @keyframes float-blob-1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-50px, 50px) scale(1.1); }
+    }
+
+    @keyframes float-blob-2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(50px, -50px) scale(1.2); }
+    }
+
+    .home-hero h1 {
+      font-size: 56px;
+      margin-bottom: 20px;
+      font-weight: 800;
+      line-height: 1.2;
+      position: relative;
+      z-index: 1;
+      animation: slideDown 0.8s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .home-hero p {
+      font-size: 20px;
+      color: var(--gray-200);
+      margin-bottom: 40px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+      z-index: 1;
+      animation: slideUp 0.8s ease 0.2s both;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-features {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 60px;
+      position: relative;
+      z-index: 1;
+      animation: fadeIn 1s ease 0.4s both;
+    }
+
+    .hero-feature {
+      text-align: center;
+    }
+
+    .hero-feature-icon {
+      width: 80px;
+      height: 80px;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      font-size: 36px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    .hero-feature:nth-child(2) .hero-feature-icon {
+      animation-delay: 0.3s;
+    }
+
+    .hero-feature:nth-child(3) .hero-feature-icon {
+      animation-delay: 0.6s;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .hero-feature h3 {
+      font-size: 18px;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+
+    .hero-feature p {
+      font-size: 14px;
+      color: var(--gray-300);
+      margin: 0;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      max-width: 1200px;
+      margin: 80px auto 100px;
+      padding: 0 60px;
+    }
+
+    .dashboard-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 40px 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 0.6s ease both;
+    }
+
+    .dashboard-card:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+
+    .dashboard-card:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .dashboard-card:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dashboard-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--red), transparent);
+      transition: left 0.8s;
+    }
+
+    .dashboard-card.green::before {
+      background: linear-gradient(90deg, transparent, var(--green), transparent);
+    }
+
+    .dashboard-card:hover::before {
+      left: 100%;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      border-color: var(--red);
+    }
+
+    .dashboard-card.green:hover {
+      border-color: var(--green);
+    }
+
+    .dashboard-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      animation: iconPulse 3s ease-in-out infinite;
+    }
+
+    .dashboard-card:nth-child(2) .dashboard-icon {
+      animation-delay: 0.5s;
+    }
+
+    .dashboard-card:nth-child(3) .dashboard-icon {
+      animation-delay: 1s;
+    }
+
+    @keyframes iconPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .dashboard-card h3 {
+      font-size: 24px;
+      margin-bottom: 12px;
+      color: var(--gray-800);
+    }
+
+    .dashboard-card p {
+      color: var(--gray-600);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    /* Dashboard Pages */
+    .dashboard-header {
+      background: var(--white);
+      padding: 30px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .dashboard-title {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .dashboard-title h1 {
+      font-size: 32px;
+      color: var(--gray-800);
+    }
+
+    .dashboard-title .icon {
+      font-size: 40px;
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: var(--gray-100);
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .back-btn:hover {
+      background: var(--gray-200);
+      transform: translateX(-5px);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 60px;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+
+    .card h2 {
+      font-size: 28px;
+      margin-bottom: 12px;
+      color: var(--gray-800);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .muted {
+      color: var(--gray-600);
+      margin-bottom: 25px;
+      font-size: 15px;
+    }
+
+    input[type="file"],
+    input[type="number"],
+    input[type="text"] {
+      width: 100%;
+      padding: 14px 18px;
+      margin: 10px 0;
+      border: 2px solid var(--gray-200);
+      border-radius: 8px;
+      font-size: 15px;
+      transition: all 0.3s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+
+    .invoice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+      margin-top: 25px;
+    }
+
+    .invoice-card {
+      background: var(--gray-50);
+      border: 2px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 25px;
+      transition: all 0.3s;
+      overflow: hidden;
+    }
+
+    .invoice-card:hover {
+      border-color: var(--green);
+      box-shadow: 0 8px 25px rgba(22, 163, 74, 0.15);
+      transform: translateY(-5px);
+    }
+
+    .invoice-card img {
+      width: 100%;
+      height: auto;
+      max-height: 200px;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      background: var(--white);
+      padding: 10px;
+    }
+
+    .invoice-card h4 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: var(--gray-800);
+    }
+
+    .invoice-card p {
+      color: var(--gray-600);
+      margin: 8px 0;
+      font-size: 14px;
+    }
+
+    .invoice-card .btn {
+      margin-top: 15px;
+      width: 100%;
+    }
+
+    /* Log Panel */
+    .log-panel {
+      background: var(--gray-900);
+      color: var(--white);
+      padding: 30px 60px;
+      margin-top: 60px;
+    }
+
+    .log-panel h3 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: var(--green);
+    }
+
+    #log {
+      background: rgba(0,0,0,0.3);
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      border: 1px solid rgba(22, 163, 74, 0.3);
+      color: var(--gray-200);
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, var(--white), var(--gray-50));
+      border-radius: 12px;
+      padding: 25px;
+      border: 2px solid var(--gray-200);
+    }
+
+    .stat-card h4 {
+      font-size: 14px;
+      color: var(--gray-600);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-card .value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--gray-800);
+    }
+
+    .stat-card.red .value {
+      color: var(--red);
+    }
+
+    .stat-card.green .value {
+      color: var(--green);
+    }
+
+    /* Invoice Visual */
+    .invoice-visual {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(22, 163, 74, 0.1));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .invoice-visual::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(220, 38, 38, 0.2), transparent);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(50px, -50px); }
+    }
+
+    .invoice-visual svg {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .dashboard-grid,
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header,
+      .dashboard-header,
+      .container,
+      .log-panel,
+      .home-hero {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .home-hero h1 {
+        font-size: 36px;
+      }
+
+      .dashboard-grid {
+        padding: 0 20px;
+      }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--gray-600);
+    }
+
+    .empty-state svg {
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    .empty-state p {
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo">📄 Invoice Finance</div>
+    <button id="connect" class="btn primary">Connect Wallet</button>
+  </header>
+
+  <!-- HOME PAGE -->
+  <div id="homePage" class="page active">
+    <div class="home-hero">
+      <h1>Decentralized Invoice Financing</h1>
+      <p>Transform your invoices into NFTs, get instant funding, and manage your cash flow on the blockchain</p>
+      
+      <div class="hero-features">
+        <div class="hero-feature">
+          <div class="hero-feature-icon">⚡</div>
+          <h3>Instant NFT Minting</h3>
+          <p>Upload & tokenize</p>
+        </div>
+        <div class="hero-feature">
+          <div class="hero-feature-icon">🔒</div>
+          <h3>Blockchain Secured</h3>
+          <p>Cardano smart contracts</p>
+        </div>
+        <div class="hero-feature">
+          <div class="hero-feature-icon">💸</div>
+          <h3>Quick Funding</h3>
+          <p>Fast liquidity access</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="dashboard-card" onclick="showPage('createPage')">
+        <div class="dashboard-icon">📝</div>
+        <h3>Create Invoice</h3>
+        <p>Upload and tokenize your invoices as NFTs on the Cardano blockchain</p>
+        <button class="btn primary">Get Started →</button>
+      </div>
+
+      <div class="dashboard-card green" onclick="showPage('availablePage')">
+        <div class="dashboard-icon">💰</div>
+        <h3>Available Invoices</h3>
+        <p>Browse and fund invoice NFTs to earn returns on repayment</p>
+        <button class="btn success">Explore →</button>
+      </div>
+
+      <div class="dashboard-card" onclick="showPage('fundedPage')">
+        <div class="dashboard-icon">📊</div>
+        <h3>My Funded Invoices</h3>
+        <p>Track your funded invoices and manage repayments</p>
+        <button class="btn secondary">View Dashboard →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE INVOICE PAGE -->
+  <div id="createPage" class="page">
+    <div class="dashboard-header">
+      <div class="dashboard-title">
+        <span class="icon">📝</span>
+        <h1>Create Invoice</h1>
+      </div>
+      <button class="back-btn" onclick="showPage('homePage')">
+        ← Back to Home
+      </button>
+    </div>
+
+    <main class="container">
+      <section class="card">
+        <h2>📄 Upload & Tokenize Invoice</h2>
+        <p class="muted">
+          Upload your invoice document → NFT minted automatically → Invoice listed on-chain for funding
+        </p>
+
+        <div class="invoice-visual">
+          <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M14 2V8H20" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 13H8" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 17H8" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M10 9H9H8" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <input type="file" id="invoiceUpload" />
+        <input type="number" id="faceValue" placeholder="Face Value (ADA)" />
+        <input type="number" id="repayment" placeholder="Repayment Amount (ADA)" />
+
+        <button id="createInvoice" class="btn success" style="width: 100%; margin-top: 20px; padding: 16px;">
+          Create Invoice NFT
+        </button>
+      </section>
+    </main>
+  </div>
+
+  <!-- AVAILABLE INVOICES PAGE -->
+  <div id="availablePage" class="page">
+    <div class="dashboard-header">
+      <div class="dashboard-title">
+        <span class="icon">💰</span>
+        <h1>Available Invoices</h1>
+      </div>
+      <button class="back-btn" onclick="showPage('homePage')">
+        ← Back to Home
+      </button>
+    </div>
+
+    <main class="container">
+      <section class="card">
+        <h2>💼 On-Chain Invoice NFTs</h2>
+        <p class="muted">
+          Browse available invoice NFTs and fund them to earn returns on repayment
+        </p>
+
+        <div id="invoiceGrid" class="invoice-grid">
+          <div class="empty-state">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="12" cy="12" r="10" stroke-width="2"/>
+              <path d="M12 6v6l4 2" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <p>No invoices available yet. Check back soon!</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FUNDED INVOICES PAGE -->
+  <div id="fundedPage" class="page">
+    <div class="dashboard-header">
+      <div class="dashboard-title">
+        <span class="icon">📊</span>
+        <h1>My Funded Invoices</h1>
+      </div>
+      <button class="back-btn" onclick="showPage('homePage')">
+        ← Back to Home
+      </button>
+    </div>
+
+    <main class="container">
+      <section class="card">
+        <h2>📈 Your Investment Portfolio</h2>
+        <p class="muted">
+          Track your funded invoices and manage repayments
+        </p>
+
+        <div id="myinvoiceGrid" class="invoice-grid">
+          <div class="empty-state">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M3 3h18v18H3V3z" stroke-width="2"/>
+              <path d="M9 9h6v6H9V9z" stroke-width="2"/>
+            </svg>
+            <p>You haven't funded any invoices yet. Visit Available Invoices to get started!</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- LOG PANEL -->
+  <footer class="log-panel">
+    <h3>🔔 Status & Activity</h3>
+    <div id="log">Waiting for wallet connection…</div>
+  </footer>
+
+  <script>
+    function showPage(pageId) {
+      // Hide all pages
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+      
+      // Show selected page
+      document.getElementById(pageId).classList.add('active');
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Update empty states when invoices are loaded
+    function updateEmptyStates() {
+      const invoiceGrid = document.getElementById('invoiceGrid');
+      const myInvoiceGrid = document.getElementById('myinvoiceGrid');
+      
+      // Remove empty states if there are invoice cards
+      if (invoiceGrid && invoiceGrid.children.length > 1) {
+        const emptyState = invoiceGrid.querySelector('.empty-state');
+        if (emptyState) emptyState.remove();
+      }
+      
+      if (myInvoiceGrid && myInvoiceGrid.children.length > 1) {
+        const emptyState = myInvoiceGrid.querySelector('.empty-state');
+        if (emptyState) emptyState.remove();
+      }
+    }
+
+    // Call this function periodically to update empty states
+    setInterval(updateEmptyStates, 1000);
+  </script>
+
+  <!-- Your existing JavaScript -->
+  <script type="module" src="new.js"></script>
+</body>
+</html>
