@@ -7,13 +7,14 @@
 
 module Main where
 
-import Prelude (IO, String, FilePath, putStrLn, (<>), take)
+import Prelude (IO, String, FilePath, putStrLn, (<>))
 import qualified Prelude as P
 import qualified Data.Text as T
 
 import Plutus.V2.Ledger.Api
 import Plutus.V2.Ledger.Contexts
 import qualified Plutus.V2.Ledger.Api as PlutusV2
+
 import Plutus.V1.Ledger.Value
     ( AssetClass
     , assetClassValueOf
@@ -21,6 +22,7 @@ import Plutus.V1.Ledger.Value
     , adaSymbol
     , adaToken
     )
+
 import PlutusTx
 import PlutusTx.Prelude hiding (Semigroup(..), unless)
 
@@ -48,7 +50,8 @@ data InvoiceDatum = InvoiceDatum
     , idInvoiceNFT :: AssetClass
     , idFaceValue  :: Integer
     , idRepayment  :: Integer
-    , idInvestors  :: [Investor]
+    , idInvestors  :: [Investor]   -- exactly 0 or 1
+    , isRepaid     :: Bool         -- ✅ NEW
     }
 PlutusTx.unstableMakeIsData ''InvoiceDatum
 
@@ -61,15 +64,29 @@ PlutusTx.unstableMakeIsData ''InvoiceAction
 -- Helpers
 ------------------------------------------------------------
 
-{-# INLINABLE signedBy #-}
-signedBy :: PubKeyHash -> ScriptContext -> Bool
-signedBy pkh ctx =
-    txSignedBy (scriptContextTxInfo ctx) pkh
-
 {-# INLINABLE paidAda #-}
 paidAda :: TxInfo -> PubKeyHash -> Integer
 paidAda info pkh =
     valueOf (valuePaidTo info pkh) adaSymbol adaToken
+
+{-# INLINABLE notFunded #-}
+notFunded :: InvoiceDatum -> Bool
+notFunded dat =
+    case idInvestors dat of
+        [] -> True
+        _  -> False
+
+------------------------------------------------------------
+-- NFT Preservation (funding only)
+------------------------------------------------------------
+
+{-# INLINABLE nftPreserved #-}
+nftPreserved :: InvoiceDatum -> ScriptContext -> Bool
+nftPreserved dat ctx =
+    case getContinuingOutputs ctx of
+        [o] ->
+            assetClassValueOf (txOutValue o) (idInvoiceNFT dat) == 1
+        _ -> False
 
 ------------------------------------------------------------
 -- Validator
@@ -81,67 +98,68 @@ mkInvoiceValidator dat action ctx =
     case action of
 
         ----------------------------------------------------
-        -- Investors fund (issuer controls datum evolution)
+        -- Investor funds invoice
         ----------------------------------------------------
         FundInvoice ->
-            traceIfFalse "issuer signature missing" issuerSigned
+            traceIfFalse "already funded"        (notFunded dat) &&
+            traceIfFalse "already repaid"        (not $ isRepaid dat) &&
+            traceIfFalse "issuer not paid"       issuerPaid &&
+            traceIfFalse "NFT missing"           (nftPreserved dat ctx) &&
+            traceIfFalse "investor must sign"    investorSigned
 
         ----------------------------------------------------
-        -- Client repays and profit is split
+        -- Issuer repays investor
         ----------------------------------------------------
         RepayInvoice ->
+            traceIfFalse "already repaid"        (not $ isRepaid dat) &&
+            traceIfFalse "no investor"           hasInvestor &&
             traceIfFalse "repayment insufficient" repaymentEnough &&
-            traceIfFalse "investors not paid" investorsPaid &&
-            traceIfFalse "invoice NFT not released" nftReleased
+            traceIfFalse "investor not paid"     investorPaid
 
   where
     info :: TxInfo
     info = scriptContextTxInfo ctx
 
-    issuerSigned :: Bool
-    issuerSigned =
-        signedBy (idIssuer dat) ctx
+    ----------------------------------------------------
+    -- Funding checks
+    ----------------------------------------------------
+
+    issuerPaid :: Bool
+    issuerPaid =
+        paidAda info (idIssuer dat) >= idFaceValue dat
+
+    investorSigned :: Bool
+    investorSigned =
+        case txInfoSignatories info of
+            [_] -> True
+            _   -> False
 
     ----------------------------------------------------
-    -- Total repayment must be present
+    -- Repayment checks
     ----------------------------------------------------
+
+    hasInvestor :: Bool
+    hasInvestor =
+        case idInvestors dat of
+            [_] -> True
+            _   -> False
+
     repaymentEnough :: Bool
     repaymentEnough =
-        let totalOut =
-                valueOf
-                    (mconcat (map txOutValue (txInfoOutputs info)))
-                    adaSymbol
-                    adaToken
-        in totalOut >= idRepayment dat
+        valueOf
+            (mconcat (map txOutValue (txInfoOutputs info)))
+            adaSymbol
+            adaToken
+            >= idRepayment dat
 
-    ----------------------------------------------------
-    -- Each investor gets principal + proportional profit
-    ----------------------------------------------------
-    investorsPaid :: Bool
-    investorsPaid =
-        all paidInvestor (idInvestors dat)
-
-    paidInvestor :: Investor -> Bool
-    paidInvestor inv =
-        let totalProfit =
-                idRepayment dat - idFaceValue dat
-
-            investorProfit =
-                (invAmount inv * totalProfit)
-                    `divide` idFaceValue dat
-        in paidAda info (invPkh inv)
-            >= invAmount inv + investorProfit
-
-    ----------------------------------------------------
-    -- NFT must leave the script
-    ----------------------------------------------------
-    nftReleased :: Bool
-    nftReleased =
-        case findOwnInput ctx of
-            Nothing -> traceError "no script input"
-            Just i  ->
-                let v = txOutValue (txInInfoResolved i)
-                in assetClassValueOf v (idInvoiceNFT dat) == 1
+    investorPaid :: Bool
+    investorPaid =
+        case idInvestors dat of
+            [inv] ->
+                let profit = idRepayment dat - idFaceValue dat
+                in paidAda info (invPkh inv)
+                    >= invAmount inv + profit
+            _ -> False
 
 ------------------------------------------------------------
 -- Untyped Wrapper
@@ -163,14 +181,14 @@ validator =
         $$(PlutusTx.compile [|| mkValidatorUntyped ||])
 
 ------------------------------------------------------------
--- Validator Hash & Address
+-- Script Address
 ------------------------------------------------------------
 
 plutusValidatorHash :: PlutusV2.Validator -> PlutusV2.ValidatorHash
 plutusValidatorHash val =
-    let bytes  = Serialise.serialise val
-        short  = SBS.toShort (LBS.toStrict bytes)
-    in PlutusV2.ValidatorHash (toBuiltin (SBS.fromShort short))
+    let bytes = Serialise.serialise val
+    in PlutusV2.ValidatorHash
+        (toBuiltin (SBS.fromShort (SBS.toShort (LBS.toStrict bytes))))
 
 plutusScriptAddress :: Address
 plutusScriptAddress =
@@ -185,7 +203,6 @@ plutusScriptAddress =
 toBech32ScriptAddress :: C.NetworkId -> Validator -> String
 toBech32ScriptAddress network val =
     let serialised = SBS.toShort . LBS.toStrict $ Serialise.serialise val
-        plutusScript :: C.PlutusScript C.PlutusScriptV2
         plutusScript = CS.PlutusScriptSerialised serialised
         scriptHash   = C.hashScript (C.PlutusScript C.PlutusScriptV2 plutusScript)
         shelleyAddr :: C.AddressInEra C.BabbageEra
@@ -197,19 +214,13 @@ toBech32ScriptAddress network val =
     in T.unpack (C.serialiseAddress shelleyAddr)
 
 ------------------------------------------------------------
--- CBOR Helpers
+-- Write CBOR
 ------------------------------------------------------------
-
-writeValidator :: FilePath -> Validator -> IO ()
-writeValidator path val = do
-    LBS.writeFile path (Serialise.serialise val)
-    putStrLn $ "Validator written to: " <> path
 
 writeCBOR :: FilePath -> Validator -> IO ()
 writeCBOR path val = do
-    let bytes = LBS.toStrict (Serialise.serialise val)
-    BS.writeFile path (B16.encode bytes)
-    putStrLn $ "CBOR hex written to: " <> path
+    BS.writeFile path . B16.encode . LBS.toStrict $ Serialise.serialise val
+    putStrLn $ "CBOR written to: " <> path
 
 ------------------------------------------------------------
 -- Main
@@ -218,12 +229,6 @@ writeCBOR path val = do
 main :: IO ()
 main = do
     let network = C.Testnet (C.NetworkMagic 1)
-
-    writeValidator "invoice_financing.plutus" validator
-    writeCBOR      "invoice_financing.cbor"   validator
-
-    putStrLn "\n--- Invoice Financing Contract ---"
-    putStrLn $ "Validator Hash: " <> P.show (plutusValidatorHash validator)
-    putStrLn $ "Script Address: " <> P.show plutusScriptAddress
-    putStrLn $ "Bech32 Address: " <> toBech32ScriptAddress network validator
-    putStrLn "----------------------------------"
+    writeCBOR "invoice_financing.cbor" validator
+    putStrLn "Invoice Financing Validator Ready"
+    putStrLn $ "Address: " <> toBech32ScriptAddress network validator
