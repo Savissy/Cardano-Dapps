@@ -161,7 +161,7 @@ async function loadInvoices() {
         <h3>${meta?.name || "Invoice NFT"}</h3>
         <p>Face Value: ${(d.idFaceValue / 1_000_000n).toString()} ADA</p>
         <p>Repayment: ${(d.idRepayment / 1_000_000n).toString()} ADA</p>
-        <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" class="nft-link">🔍 View & Verify NFT Image</a>
+        <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" class="nft-link">🔍 View & Verify NFT Invoice</a>
         <button class="btn success">Fund Invoice</button>
       `;
 
@@ -180,7 +180,7 @@ async function loadInvoices() {
         <img src="${imageUrl}" alt="Invoice NFT" style="cursor:pointer" onclick="window.open('${imageUrl}', '_blank')" />
         <h3>${meta?.name || "Invoice NFT"}</h3>
         <p>Repay Amount: ${(d.idRepayment / 1_000_000n).toString()} ADA</p>
-        <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" class="nft-link">🔍 View & Verify NFT Image</a>
+        <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" class="nft-link">🔍 View & Verify NFT Invoice</a>
         <button class="btn success">Repay</button>
       `;
 
