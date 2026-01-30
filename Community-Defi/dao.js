@@ -1,3 +1,28 @@
+import{
+    bytesToHex,Cip30Wallet,WalletHelper,TxOutput,
+    Assets,bytesToText,hexToBytes,AssetClass,
+    Tx,Address, NetworkParams, Value,MintingPolicyHash,
+    Program,ByteArrayData,ConstrData,NetworkEmulator,PubKey,
+    textToBytes,Datum,ListData,IntData
+} from "./helios.js";
+
+import{
+    txPrerequisites,walletEssentials,txFunc,hlib,hexToTex,shortAddressFunc, 
+    addressFunc, adaFunc, assetFunc,getAssets,sendADA,sendAssets,
+    showWalletData,mint,txDeadLine,baseAddressPKH,submitTx, getAssetsFromValue
+} from "./coxylib.js";
+
+import{opt,j} from "./jimba.js";
+
+opt._R = 1;//run all tests, checks and logs
+opt._O = 1; //run only logs
+opt._M = 1; //show stake frames of logs
+opt._T = 1; //run tests
+opt._Ob = 0; //show tests stack frames
+opt._FailsOnly = 0; //run only failed tests
+opt._F = 0;  //show functions that are marked with j.s() and j.e() for function profiling
+opt._tNo = 1; //this is the number of times testPack will run
+
 import {
   Lucid,
   Blockfrost,
@@ -61,12 +86,14 @@ async function init() {
   lucid.selectWallet(api);
 
   walletAddress = await lucid.wallet.address();
+  j.log({walletAddress});
   walletPkh =
     lucid.utils.getAddressDetails(walletAddress)
       .paymentCredential.hash;
 
   scriptAddress =
     lucid.utils.validatorToAddress(script);
+    j.log({scriptAddress});
 
   log("Wallet: " + walletAddress);
   log("Script: " + scriptAddress);
@@ -115,23 +142,23 @@ async function createProposal() {
         lucid.utils.getAddressDetails(a.trim())
           .paymentCredential.hash
       );
-  console.log("members", members);
+  j.log({members});
   const quorum =
     document.getElementById("quorum").value;
-  console.log("quorum", quorum);
+  j.log({quorum});
 
   const recipientAddr =
     document.getElementById("recipient").value;
-  console.log("recipientAddr", recipientAddr);
+  j.log({recipientAddr});
   const recipient =
     lucid.utils.getAddressDetails(recipientAddr)
       .paymentCredential.hash;
-  console.log("recipient", recipient);
+  j.log({recipient});
 
   const amount =
     BigInt(document.getElementById("amount").value)
     * 1_000_000n;
-  console.log("amount", amount);
+  j.log({amount});
 
   const datum = mkTreasuryDatum(
     members,
@@ -163,14 +190,14 @@ async function createProposal() {
 
 async function vote() {
   const utxos = await lucid.utxosAt(scriptAddress);
-  console.log("utxos", utxos);
+  j.log({utxos});
 
   const proposalUtxo = utxos.find((u) => {
     if (!u.datum) return false;
     const d = Data.from(u.datum, TreasuryDatum);
     return d.members.includes(walletPkh);
   });
-  console.log("proposalUtxo", proposalUtxo);
+  j.log({proposalUtxo});
 
   if (!proposalUtxo)
     return log("No proposal found");
@@ -179,7 +206,7 @@ async function vote() {
     proposalUtxo.datum,
     TreasuryDatum
   );
-  console.log("d", d);
+  j.log({d});
 
   if (d.votes.includes(walletPkh))
     return log("Already voted");
@@ -191,7 +218,7 @@ async function vote() {
     d.amount,
     [...d.votes, walletPkh]
   );
-  console.log("newDatum", newDatum);
+  j.log({newDatum});
 
   const tx = await lucid
     .newTx()
@@ -217,14 +244,14 @@ async function vote() {
 
 async function execute() {
   const utxos = await lucid.utxosAt(scriptAddress);
-  console.log("utxos", utxos);
+  j.log({utxos});
 
   const proposalUtxo = utxos.find((u) => {
     if (!u.datum) return false;
     const d = Data.from(u.datum, TreasuryDatum);
     return BigInt(d.votes.length) >= d.quorum;
   });
-  console.log("proposalUtxo", proposalUtxo);
+  j.log({proposalUtxo});
 
   if (!proposalUtxo)
     return log("No executable proposal");
@@ -233,7 +260,7 @@ async function execute() {
     proposalUtxo.datum,
     TreasuryDatum
   );
-  console.log("d", d);
+ j.log({d});
 
   // if (walletPkh != d.recipient)
   //   return log("You're not the recipient");
