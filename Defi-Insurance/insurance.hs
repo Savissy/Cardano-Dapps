@@ -61,11 +61,6 @@ membershipPolicy =
     CurrencySymbol
       "3f6f56667f1e1c683316e9f5616c3d9383f8045057764c103a042c6fbc47d131"
 
-{-# INLINABLE membershipToken #-}
-membershipToken :: TokenName
-membershipToken =
-    TokenName "MEMBER"
-
 -------------------------------------------------
 -- HELPERS
 -------------------------------------------------
@@ -73,11 +68,36 @@ membershipToken =
 {-# INLINABLE signerHasMembership #-}
 signerHasMembership :: TxInfo -> PubKeyHash -> Bool
 signerHasMembership info pkh =
-    valueOf
-        (valuePaidTo info pkh)
-        membershipPolicy
-        membershipToken
-        >= 1
+    let
+        tn = TokenName (getPubKeyHash pkh)
+    in
+        valueOf
+            (txInfoMint info)
+            membershipPolicy
+            tn
+        == 0
+        &&
+        any
+            (\i ->
+                valueOf
+                    (txOutValue $ txInInfoResolved i)
+                    membershipPolicy
+                    tn
+                >= 1
+            )
+            (txInfoInputs info)
+
+{-# INLINABLE hasSignerInput #-}
+hasSignerInput :: TxInfo -> PubKeyHash -> Bool
+hasSignerInput info pkh =
+    any
+        (\i ->
+            case txOutAddress (txInInfoResolved i) of
+                Address (PubKeyCredential pkh') _ ->
+                    pkh' == pkh
+                _ -> False
+        )
+        (txInfoInputs info)
 
 -------------------------------------------------
 -- VALIDATOR
@@ -118,7 +138,10 @@ mkInsuranceValidator dat action ctx =
             _     -> traceError "exactly one signer required"
 
     memberAuth :: Bool
-    memberAuth = signerHasMembership info signer
+    memberAuth =
+        txSignedBy info signer
+        && hasSignerInput info signer
+
 
     noDoubleVote :: Bool
     noDoubleVote =
