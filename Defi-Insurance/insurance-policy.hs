@@ -98,35 +98,36 @@ currencySymbol =
         hash = sha2_256 builtin
     in CurrencySymbol hash
 
--------------------------------------------------
--- BECH32 SCRIPT ADDRESS (OFF-CHAIN)
--------------------------------------------------
+--------------------------------------------------------------------------------
+-- CBOR HEX GENERATOR
+--------------------------------------------------------------------------------
 
-toBech32PolicyAddress :: C.NetworkId -> MintingPolicy -> String
-toBech32PolicyAddress network pol =
-    let serialised = SBS.toShort . LBS.toStrict $ Serialise.serialise pol
-        plutusScript :: C.PlutusScript C.PlutusScriptV2
-        plutusScript = CS.PlutusScriptSerialised serialised
-        scriptHash = C.hashScript (C.PlutusScript C.PlutusScriptV2 plutusScript)
-        shelleyAddr :: C.AddressInEra C.BabbageEra
-        shelleyAddr =
-            C.makeShelleyAddressInEra
-                network
-                (C.PaymentCredentialByScript scriptHash)
-                C.NoStakeAddress
-    in T.unpack (C.serialiseAddress shelleyAddr)
+policyToCBORHex :: MintingPolicy -> String
+policyToCBORHex val =
+    let bytes = LBS.toStrict $ Serialise.serialise val
+    in BS.foldr (\b acc -> byteToHex b <> acc) "" bytes
+  where
+    hexChars = "0123456789abcdef"
+    byteToHex b =
+        let hi = P.fromIntegral b `P.div` 16
+            lo = P.fromIntegral b `P.mod` 16
+        in [ hexChars P.!! hi, hexChars P.!! lo ]
 
+writeCBOR :: FilePath -> MintingPolicy -> IO ()
+writeCBOR path val = do
+    let bytes = LBS.toStrict (Serialise.serialise val)
+        hex   = B16.encode bytes
+    BS.writeFile path hex
+    putStrLn $ "CBOR hex written to: " <> path
 -------------------------------------------------
 -- MAIN
 -------------------------------------------------
 
 main :: IO ()
 main = do
-    let network = C.Testnet (C.NetworkMagic 1)
 
-    let bech32 = toBech32PolicyAddress network policy
+    writeCBOR "insurance_mint_policy.cbor" policy
 
     putStrLn "\n--- Soulbound Membership Policy ---"
     putStrLn $ "CurrencySymbol: " <> P.show currencySymbol
-    putStrLn $ "Bech32 Script Address: " <> bech32
     putStrLn "---------------------------------"
