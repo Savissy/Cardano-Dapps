@@ -1,0 +1,467 @@
+import {
+  Lucid,
+  Blockfrost,
+  Constr,
+  Data,
+} from "https://unpkg.com/lucid-cardano@0.10.11/web/mod.js";
+
+/* =====================================================
+   CONFIG
+===================================================== */
+
+const BLOCKFROST_URL = "https://cardano-preprod.blockfrost.io/api/v0";
+const BLOCKFROST_KEY = "preprodYjRkHfcazNkL0xxG9C2RdUbUoTrG7wip";
+const NETWORK = "Preprod";
+
+/* =====================================================
+   MEMBERSHIP (SOULBOUND NFT)
+===================================================== */
+
+export let MEMBERSHIP_POLICY_ID;
+
+const MEMBERSHIP_POLICY_CBOR = "59092501000032323233223232323232323232323322323322323232323232323232223232533532325335533553353008355001222222222222008101e22135002222533500415335333573466e3c00cd401c88cccd40048c98c8098cd5ce2481024c680002920012326320263357389201024c68000292326320263357389201024c680002902402315335333573466e1c005200202402315335333573466e3c009221000240231023102410231023221025101f1335738921196d757374206d696e742065786163746c79206f6e65204e46540001e1533553353008355001222222222222008101e22135002222533500413235001222222222222533533355301912001321233001225335002210031001002502525335333573466e3c0400040c80c44d409c00454098010840c840c14018884094407c4cd5ce24811d6d757374206265207369676e656420627920746f6b656e206f776e65720001e101e135001220023333573466e1cd55cea80124000466442466002006004646464646464646464646464646666ae68cdc39aab9d500c480008cccccccccccc88888888888848cccccccccccc00403403002c02802402001c01801401000c008cd4060064d5d0a80619a80c00c9aba1500b33501801a35742a014666aa038eb9406cd5d0a804999aa80e3ae501b35742a01066a03004a6ae85401cccd54070099d69aba150063232323333573466e1cd55cea801240004664424660020060046464646666ae68cdc39aab9d5002480008cc8848cc00400c008cd40c1d69aba150023031357426ae8940088c98c80cccd5ce01a81b01889aab9e5001137540026ae854008c8c8c8cccd5cd19b8735573aa004900011991091980080180119a8183ad35742a00460626ae84d5d1280111931901999ab9c035036031135573ca00226ea8004d5d09aba2500223263202f33573806206405a26aae7940044dd50009aba1500533501875c6ae854010ccd540700888004d5d0a801999aa80e3ae200135742a00460486ae84d5d1280111931901599ab9c02d02e029135744a00226ae8940044d5d1280089aba25001135744a00226ae8940044d5d1280089aba25001135744a00226ae8940044d55cf280089baa00135742a00460286ae84d5d1280111931900e99ab9c01f02001b101f16135573ca00226ea8004c8004d5406c88448894cd40044d400c88004884ccd401488008c010008ccd54c01c480040140100048cc0094028004c8004d540648894cd40044008884d400888cc01cccc02000801800400cc8004d5406088894cd40044008884d4008894cd4ccd5cd19b87001480000740704ccc02001c01800c4ccc02001ccd403848ccc00402000c00801800c48c88c008dd6000990009aa80c111999aab9f0012500a233500930043574200460066ae880080648c8c8cccd5cd19b8735573aa004900011991091980080180118071aba150023005357426ae8940088c98c8058cd5ce00c00c80a09aab9e5001137540024646464646666ae68cdc39aab9d5004480008cccc888848cccc00401401000c008c8c8c8cccd5cd19b8735573aa0049000119910919800801801180b9aba1500233500f016357426ae8940088c98c806ccd5ce00e80f00c89aab9e5001137540026ae854010ccd54021d728039aba150033232323333573466e1d4005200423212223002004357426aae79400c8cccd5cd19b875002480088c84888c004010dd71aba135573ca00846666ae68cdc3a801a400042444006464c6403a66ae7007c08006c0680644d55cea80089baa00135742a00466a016eb8d5d09aba2500223263201733573803203402a26ae8940044d5d1280089aab9e500113754002266aa002eb9d6889119118011bab00132001355015223233335573e0044a010466a00e66442466002006004600c6aae754008c014d55cf280118021aba200301713574200222440042442446600200800624464646666ae68cdc3a800a400046a00e600a6ae84d55cf280191999ab9a3370ea00490011280391931900919ab9c01401501000f135573aa00226ea800448488c00800c44880048c8c8cccd5cd19b875001480188c848888c010014c01cd5d09aab9e500323333573466e1d400920042321222230020053009357426aae7940108cccd5cd19b875003480088c848888c004014c01cd5d09aab9e500523333573466e1d40112000232122223003005375c6ae84d55cf280311931900819ab9c01201300e00d00c00b135573aa00226ea80048c8c8cccd5cd19b8735573aa004900011991091980080180118029aba15002375a6ae84d5d1280111931900619ab9c00e00f00a135573ca00226ea80048c8cccd5cd19b8735573aa002900011bae357426aae7940088c98c8028cd5ce00600680409baa001232323232323333573466e1d4005200c21222222200323333573466e1d4009200a21222222200423333573466e1d400d2008233221222222233001009008375c6ae854014dd69aba135744a00a46666ae68cdc3a8022400c4664424444444660040120106eb8d5d0a8039bae357426ae89401c8cccd5cd19b875005480108cc8848888888cc018024020c030d5d0a8049bae357426ae8940248cccd5cd19b875006480088c848888888c01c020c034d5d09aab9e500b23333573466e1d401d2000232122222223005008300e357426aae7940308c98c804ccd5ce00a80b00880800780700680600589aab9d5004135573ca00626aae7940084d55cf280089baa0012323232323333573466e1d400520022333222122333001005004003375a6ae854010dd69aba15003375a6ae84d5d1280191999ab9a3370ea0049000119091180100198041aba135573ca00c464c6401866ae7003803c0280244d55cea80189aba25001135573ca00226ea80048c8c8cccd5cd19b875001480088c8488c00400cdd71aba135573ca00646666ae68cdc3a8012400046424460040066eb8d5d09aab9e500423263200933573801601800e00c26aae7540044dd500089119191999ab9a3370ea00290021091100091999ab9a3370ea00490011190911180180218031aba135573ca00846666ae68cdc3a801a400042444004464c6401466ae7003003402001c0184d55cea80089baa0012323333573466e1d40052002200623333573466e1d40092000200623263200633573801001200800626aae74dd5000a4c2440042440029210350543100120011123230010012233003300200200101";
+
+const membershipPolicy = {
+  type: "PlutusV2",
+  script: MEMBERSHIP_POLICY_CBOR,
+};
+
+/* =====================================================
+   VALIDATORS
+===================================================== */
+const SCRIPT_CBOR = "590cea01000032323232332233223232323232323232323232323232332232323232323232323232323232323322323223232323223232232325335323232323232533335005153355335333573466e20c8cccd54c06448004c8cd407488ccd407800c004008d406c004cd4070888c00cc008004800488cdc0000a400400290001a80311110009a803111100201a01a881a899ab9c4901117468726573686f6c64206e6f74206d65740003415335533535006222200321333573466e20c8c0d0004c8ccd54c0544800488cd54c06c480048d400488cd540fc008cd54c078480048d400488cd54108008ccd40048cc1152000001223304600200123304500148000004cd54c06c480048d400488cd540fc008ccd40048cd54c07c480048d400488cd5410c008d5408000400488ccd55406c0980080048cd54c07c480048d400488cd5410c008d5407c004004ccd55405808400800540e4d4004888888888888ccd54c0844800488d40088888d401088cd400894cd4ccd5cd19b8f01700104c04b133504d00600810082008504500a50043500722220020350361326320313357389210b6e6f20636c61696d616e740003110351335738920111636c61696d616e74206e6f74207061696400034103415335500110351335738921136d656d626572736869702072657175697265640003421533553355002103613357389201136d656d626572736869702072657175697265640003515335333573466e2400520000350361036133573892010e696e76616c696420616d6f756e74000351035153355335500110351335738921136d656d62657273686970207265717569726564000341533553353335530181200135016501c301d5002350062222001103410351035133573892010b646f75626c6520766f746500034103415335323235002222222222222533533355302512001335028225335002210031001503125335333573466e3c03800410c1084d40cc004540c80108410c4105400940084c8c8ccd54c06448004d405d40748d4d4d400488004888801088cd40088cc08800401480e4d40088888888888880314009400840cc54cd4d540048888888888880104c0b5262215335001100222130314984d400488008cccd5cd19b8735573aa0089000119910919800801801191919191919191919191919191999ab9a3370e6aae754031200023333333333332222222222221233333333333300100d00c00b00a00900800700600500400300233502902a35742a01866a0520546ae85402ccd40a40acd5d0a805199aa816bae502c35742a012666aa05aeb940b0d5d0a80419a81481a1aba150073335502d03575a6ae854018c8c8c8cccd5cd19b8735573aa00490001199109198008018011919191999ab9a3370e6aae754009200023322123300100300233503f75a6ae854008c100d5d09aba2500223263204433573808208808426aae7940044dd50009aba150023232323333573466e1cd55cea8012400046644246600200600466a07eeb4d5d0a80118201aba135744a004464c6408866ae701041101084d55cf280089baa001357426ae8940088c98c8100cd5ce01e82001f09aab9e5001137540026ae854014cd40a5d71aba150043335502d031200135742a006666aa05aeb88004d5d0a80118199aba135744a004464c6407866ae700e40f00e84d5d1280089aba25001135744a00226ae8940044d5d1280089aba25001135744a00226ae8940044d5d1280089aba25001135573ca00226ea8004d5d0a80218119aba135744a008464c6405c66ae700ac0b80b0cccd5cd19b875005480188488880108cccd5cd19b875006480108488880048cccd5cd19b875007480088c848888c008014dd69aba135573ca01246666ae68cdc3a80424000424444006464c6406066ae700b40c00b80b40b00accccd5cd19b8735573aa01490001199991110919998008028020018011bad35742a01466a03ceb8d5d0a8049bad35742a01066a032eb8d5d09aba2500823263202c33573805205805420562c26aae7940044dd500089aab9d50011375400226ae8940044d5d1280089aab9e500113754002222444666aa600824002a04e66aa60102400246a0024466aa0580046aa012002666aa600824002446a00444a66a666aa601a240026a016a02246a002446601400400a00c2006266a056008006a05000266aa60102400246a002446466aa05a006600200a640026aa05e44a66a00226aa0140064426a00444a66a6601800401022444660040140082600c006004640026aa0504422444a66a00220044426600a004666aa600e2400200a00800222424446006008224244460020082466a00c44666a006440040040026a00244002640026aa048442244a66a0022a04844266a04a600800466aa600c24002008002640026aa0464422444a66a00226a00c006442666a01200a6008004666aa600e2400200a008002246a00244002246a0024400424424660020060042246600244a66a0042038200203244666ae68cdc780100080d00c8919118011bac0013200135501e2233335573e0024a03a466a03860086ae84008c00cd5d100100b119191999ab9a3370e6aae7540092000233221233001003002300c35742a004600a6ae84d5d1280111931900b19ab9c013016014135573ca00226ea80048c8c8c8c8cccd5cd19b8735573aa00890001199991110919998008028020018011919191999ab9a3370e6aae7540092000233221233001003002301535742a00466a01a0286ae84d5d1280111931900d99ab9c01801b019135573ca00226ea8004d5d0a802199aa8043ae500735742a0066464646666ae68cdc3a800a4008464244460040086ae84d55cf280191999ab9a3370ea0049001119091118008021bae357426aae7940108cccd5cd19b875003480008488800c8c98c8074cd5ce00d00e80d80d00c89aab9d5001137540026ae854008cd4025d71aba135744a004464c6402e66ae7005005c0544d5d1280089aba25001135573ca00226ea80044cd54005d73ad112232230023756002640026aa03644646666aae7c0089406c8cd4068cd54070c018d55cea80118029aab9e500230043574400602826ae84004488c8c8cccd5cd19b875001480008d401cc014d5d09aab9e500323333573466e1d400920022500723263201433573802202802402226aae7540044dd50008909118010018891000919191999ab9a3370ea002900311909111180200298039aba135573ca00646666ae68cdc3a8012400846424444600400a60126ae84d55cf280211999ab9a3370ea006900111909111180080298039aba135573ca00a46666ae68cdc3a8022400046424444600600a6eb8d5d09aab9e500623263201233573801e02402001e01c01a26aae7540044dd5000919191999ab9a3370e6aae7540092000233221233001003002300535742a0046eb4d5d09aba2500223263200e33573801601c01826aae7940044dd50009191999ab9a3370e6aae75400520002375c6ae84d55cf280111931900619ab9c00900c00a13754002464646464646666ae68cdc3a800a401842444444400646666ae68cdc3a8012401442444444400846666ae68cdc3a801a40104664424444444660020120106eb8d5d0a8029bad357426ae8940148cccd5cd19b875004480188cc8848888888cc008024020dd71aba15007375c6ae84d5d1280391999ab9a3370ea00a900211991091111111980300480418061aba15009375c6ae84d5d1280491999ab9a3370ea00c900111909111111180380418069aba135573ca01646666ae68cdc3a803a400046424444444600a010601c6ae84d55cf280611931900a99ab9c01201501301201101000f00e00d135573aa00826aae79400c4d55cf280109aab9e5001137540024646464646666ae68cdc3a800a4004466644424466600200a0080066eb4d5d0a8021bad35742a0066eb4d5d09aba2500323333573466e1d4009200023212230020033008357426aae7940188c98c8038cd5ce00580700600589aab9d5003135744a00226aae7940044dd5000919191999ab9a3370ea002900111909118008019bae357426aae79400c8cccd5cd19b875002480008c8488c00800cdd71aba135573ca008464c6401666ae7002002c0240204d55cea80089baa00112232323333573466e1d400520042122200123333573466e1d40092002232122230030043006357426aae7940108cccd5cd19b87500348000848880088c98c8030cd5ce00480600500480409aab9d5001137540024646666ae68cdc3a800a4004401646666ae68cdc3a801240004016464c6401066ae700140200180144d55ce9baa00149103505431002326320033357389211b65786163746c79206f6e65207369676e65722072657175697265640000349848004c8004d5402488cd400520002235002225335333573466e3c0080340240204c01c0044c01800cc8004d5402088cd400520002235002225335333573466e3c00803002001c40044c01800c4880084880044488008488488cc00401000c448848cc00400c009220100223370000400222464600200244660066004004003";
+
+const insuranceValidator = {
+  type: "PlutusV2",
+  script: SCRIPT_CBOR,
+};
+
+const POOL_VALIDATOR_CBOR = "5908a8010000323232323322323232323232323232332232323232323232232322322323253353232325335002101f15335333573466e20c8c8cccd54c03848004cd403c888c00cc0080048004894cd4ccd54c04048004c8cd404888ccd400c88008008004d40048800448cc004894cd40084098400408c8ccd5cd19b8f00300102402300413370000290010800800a40006a6a004440044444444444440086a006440046a0064400203c03e203e266ae7124121696e73756666696369656e74207369676e61747572657320617661696c61626c650001e3333573466e1cd55cea80224000466442466002006004646464646464646464646464646666ae68cdc39aab9d500c480008cccccccccccc88888888888848cccccccccccc00403403002c02802402001c01801401000c008cd4070074d5d0a80619a80e00e9aba1500b33501c01e35742a014666aa040eb9407cd5d0a804999aa8103ae501f35742a01066a03804e6ae85401cccd540800a1d69aba150063232323333573466e1cd55cea801240004664424660020060046464646666ae68cdc39aab9d5002480008cc8848cc00400c008cd40c9d69aba150023033357426ae8940088c98c80dccd5ce01b81c01a89aab9e5001137540026ae854008c8c8c8cccd5cd19b8735573aa004900011991091980080180119a8193ad35742a00460666ae84d5d1280111931901b99ab9c037038035135573ca00226ea8004d5d09aba2500223263203333573806606806226aae7940044dd50009aba1500533501c75c6ae854010ccd540800908004d5d0a801999aa8103ae200135742a004604c6ae84d5d1280111931901799ab9c02f03002d135744a00226ae8940044d5d1280089aba25001135744a00226ae8940044d5d1280089aba25001135744a00226ae8940044d55cf280089baa00135742a008602c6ae84d5d1280211931901099ab9c02102201f3333573466e1d40152002212200123333573466e1d40192000212200223263202133573804204403e03c6666ae68cdc39aab9d5007480008cc8848cc00400c008cd4031d71aba15007375a6ae84d5d1280391931900f99ab9c01f02001d101f16135573ca00226ea80044d55ce9baa001135573ca00226ea8004c8004d5405c88448894cd40044d400c88004884ccd401488008c010008ccd54c01c4800401401000448848cc00400c00848c88c008dd6000990009aa80b111999aab9f0012500a233500930043574200460066ae8800805c8c8c8cccd5cd19b8735573aa004900011991091980080180118061aba150023005357426ae8940088c98c8058cd5ce00b00b80a09aab9e5001137540024646464646666ae68cdc39aab9d5004480008cccc888848cccc00401401000c008c8c8c8cccd5cd19b8735573aa0049000119910919800801801180a9aba1500233500f014357426ae8940088c98c806ccd5ce00d80e00c89aab9e5001137540026ae854010ccd54021d728039aba150033232323333573466e1d4005200423212223002004357426aae79400c8cccd5cd19b875002480088c84888c004010dd71aba135573ca00846666ae68cdc3a801a400042444006464c6403a66ae7007407806c0680644d55cea80089baa00135742a00466a016eb8d5d09aba2500223263201733573802e03002a26ae8940044d5d1280089aab9e500113754002266aa002eb9d6889119118011bab00132001355013223233335573e0044a010466a00e66442466002006004600c6aae754008c014d55cf280118021aba200301513574200222440042442446600200800624464646666ae68cdc3a800a40004642446004006600a6ae84d55cf280191999ab9a3370ea0049001109100091931900919ab9c01201301000f135573aa00226ea80048c8c8cccd5cd19b875001480188c848888c010014c01cd5d09aab9e500323333573466e1d400920042321222230020053009357426aae7940108cccd5cd19b875003480088c848888c004014c01cd5d09aab9e500523333573466e1d40112000232122223003005375c6ae84d55cf280311931900919ab9c01201301000f00e00d135573aa00226ea80048c8c8cccd5cd19b8735573aa004900011991091980080180118029aba15002375a6ae84d5d1280111931900719ab9c00e00f00c135573ca00226ea80048c8cccd5cd19b8735573aa002900011bae357426aae7940088c98c8030cd5ce00600680509baa001232323232323333573466e1d4005200c21222222200323333573466e1d4009200a21222222200423333573466e1d400d2008233221222222233001009008375c6ae854014dd69aba135744a00a46666ae68cdc3a8022400c4664424444444660040120106eb8d5d0a8039bae357426ae89401c8cccd5cd19b875005480108cc8848888888cc018024020c030d5d0a8049bae357426ae8940248cccd5cd19b875006480088c848888888c01c020c034d5d09aab9e500b23333573466e1d401d2000232122222223005008300e357426aae7940308c98c8054cd5ce00a80b00980900880800780700689aab9d5004135573ca00626aae7940084d55cf280089baa0012323232323333573466e1d400520022333222122333001005004003375a6ae854010dd69aba15003375a6ae84d5d1280191999ab9a3370ea0049000119091180100198041aba135573ca00c464c6401c66ae7003803c03002c4d55cea80189aba25001135573ca00226ea80048c8c8cccd5cd19b875001480088c8488c00400cdd71aba135573ca00646666ae68cdc3a8012400046424460040066eb8d5d09aab9e500423263200b33573801601801201026aae7540044dd500089119191999ab9a3370ea00290021091100091999ab9a3370ea00490011190911180180218031aba135573ca00846666ae68cdc3a801a400042444004464c6401866ae700300340280240204d55cea80089baa0012323333573466e1d40052002200523333573466e1d40092000200523263200833573801001200c00a26aae74dd5000891001091000a4c92010350543100120011123230010012233003300200200101";
+
+const poolValidator = {
+  type: "PlutusV2",
+  script: POOL_VALIDATOR_CBOR,
+};
+
+/* =====================================================
+   DATUMS
+===================================================== */
+
+const InsuranceDatum = Data.Object({
+  idThreshold: Data.Integer(),
+  idClaimant: Data.Nullable(Data.Bytes()),
+  idClaimAmount: Data.Integer(),
+  idVotes: Data.Array(Data.Bytes()),
+});
+
+const PoolDatum = Data.Object({
+  pdSigners: Data.Array(Data.Bytes()),
+  pdThreshold: Data.Integer(),
+});
+
+/* =====================================================
+   REDEEMERS
+===================================================== */
+
+const VoteRedeemer    = Data.to(new Constr(2, []));
+const ExecuteRedeemer = Data.to(new Constr(3, []));
+const DepositRedeemer = Data.to(new Constr(0, []));
+const PayoutRedeemer  = Data.to(new Constr(1, []));
+
+/* =====================================================
+   SHARED STATE
+===================================================== */
+
+export let lucid;
+export let walletPkh;
+let walletAddress;
+let insuranceAddress;
+let poolAddress;
+
+/* =====================================================
+   MEMBERSHIP CHECK
+===================================================== */
+
+export async function hasMembershipNFT() {
+  const utxos = await lucid.wallet.getUtxos();
+  const unit = MEMBERSHIP_POLICY_ID + walletPkh;
+  return utxos.some(u => u.assets[unit] === 1n);
+}
+
+/* =====================================================
+   UI
+===================================================== */
+
+export async function refreshMembershipUI() {
+  const ok = await hasMembershipNFT();
+
+  // Membership mint section
+  document
+    .getElementById("membership")
+    .classList.toggle("hidden", ok);
+
+  // Insurance actions (submit / vote / execute)
+  document
+    .getElementById("protocol")
+    .classList.toggle("hidden", !ok);
+
+  document.getElementById("log").innerText =
+    ok
+      ? "Membership verified ✔️ Access granted"
+      : "Membership required ❌";
+  
+  // Load claims if member
+  if (ok) {
+    await loadClaims();
+  }
+}
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+async function getPoolUtxo() {
+  const utxos = await lucid.utxosAt(poolAddress);
+  console.log("utxos", utxos);
+
+  if (utxos.length === 0) return null;
+  if (utxos.length > 1) throw "Pool invariant broken: multiple pool UTXOs";
+
+  return utxos[0];
+}
+
+/* =====================================================
+   LOAD & RENDER CLAIMS
+===================================================== */
+
+async function loadClaims() {
+  try {
+    const utxos = await lucid.utxosAt(insuranceAddress);
+    
+    if (utxos.length === 0) {
+      renderClaims([], []);
+      return;
+    }
+
+    const claimsForVoting = [];
+    const claimsForExecution = [];
+
+    for (const utxo of utxos) {
+      try {
+        const datum = Data.from(utxo.datum, InsuranceDatum);
+        
+        const claim = {
+          utxo,
+          datum,
+          claimant: datum.idClaimant,
+          amount: Number(datum.idClaimAmount) / 1_000_000,
+          threshold: Number(datum.idThreshold),
+          votes: datum.idVotes.length,
+          hasVoted: datum.idVotes.some(v => v === walletPkh),
+          metThreshold: datum.idVotes.length >= Number(datum.idThreshold)
+        };
+
+        if (claim.metThreshold) {
+          claimsForExecution.push(claim);
+        } else {
+          claimsForVoting.push(claim);
+        }
+      } catch (e) {
+        console.warn("Failed to parse claim:", e);
+      }
+    }
+
+    renderClaims(claimsForVoting, claimsForExecution);
+  } catch (e) {
+    console.error("Failed to load claims:", e);
+    document.getElementById("log").innerText = "Failed to load claims: " + e.message;
+  }
+}
+
+function renderClaims(forVoting, forExecution) {
+  // Render claims needing votes
+  const votingSection = document.getElementById("claimsForVoting");
+  if (forVoting.length === 0) {
+    votingSection.innerHTML = "<p><em>No claims pending votes</em></p>";
+  } else {
+    votingSection.innerHTML = forVoting.map((claim, idx) => `
+      <div class="claim-card">
+        <div class="claim-info">
+          <strong>Claim #${idx + 1}</strong><br>
+          Amount: <strong>${claim.amount} ADA</strong><br>
+          Votes: <strong>${claim.votes}/${claim.threshold}</strong><br>
+          Claimant: <code>${claim.claimant ? claim.claimant.slice(0, 16) + '...' : 'Unknown'}</code>
+        </div>
+        <button 
+          class="white" 
+          onclick="voteForClaim(${idx})"
+          ${claim.hasVoted ? 'disabled' : ''}
+        >
+          ${claim.hasVoted ? '✓ Voted' : 'Vote'}
+        </button>
+      </div>
+    `).join('');
+  }
+
+  // Render claims ready for execution
+  const executionSection = document.getElementById("claimsForExecution");
+  if (forExecution.length === 0) {
+    executionSection.innerHTML = "<p><em>No claims ready for execution</em></p>";
+  } else {
+    executionSection.innerHTML = forExecution.map((claim, idx) => `
+      <div class="claim-card execution">
+        <div class="claim-info">
+          <strong>Claim #${idx + 1}</strong> ✅<br>
+          Amount: <strong>${claim.amount} ADA</strong><br>
+          Votes: <strong>${claim.votes}/${claim.threshold}</strong> (Passed)<br>
+          Claimant: <code>${claim.claimant ? claim.claimant.slice(0, 16) + '...' : 'Unknown'}</code>
+        </div>
+        <button 
+          class="red" 
+          onclick="executeClaimByIndex(${idx})"
+        >
+          Execute
+        </button>
+      </div>
+    `).join('');
+  }
+
+  // Store claims in window for button callbacks
+  window.claimsForVoting = forVoting;
+  window.claimsForExecution = forExecution;
+}
+
+/* =====================================================
+   INIT
+===================================================== */
+
+async function init() {
+  lucid = await Lucid.new(
+    new Blockfrost(BLOCKFROST_URL, BLOCKFROST_KEY),
+    NETWORK
+  );
+
+  const api = await window.cardano.lace.enable();
+  lucid.selectWallet(api);
+
+  walletAddress = await lucid.wallet.address();
+  walletPkh =
+    lucid.utils.getAddressDetails(walletAddress).paymentCredential.hash;
+
+  MEMBERSHIP_POLICY_ID =
+    lucid.utils.mintingPolicyToId(membershipPolicy);
+
+  insuranceAddress =
+    lucid.utils.validatorToAddress(insuranceValidator);
+
+  poolAddress =
+    lucid.utils.validatorToAddress(poolValidator);
+
+  await refreshMembershipUI();
+}
+
+window.init = init;
+
+/* =====================================================
+   POOL DEPOSIT
+===================================================== */
+
+async function depositToPool() {
+  if (!(await hasMembershipNFT())) throw "No membership";
+
+  const amount =
+    BigInt(document.getElementById("depositAmount").value) * 1_000_000n;
+
+  const poolUtxo = await getPoolUtxo();
+
+  let tx = lucid.newTx();
+
+  if (!poolUtxo) {
+    const addr1 =
+      "addr_test1qqe5zn0qmu9hga5xlqp4ae4cxq4g0vmtyac0g2zv0mh5kfhsn2ld9h4unte6gjsml94j9rsk8kktpvf0dqznl629esdsk76wfv";
+    const addr2 =
+      "addr_test1qpma2jn6l0684rmevytrd3k7x8q4fvzzqwydedwy2aezzxjacmj4jllasdrpk6rlyl5dhsg0wne5nssnt68z6s5f4x7s66s08j";
+
+    const pkh1 = lucid.utils.getAddressDetails(addr1).paymentCredential.hash;
+    const pkh2 = lucid.utils.getAddressDetails(addr2).paymentCredential.hash;
+
+    const datum = Data.to(
+      {
+        pdSigners: [pkh1, pkh2],
+        pdThreshold: 1n,
+      },
+      PoolDatum
+    );
+
+    tx = tx.payToContract(
+      poolAddress,
+      { inline: datum },
+      { lovelace: amount }
+    );
+  } else {
+    const rawDatum = await lucid.datumOf(poolUtxo);
+    const datum = Data.from(rawDatum, PoolDatum);
+
+    const existing = poolUtxo.assets.lovelace;
+
+    tx = tx
+      .collectFrom([poolUtxo], DepositRedeemer)
+      .payToContract(
+        poolAddress,
+        { inline: Data.to(datum, PoolDatum) },
+        { lovelace: existing + amount }
+      );
+  }
+
+  const completedTx = await tx
+    .addSignerKey(walletPkh)
+    .complete();
+
+  await (await completedTx.sign().complete()).submit();
+  
+  document.getElementById("log").innerText = "Deposit successful! ✅";
+  await loadClaims();
+}
+
+window.depositToPool = depositToPool;
+
+/* =====================================================
+   CLAIM SUBMISSION
+===================================================== */
+
+export async function submitClaim() {
+  if (!(await hasMembershipNFT())) throw "No membership";
+
+  const amount =
+    BigInt(document.getElementById("claimAmount").value) * 1_000_000n;
+  const threshold = 2n;
+
+  const datum = Data.to({
+    idThreshold: threshold,
+    idClaimant: walletPkh,
+    idClaimAmount: amount,
+    idVotes: [],
+  }, InsuranceDatum);
+
+  const tx = await lucid
+    .newTx()
+    .payToContract(
+      insuranceAddress,
+      { inline: datum },
+      { lovelace: 2_000_000n }
+    )
+    .addSignerKey(walletPkh)
+    .complete();
+
+  await (await tx.sign().complete()).submit();
+  
+  document.getElementById("log").innerText = "Claim submitted! ✅";
+  await loadClaims();
+}
+
+/* =====================================================
+   VOTE ON CLAIM
+===================================================== */
+
+async function voteForClaim(index) {
+  if (!(await hasMembershipNFT())) throw "No membership";
+
+  const claim = window.claimsForVoting[index];
+  if (!claim) throw "Claim not found";
+
+  const u = claim.utxo;
+  const d = claim.datum;
+
+  if (d.idVotes.some(v => v === walletPkh)) {
+    throw "You have already voted on this claim";
+  }
+
+  const tx = await lucid
+    .newTx()
+    .collectFrom([u], VoteRedeemer)
+    .attachSpendingValidator(insuranceValidator)
+    .payToContract(
+      insuranceAddress,
+      { inline: Data.to({ ...d, idVotes: [...d.idVotes, walletPkh] }, InsuranceDatum) },
+      u.assets
+    )
+    .addSignerKey(walletPkh)
+    .complete();
+
+  await (await tx.sign().complete()).submit();
+  
+  document.getElementById("log").innerText = "Vote submitted! ✅";
+  await loadClaims();
+}
+
+window.voteForClaim = voteForClaim;
+
+/* =====================================================
+   EXECUTE CLAIM
+===================================================== */
+
+async function executeClaimByIndex(index) {
+  if (!(await hasMembershipNFT())) throw "No membership";
+
+  const claim = window.claimsForExecution[index];
+  if (!claim) throw "Claim not found";
+
+  const claimUtxo = claim.utxo;
+  const poolUtxo = await getPoolUtxo();
+
+  if (!poolUtxo) throw "No pool funds available";
+
+  const claimDatum = claim.datum;
+  const poolDatum = Data.from(poolUtxo.datum, PoolDatum);
+
+  const signers = poolDatum.pdSigners;
+  const isSigner = signers.some(s => s === walletPkh);
+
+  if (!isSigner) {
+    throw "❌ You are not a signatory for this pool!";
+  }
+
+  const tx = await lucid
+    .newTx()
+    .collectFrom([claimUtxo], ExecuteRedeemer)
+    .collectFrom([poolUtxo], PayoutRedeemer)
+    .attachSpendingValidator(insuranceValidator)
+    .attachSpendingValidator(poolValidator)
+    .payToAddress(
+      lucid.utils.credentialToAddress(
+        lucid.utils.keyHashToCredential(claimDatum.idClaimant)
+      ),
+      { lovelace: claimDatum.idClaimAmount }
+    )
+    .addSignerKey(walletPkh)
+    .complete();
+
+  const signed = await tx.sign().complete();
+  const txHash = await signed.submit();
+
+  document.getElementById("log").innerText = "Claim executed! ✅ TX: " + txHash;
+  await loadClaims();
+}
+
+window.executeClaimByIndex = executeClaimByIndex;
+
+// Legacy functions for backward compatibility
+export async function voteClaim() {
+  if (window.claimsForVoting && window.claimsForVoting.length > 0) {
+    await voteForClaim(0);
+  } else {
+    throw "No claims available for voting";
+  }
+}
+
+export async function executeClaim() {
+  if (window.claimsForExecution && window.claimsForExecution.length > 0) {
+    await executeClaimByIndex(0);
+  } else {
+    throw "No claims ready for execution";
+  }
+}
+
+window.submitClaim = submitClaim;
+window.voteClaim = voteClaim;
+window.executeClaim = executeClaim;
