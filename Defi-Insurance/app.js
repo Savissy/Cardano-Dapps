@@ -184,23 +184,27 @@ function renderClaims(forVoting, forExecution) {
   if (forVoting.length === 0) {
     votingSection.innerHTML = "<p><em>No claims pending votes</em></p>";
   } else {
-    votingSection.innerHTML = forVoting.map((claim, idx) => `
-      <div class="claim-card">
-        <div class="claim-info">
-          <strong>Claim #${idx + 1}</strong><br>
-          Amount: <strong>${claim.amount} ADA</strong><br>
-          Votes: <strong>${claim.votes}/${claim.threshold}</strong><br>
-          Claimant: <code>${claim.claimant ? claim.claimant.slice(0, 16) + '...' : 'Unknown'}</code>
-        </div>
-        <button 
-          class="white" 
-          onclick="voteForClaim(${idx})"
-          ${claim.hasVoted ? 'disabled' : ''}
-        >
-          ${claim.hasVoted ? '✓ Voted' : 'Vote'}
-        </button>
+    votingSection.innerHTML = `
+      <div class="claims-grid">
+        ${forVoting.map((claim, idx) => `
+          <div class="claim-card">
+            <div class="claim-info">
+              <strong>Claim #${idx + 1}</strong><br>
+              Amount: <strong>${claim.amount} ADA</strong><br>
+              Votes: <strong>${claim.votes}/${claim.threshold}</strong><br>
+              Claimant: <code>${claim.claimant ? claim.claimant.slice(0, 16) + '...' : 'Unknown'}</code>
+            </div>
+            <button 
+              class="white" 
+              onclick="voteForClaim(${idx})"
+              ${claim.hasVoted ? 'disabled' : ''}
+            >
+              ${claim.hasVoted ? '✓ Voted' : 'Vote'}
+            </button>
+          </div>
+        `).join('')}
       </div>
-    `).join('');
+    `;
   }
 
   // Render claims ready for execution
@@ -208,22 +212,26 @@ function renderClaims(forVoting, forExecution) {
   if (forExecution.length === 0) {
     executionSection.innerHTML = "<p><em>No claims ready for execution</em></p>";
   } else {
-    executionSection.innerHTML = forExecution.map((claim, idx) => `
-      <div class="claim-card execution">
-        <div class="claim-info">
-          <strong>Claim #${idx + 1}</strong> ✅<br>
-          Amount: <strong>${claim.amount} ADA</strong><br>
-          Votes: <strong>${claim.votes}/${claim.threshold}</strong> (Passed)<br>
-          Claimant: <code>${claim.claimant ? claim.claimant.slice(0, 16) + '...' : 'Unknown'}</code>
-        </div>
-        <button 
-          class="red" 
-          onclick="executeClaimByIndex(${idx})"
-        >
-          Execute
-        </button>
+    executionSection.innerHTML = `
+      <div class="claims-grid">
+        ${forExecution.map((claim, idx) => `
+          <div class="claim-card execution">
+            <div class="claim-info">
+              <strong>Claim #${idx + 1}</strong> ✅<br>
+              Amount: <strong>${claim.amount} ADA</strong><br>
+              Votes: <strong>${claim.votes}/${claim.threshold}</strong> (Passed)<br>
+              Claimant: <code>${claim.claimant ? claim.claimant.slice(0, 16) + '...' : 'Unknown'}</code>
+            </div>
+            <button 
+              class="red" 
+              onclick="executeClaimByIndex(${idx})"
+            >
+              Execute
+            </button>
+          </div>
+        `).join('')}
       </div>
-    `).join('');
+    `;
   }
 
   // Store claims in window for button callbacks
@@ -417,6 +425,10 @@ async function executeClaimByIndex(index) {
   const signers = poolDatum.pdSigners;
   const isSigner = signers.some(s => s === walletPkh);
 
+  const poolAda = poolUtxo.assets.lovelace;
+
+  const remainder = poolAda - claimDatum.idClaimAmount;
+
   if (!isSigner) {
     throw "❌ You are not a signatory for this pool!";
   }
@@ -433,6 +445,11 @@ async function executeClaimByIndex(index) {
       ),
       { lovelace: claimDatum.idClaimAmount }
     )
+    .payToContract(
+        poolAddress,
+        { inline: Data.to(poolDatum, PoolDatum) },
+        { lovelace: remainder }
+      )
     .addSignerKey(walletPkh)
     .complete();
 
