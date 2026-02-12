@@ -20,6 +20,7 @@ import qualified Codec.Serialise as Serialise
 import qualified Data.ByteString.Lazy as LBS
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Base16 as B16
+import qualified Data.ByteString.Char8 as C8
 
 -------------------------------------------------
 -- CONSTANTS
@@ -42,7 +43,6 @@ mkSharePolicy poolVH _ ctx =
     info :: TxInfo
     info = scriptContextTxInfo ctx
 
-    -- Pool script must be consumed
     poolSpent :: Bool
     poolSpent =
       any (\i ->
@@ -51,7 +51,6 @@ mkSharePolicy poolVH _ ctx =
           _ -> False
       ) (txInfoInputs info)
 
-    -- Mint or burn must be non-zero
     mintNonZero :: Bool
     mintNonZero =
       assetClassValueOf
@@ -76,15 +75,17 @@ sharePolicy vh =
         PlutusTx.liftCode vh
 
 -------------------------------------------------
--- SERIALIZATION
+-- FIX: HEX-DECODE POOL VALIDATOR HASH
 -------------------------------------------------
 
--- 🔴 IMPORTANT:
--- REPLACE THIS WITH YOUR REAL POOL VALIDATOR HASH
 {-# INLINABLE poolValidatorHash #-}
 poolValidatorHash :: ValidatorHash
 poolValidatorHash =
-  ValidatorHash "d734a4972bf5c7316f23c275bfde598255670889fef48bcfb4d1d28e"
+  let hex = "1e475daed548bd4fbfe2e338326a7f5863d7f8f15a70c2f282f9b184"
+  in case B16.decode (C8.pack hex) of
+      Left err  -> P.error ("Invalid pool validator hash hex: " P.<> err)
+      Right raw -> ValidatorHash (toBuiltin raw)
+
 
 policy :: MintingPolicy
 policy = sharePolicy poolValidatorHash
