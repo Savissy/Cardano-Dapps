@@ -7,17 +7,16 @@
 
 module Main where
 
-import Prelude (IO, String, FilePath, putStrLn, (<>), take)
+import Prelude (IO, String, FilePath, putStrLn, (<>))
 import qualified Prelude as P
 import qualified Data.Text as T
 
 import Plutus.V2.Ledger.Api
 import Plutus.V2.Ledger.Contexts
 import qualified Plutus.V2.Ledger.Api as PlutusV2
-import Plutus.V1.Ledger.Value (valueOf, adaSymbol, adaToken)
+import Plutus.V1.Ledger.Value (valueOf, adaSymbol, adaToken, AssetClass(..))
 import PlutusTx
 import PlutusTx.Prelude hiding (Semigroup(..), unless)
-import qualified PlutusTx.Builtins as Builtins
 
 import qualified Codec.Serialise as Serialise
 import qualified Data.ByteString.Lazy  as LBS
@@ -29,14 +28,16 @@ import qualified Cardano.Api as C
 import qualified Cardano.Api.Shelley as CS
 
 -------------------------------------------------
--- DATUM
+-- DATUM (UPDATED)
 -------------------------------------------------
 
 data InsuranceDatum = InsuranceDatum
     { idThreshold   :: Integer
-    , idClaimant    :: Maybe PubKeyHash
+    , idClaimerPkh  :: PubKeyHash     -- NEW (replaces Maybe claimant)
     , idClaimAmount :: Integer
     , idVotes       :: [PubKeyHash]
+    , idDocAsset    :: AssetClass     -- NEW (doc NFT asset class)
+    , idExecuted    :: Bool           -- NEW
     }
 PlutusTx.unstableMakeIsData ''InsuranceDatum
 
@@ -68,22 +69,13 @@ membershipPolicy =
 {-# INLINABLE signerHasMembership #-}
 signerHasMembership :: TxInfo -> PubKeyHash -> Bool
 signerHasMembership info pkh =
-    let
-        tn = TokenName (getPubKeyHash pkh)
+    let tn = TokenName (getPubKeyHash pkh)
     in
-        valueOf
-            (txInfoMint info)
-            membershipPolicy
-            tn
-        == 0
+        valueOf (txInfoMint info) membershipPolicy tn == 0
         &&
         any
             (\i ->
-                valueOf
-                    (txOutValue $ txInInfoResolved i)
-                    membershipPolicy
-                    tn
-                >= 1
+                valueOf (txOutValue $ txInInfoResolved i) membershipPolicy tn >= 1
             )
             (txInfoInputs info)
 
@@ -93,8 +85,7 @@ hasSignerInput info pkh =
     any
         (\i ->
             case txOutAddress (txInInfoResolved i) of
-                Address (PubKeyCredential pkh') _ ->
-                    pkh' == pkh
+                Address (PubKeyCredential pkh') _ -> pkh' == pkh
                 _ -> False
         )
         (txInfoInputs info)
@@ -116,7 +107,6 @@ mkInsuranceValidator dat action ctx =
             traceIfFalse "invalid amount" (amt > 0)
 
         VoteClaim ->
-            traceIfFalse "membership required" memberAuth &&
             traceIfFalse "double vote" noDoubleVote
 
         ExecuteClaim ->
@@ -141,7 +131,7 @@ mkInsuranceValidator dat action ctx =
     memberAuth =
         txSignedBy info signer
         && hasSignerInput info signer
-
+        && signerHasMembership info signer
 
     noDoubleVote :: Bool
     noDoubleVote =
@@ -153,17 +143,11 @@ mkInsuranceValidator dat action ctx =
 
     claimantPaid :: Bool
     claimantPaid =
-        case idClaimant dat of
-            Nothing  -> traceError "no claimant"
-            Just pkh ->
-                valueOf
-                    (valuePaidTo info pkh)
-                    adaSymbol
-                    adaToken
-                >= idClaimAmount dat
+        valueOf (valuePaidTo info (idClaimerPkh dat)) adaSymbol adaToken
+            >= idClaimAmount dat
 
 -------------------------------------------------
--- UNTYPED WRAPPER (FIXED)
+-- UNTYPED WRAPPER
 -------------------------------------------------
 
 {-# INLINABLE mkValidatorUntyped #-}
